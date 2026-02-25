@@ -5,29 +5,22 @@ if(EMSCRIPTEN)
   message("Using Emscripten!")
 endif()
 
-if(EMSCRIPTEN)
+if(EMSCRIPTEN) 
   set(TARGET_NAME minigin_web)
   set(TARGET_PARAM )
 else()
-  set(TARGET_NAME minigin)
-  set(TARGET_PARAM WIN32)
-endif()
+  set(TARGET_NAME minigin) 
+  set(TARGET_PARAM WIN32) 
+endif() 
+ 
+
+file(GLOB_RECURSE PROJECT_SOURCES
+    CONFIGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+)
 
 # list source files here
-add_executable(${TARGET_NAME} ${TARGET_PARAM}
-  Minigin/Font.cpp
-  Minigin/GameObject.cpp
-  Minigin/InputManager.cpp
-  Minigin/Main.cpp
-  Minigin/Minigin.cpp
-  Minigin/Renderer.cpp
-  Minigin/ResourceManager.cpp
-  Minigin/Scene.cpp
-  Minigin/SceneManager.cpp
-  Minigin/TextObject.cpp
-  Minigin/Texture2D.cpp
-  Minigin/Transform.cpp
-)
+add_executable(${TARGET_NAME} ${TARGET_PARAM} ${PROJECT_SOURCES} )
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
@@ -108,16 +101,25 @@ if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
   find_package(VLD CONFIG)
 endif()
-
+ 
 # Add steam if available
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
 find_package(Steamworks QUIET)
 
-target_include_directories("${TARGET_NAME}" PUBLIC
-  ${CMAKE_SOURCE_DIR}/Minigin/
-  ${VLD_INCLUDE_DIR}
-)
+file(GLOB_RECURSE ALL_INCLUDE_DIRS LIST_DIRECTORIES true
+     ${CMAKE_SOURCE_DIR}/src/*)
 
+set(DIR_LIST "")
+foreach(dir ${ALL_INCLUDE_DIRS})
+    if(IS_DIRECTORY ${dir}) 
+        list(APPEND DIR_LIST ${dir})
+    endif()
+endforeach()
+
+target_include_directories(${TARGET_NAME} PUBLIC
+    ${DIR_LIST}
+    ${VLD_INCLUDE_DIR}
+)
 target_link_libraries("${TARGET_NAME}" PUBLIC
   SDL3::SDL3
   SDL3_ttf::SDL3_ttf
@@ -173,7 +175,7 @@ elseif(WIN32)
       VERBATIM
     )
   endforeach()
-
+   
   if(Steamworks_FOUND)
     target_link_libraries("${TARGET_NAME}" PUBLIC Steamworks::Steamworks)
     target_compile_definitions(${TARGET_NAME} PRIVATE USE_STEAMWORKS)

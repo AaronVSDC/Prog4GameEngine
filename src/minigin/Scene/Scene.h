@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SCENE_H
+#define SCENE_H
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,8 +14,10 @@ namespace dae
 		void Add(std::unique_ptr<GameObject> object);
 		void Remove(const GameObject& object);
 		void RemoveAll();
-
-		void Update();
+		 
+		void Update(float deltaTime);
+		void FixedUpdate(float fixedTimeStep); 
+		void Start(); 
 		void Render() const;
 
 		~Scene() = default;
@@ -30,3 +34,5 @@ namespace dae
 	};
 
 }
+
+#endif

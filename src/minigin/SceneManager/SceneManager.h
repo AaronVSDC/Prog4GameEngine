@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SCENE_MANAGER_H
+#define SCENE_MANAGER_H
+
 #include <vector>
 #include <string>
 #include <memory>
@@ -13,7 +15,9 @@ namespace dae
 	public:
 		Scene& CreateScene();
 
-		void Update();
+		void Start(); 
+		void FixedUpdate(float fixedTimeStep); 
+		void Update(float deltaTime);
 		void Render();
 	private:
 		friend class Singleton<SceneManager>;
@@ -21,3 +25,5 @@ namespace dae
 		std::vector<std::unique_ptr<Scene>> m_scenes{};
 	};
 }
+
+#endif
