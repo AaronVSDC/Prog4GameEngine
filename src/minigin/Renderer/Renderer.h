@@ -3,7 +3,6 @@
 
 #include <SDL3/SDL.h>
 #include "Singleton.h"
-
 namespace dae
 {
 	class Texture2D;
@@ -15,6 +14,8 @@ namespace dae
 		SDL_Renderer* m_renderer{};
 		SDL_Window* m_window{};
 		SDL_Color m_clearColor{};	
+
+
 	public:
 		void Init(SDL_Window* window);
 		void Render() const;
