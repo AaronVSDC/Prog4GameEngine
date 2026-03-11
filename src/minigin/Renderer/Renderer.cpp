@@ -49,8 +49,8 @@ void dae::Renderer::Render() const
 	ImGui_ImplSDL3_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::ShowDemoWindow(); // For demonstration purposes, do not keep this in your engine
-		ImGui::Render();
+	//ImGui::ShowDemoWindow(); // For demonstration purposes, do not keep this in your engine
+	ImGui::Render();
 
 	const auto& color = GetBackgroundColor();
 	SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
