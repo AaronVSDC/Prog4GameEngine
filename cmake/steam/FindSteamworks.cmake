@@ -47,7 +47,7 @@ if(NOT STEAMWORKS_ROOT)
             "  ${_STEAMWORKS_CANDIDATES}\n"
             "Please specify STEAMWORKS_ROOT manually."
         )
-    endif()
+    endif() 
 endif()
 
 # ------------------------------------------------------------

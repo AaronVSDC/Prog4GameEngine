@@ -63,6 +63,6 @@
                 "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
                 "CMAKE_BUILD_TYPE": "Release"
             }
-        }
+        } 
     ]
 }

@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.26)
 project(Minigin)
 
-#add_compile_definitions(EMSCRIPTEN)
+add_compile_definitions(USE_STEAMWORKS)   
 
-if(EMSCRIPTEN)
-  message("Using Emscripten!") 
-endif()
+if(EMSCRIPTEN)  
+  message("Using Emscripten!")   
+endif() 
  
-if(EMSCRIPTEN) 
-  set(TARGET_NAME minigin_web) 
+if(EMSCRIPTEN)     
+  set(TARGET_NAME minigin_web)  
   set(TARGET_PARAM ) 
 else()
   set(TARGET_NAME minigin) 
@@ -242,7 +242,7 @@ elseif(APPLE)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E echo "480" > "$<TARGET_FILE_DIR:${TARGET_NAME}>/steam_appid.txt"
       COMMENT "Generating steam_appid.txt"
-    ) 
+    )  
   endif()
 
   # Copy Data folder to output directory after build
