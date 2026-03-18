@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(Minigin)
 
-add_compile_definitions(USE_STEAMWORKS)   
+add_compile_definitions(EMSCRIPTEN)    
 
 if(EMSCRIPTEN)  
   message("Using Emscripten!")   
