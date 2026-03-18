@@ -13,7 +13,7 @@ namespace dae
 			: m_Speed(radiansPerSecond), m_Radius(radius) {
 		} 
 		 
-		void Start(); 
+		void Start() override;  
 		void Update(float) override;
 		
 
