@@ -10,7 +10,7 @@ namespace dae
 	{
 	public:
 		explicit RotatorComponent(float radius, float radiansPerSecond = 1.f)
-			: m_Speed(radiansPerSecond), m_Radius(radius) {
+			: m_Radius(radius), m_Speed(radiansPerSecond) {
 		} 
 		 
 		void Start() override;  
