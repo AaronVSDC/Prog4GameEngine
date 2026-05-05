@@ -1,28 +1,35 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 4.1)
+
 project(Minigin)
 
-add_compile_definitions(EMSCRIPTEN)    
+if(CMAKE_CXX_COMPILER_CLANG_SCAN_DEPS MATCHES "NOTFOUND")
+  message(WARNING "clang-scan-deps not found, C++ module dependency scanning will be disabled")
+  set(CMAKE_CXX_SCAN_FOR_MODULES OFF CACHE BOOL "Disable C++ module scanning" FORCE)
+endif()
 
-if(EMSCRIPTEN)  
-  message("Using Emscripten!")   
-endif() 
- 
-if(EMSCRIPTEN)     
-  set(TARGET_NAME minigin_web)  
-  set(TARGET_PARAM ) 
+if(EMSCRIPTEN)
+  set(TARGET_NAME minigin_web)
+  set(TARGET_PARAM )
 else()
-  set(TARGET_NAME minigin) 
-  set(TARGET_PARAM WIN32) 
-endif() 
- 
-
-file(GLOB_RECURSE PROJECT_SOURCES
-    CONFIGURE_DEPENDS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
-)
+  set(TARGET_NAME minigin)
+  set(TARGET_PARAM WIN32)
+endif()
 
 # list source files here
-add_executable(${TARGET_NAME} ${TARGET_PARAM} ${PROJECT_SOURCES} )
+add_executable(${TARGET_NAME} ${TARGET_PARAM}
+  Minigin/Font.cpp
+  Minigin/GameObject.cpp
+  Minigin/InputManager.cpp
+  Minigin/Main.cpp
+  Minigin/Minigin.cpp
+  Minigin/Renderer.cpp
+  Minigin/ResourceManager.cpp
+  Minigin/Scene.cpp
+  Minigin/SceneManager.cpp
+  Minigin/TextObject.cpp
+  Minigin/Texture2D.cpp
+  Minigin/Transform.cpp
+)
 
 # enable c++20 features
 target_compile_features(${TARGET_NAME} PUBLIC cxx_std_20)
@@ -59,35 +66,10 @@ if(NOT SDL3_FOUND)
       GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
       GIT_TAG release-3.4.0
       GIT_SHALLOW TRUE
-      GIT_PROGRESS TRUE
     )
     FetchContent_MakeAvailable(SDL3)
   endif()
 endif()
-
-# Dear ImGui
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui
-  GIT_TAG v1.92.5-docking
-  GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(imgui)
-
-add_library(imgui STATIC
-  ${imgui_SOURCE_DIR}/imgui.cpp
-  ${imgui_SOURCE_DIR}/imgui_draw.cpp
-  ${imgui_SOURCE_DIR}/imgui_tables.cpp
-  ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-  ${imgui_SOURCE_DIR}/imgui_demo.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-  ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp
-)
-
-target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${sdl3_SOURCE_DIR}/include)
-target_link_libraries(imgui PUBLIC SDL3::SDL3)
-# enable c++20 features
-target_compile_features(imgui PUBLIC cxx_std_20)
 
 # Add SDL3_ttf
 find_package(SDL3_ttf 3.2.2 CONFIG QUIET)
@@ -108,7 +90,6 @@ if(NOT SDL3_ttf_FOUND)
       GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
       GIT_TAG release-3.2.2
       GIT_SHALLOW TRUE
-      GIT_PROGRESS TRUE
     )
     set(SDL3TTF_INSTALL OFF)
     if(EMSCRIPTEN)
@@ -127,33 +108,21 @@ if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
   find_package(VLD CONFIG)
 endif()
- 
+
 # Add steam if available
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/steam")
 find_package(Steamworks QUIET)
 
-file(GLOB_RECURSE ALL_INCLUDE_DIRS LIST_DIRECTORIES true
-     ${CMAKE_SOURCE_DIR}/src/*)
-
-set(DIR_LIST "")
-foreach(dir ${ALL_INCLUDE_DIRS})
-    if(IS_DIRECTORY ${dir}) 
-        list(APPEND DIR_LIST ${dir})
-    endif()
-endforeach()
-
-target_include_directories(${TARGET_NAME} PUBLIC
-    ${DIR_LIST}
-    ${VLD_INCLUDE_DIR}
-      ${imgui_SOURCE_DIR}
-
+target_include_directories("${TARGET_NAME}" PUBLIC
+  ${CMAKE_SOURCE_DIR}/Minigin/
+  ${VLD_INCLUDE_DIR}
 )
+
 target_link_libraries("${TARGET_NAME}" PUBLIC
   SDL3::SDL3
-  SDL3_ttf::SDL3_ttf 
-  glm::glm 
-  ${VLD_LIBRARIES} 
-  imgui  
+  SDL3_ttf::SDL3_ttf
+  glm::glm
+  ${VLD_LIBRARIES}
 )
 
 if(MSVC)
@@ -204,7 +173,7 @@ elseif(WIN32)
       VERBATIM
     )
   endforeach()
-   
+
   if(Steamworks_FOUND)
     target_link_libraries("${TARGET_NAME}" PUBLIC Steamworks::Steamworks)
     target_compile_definitions(${TARGET_NAME} PRIVATE USE_STEAMWORKS)
@@ -223,8 +192,8 @@ elseif(APPLE)
   set_target_properties(${TARGET_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     INSTALL_RPATH "@executable_path/../Frameworks"
-    BUILD_WITH_INSTALL_RPATH TRUE 
-  ) 
+    BUILD_WITH_INSTALL_RPATH TRUE
+  )
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks"
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "$<TARGET_FILE:SDL3::SDL3-shared>" "$<TARGET_BUNDLE_DIR:${TARGET_NAME}>/Contents/Frameworks/"
@@ -232,7 +201,7 @@ elseif(APPLE)
     COMMAND install_name_tool -change "@rpath/libSDL3_ttf.0.dylib" "@executable_path/../Frameworks/libSDL3_ttf.0.2.2.dylib" "$<TARGET_FILE:${TARGET_NAME}>"
     COMMAND install_name_tool -change "@rpath/libSDL3.0.dylib" "@executable_path/../Frameworks/libSDL3.0.dylib" "$<TARGET_FILE:${TARGET_NAME}>"
   )
-   
+
   if(Steamworks_FOUND)
     target_link_libraries("${TARGET_NAME}" PUBLIC Steamworks::Steamworks)
     target_compile_definitions(${TARGET_NAME} PRIVATE USE_STEAMWORKS)
@@ -242,7 +211,7 @@ elseif(APPLE)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E echo "480" > "$<TARGET_FILE_DIR:${TARGET_NAME}>/steam_appid.txt"
       COMMENT "Generating steam_appid.txt"
-    )  
+    )
   endif()
 
   # Copy Data folder to output directory after build

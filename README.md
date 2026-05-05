@@ -8,7 +8,7 @@ Minigin is a very small project using [SDL3](https://www.libsdl.org/) and [glm](
 
 # Goal
 
-Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
+Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material.
 
 # Disclaimer
 
@@ -22,9 +22,9 @@ Get the source from this project, or since students need to have their work on g
 
 Either
 - Open the root folder in Visual Studio 2026; this will be recognized as a cmake project.
-  
+
 Or
-- Install CMake 
+- Install CMake
 - Install CMake and CMake Tools extensions in Visual Code
 - Open the root folder in Visual Code,  this will be recognized as a cmake project.
 
@@ -38,11 +38,18 @@ Or
 For installing all of the needed tools on Windows I recommend using [Chocolatey](https://chocolatey.org/). You can then run the following in a terminal to install what is needed:
 
     choco install -y cmake
-    choco install -y emscripten
     choco install -y ninja
     choco install -y python
 
-In a terminal, navigate to the root folder. Run this: 
+Chocolatey unfortunately has only support for emscripten 3.1.40 but we'd like to use the latest, thus to install emscripten navigate with an **elevated** terminal to a folder where you want to have emscripten installed and run
+
+    git clone https://github.com/emscripten-core/emsdk.git
+    cd emsdk
+    ./emsdk install latest
+    ./emsdk activate latest --global
+
+
+Then, in a terminal, navigate to the root folder of your project. Run this:
 
     mkdir build_web
     cd build_web
@@ -63,7 +70,7 @@ On Mac you can use homebrew
     brew install emscripten
     brew install python
 
-In a terminal on OSX, navigate to the root folder. Run this: 
+In a terminal on OSX, navigate to the root folder. Run this:
 
     mkdir build_web
     cd build_web
@@ -80,9 +87,10 @@ Then browse to http://localhost:8000 and you're good to go.
 
 This project is build with github actions.
 - The CMake workflow builds the project in Debug and Release for Windows and serves as a check that the project builds on that platform.
-- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://avadae.github.io/minigin/). 
+- The Emscripten workflow generates a web version of the project and publishes it as a [github page](https://avadae.github.io/minigin/).
   - The url of that page will be `https://<username>.github.io/<repository>/`
-- You can embed this page with 
+  - In your repository Settings -> Pages set "Source" to "Github Actions" or this won't work.
+- You can embed this page with
 
 ```<iframe style="position: absolute; top: 0px; left: 0px; width: 1024px; height: 576px;" src="https://<username>.github.io/<repository>/" loading="lazy"></iframe>```
 
