@@ -1,0 +1,3 @@
+D:/Alles_Voor_School/DerdeJaar/Prog4/UndyneEngine/out/build/x64-debug/CMakeFiles/UndyneEngine.dir
+D:/Alles_Voor_School/DerdeJaar/Prog4/UndyneEngine/out/build/x64-debug/CMakeFiles/edit_cache.dir
+D:/Alles_Voor_School/DerdeJaar/Prog4/UndyneEngine/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
