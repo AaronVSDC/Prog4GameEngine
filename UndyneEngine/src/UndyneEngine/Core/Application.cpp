@@ -1,0 +1,58 @@
+#include "Application.h"
+#include "Window.h"
+#include "..\Log\Log.h"
+#include "..\Input\InputManager.h"
+#include "..\ECS\Scene\SceneManager.h"
+
+
+//std
+#include <chrono>
+
+namespace UndyneEngine
+{
+	Application::Application()
+	{
+		UDE_INITIALIZE_LOGGER; 
+		m_Window = std::make_unique<Window>();
+
+	}
+
+	Application::~Application()
+	{
+	}
+	void Application::run()
+	{
+		bool quit = false;
+
+		constexpr int desiredFPS{ 60 }; 
+		constexpr int frameTimeMs{ 1000 / desiredFPS }; 
+
+		const float fixedTimeStep{ 0.02f }; 
+
+		auto lastTime = std::chrono::high_resolution_clock::now(); 
+		float lag = 0.f; 
+
+		SceneManager::init();
+		SceneManager::start(); 
+		while (!quit)
+		{
+			const auto currentTime = std::chrono::high_resolution_clock::now(); 
+			const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); 
+			lastTime = currentTime; 
+			lag += deltaTime; 
+
+			quit = !InputManager::processInput(); 
+
+			while (lag >= fixedTimeStep)
+			{
+				SceneManager::fixedUpdate(fixedTimeStep); 
+				lag -= fixedTimeStep; 
+			}
+			SceneManager::update(deltaTime); 
+
+			const auto sleepTime = currentTime + std::chrono::milliseconds(frameTimeMs) - std::chrono::high_resolution_clock::now(); 
+			std::this_thread::sleep_for(sleepTime); 
+		}
+
+	}
+}
