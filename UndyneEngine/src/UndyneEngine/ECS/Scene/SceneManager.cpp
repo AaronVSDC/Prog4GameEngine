@@ -51,7 +51,7 @@ namespace UndyneEngine::SceneManager
 
 	void update(float deltaTime)
 	{
-		if (s_ActiveScene) s_ActiveScene->update(deltaTime);	
+		if (s_ActiveScene) s_ActiveScene->update(deltaTime);	//todo: maybe optimize this? am not the BIGGEST fan of this way of doing things although you basically get the pointercheck for free. 
 	}
 
 	void fixedUpdate(float fixedDeltaTime)

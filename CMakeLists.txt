@@ -19,6 +19,7 @@ else()
 endif()
 
 
+
 #COMPILE DEFINITIONS
 #----------------------
 add_compile_definitions(UDE_PLATFORM_WINDOWS)
@@ -26,7 +27,7 @@ add_compile_definitions(UDE_PLATFORM_WINDOWS)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(UDE_DEBUG)
 endif() 
-
+ 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(UDE_RELEASE)
 endif()

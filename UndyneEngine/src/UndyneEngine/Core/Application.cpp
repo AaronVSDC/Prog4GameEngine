@@ -3,7 +3,7 @@
 #include "..\Log\Log.h"
 #include "..\Input\InputManager.h"
 #include "..\ECS\Scene\SceneManager.h"
-
+#include "..\Renderer\Renderer.h"
 
 //std
 #include <chrono>
@@ -14,11 +14,14 @@ namespace UndyneEngine
 	{
 		UDE_INITIALIZE_LOGGER; 
 		m_Window = std::make_unique<Window>();
-
+		Renderer::init(m_Window->getHandle()); 
+		load();
+		SceneManager::init();
 	}
 
 	Application::~Application()
 	{
+		Renderer::destroy(); 
 	}
 	void Application::run()
 	{
@@ -32,7 +35,6 @@ namespace UndyneEngine
 		auto lastTime = std::chrono::high_resolution_clock::now(); 
 		float lag = 0.f; 
 
-		SceneManager::init();
 		SceneManager::start(); 
 		while (!quit)
 		{
@@ -49,6 +51,7 @@ namespace UndyneEngine
 				lag -= fixedTimeStep; 
 			}
 			SceneManager::update(deltaTime); 
+			Renderer::render();
 
 			const auto sleepTime = currentTime + std::chrono::milliseconds(frameTimeMs) - std::chrono::high_resolution_clock::now(); 
 			std::this_thread::sleep_for(sleepTime); 

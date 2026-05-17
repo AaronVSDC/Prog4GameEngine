@@ -23,7 +23,8 @@ namespace UndyneEngine
 		Application(Application&& other) = delete; 
 
 		void run(); 
-
+	protected: 
+		virtual void load(){}
 	private: 
 		std::unique_ptr<Window> m_Window;
 	};

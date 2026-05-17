@@ -40,6 +40,8 @@ namespace UndyneEngine
         int  getHeight() const { return m_Props.height; }
         bool shouldClose() const { return m_ShouldClose; }
 
+        SDL_Window* getHandle() const { return m_Window;  }
+
     private:
         SDL_Window*  m_Window{ nullptr };
         WindowProps  m_Props;

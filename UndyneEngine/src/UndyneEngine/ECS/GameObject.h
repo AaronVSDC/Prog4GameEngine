@@ -2,6 +2,7 @@
 #define GAME_OBJECT_H
 
 #include "BaseComponent.h"
+#include "..\Core\Core.h"
 
 //std
 #include <memory>
@@ -11,7 +12,7 @@
 namespace UndyneEngine
 {
 
-	class GameObject final
+	class UNDYNE_ENGINE_API GameObject final
 	{
 	public: 
 		GameObject(const GameObject& other) = delete;

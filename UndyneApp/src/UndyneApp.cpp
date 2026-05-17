@@ -1,17 +1,10 @@
-#include <UndyneEngine.h>
+#include "UndyneApp.h"
 
 
-class UndyneApp final : public UndyneEngine::Application
+void UndyneApp::load()
 {
-public:
-	UndyneApp() {}
-	~UndyneApp() {}
+	//all game objects get loaded in here
 
-};
 
-UndyneEngine::Application* UndyneEngine::createApplication()
-{
-	return new UndyneApp(); 
+
 }
-
-

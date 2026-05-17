@@ -17,7 +17,9 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/ECS/Scene/SceneManager.cpp"
 	"src/UndyneEngine/ECS/Scene/Scene.cpp"
 	"src/UndyneEngine/ECS/GameObject.cpp" 
-	"src/UndyneEngine/ECS/BaseComponent.cpp")
+	"src/UndyneEngine/ECS/BaseComponent.cpp"
+	"src/UndyneEngine/Renderer/Renderer.cpp"
+	"src/UndyneEngine/Utils/Texture2D.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -36,6 +38,8 @@ FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_TAG        v1.15.3
+	GIT_SHALLOW    TRUE
+
 )
 FetchContent_MakeAvailable(spdlog)
 target_link_libraries(UndyneEngine PUBLIC spdlog::spdlog)
@@ -46,6 +50,20 @@ FetchContent_Declare(
 	SDL3
 	GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
 	GIT_TAG		   release-3.4.8
+	GIT_SHALLOW    TRUE
+
 )
 FetchContent_MakeAvailable(SDL3)
 target_link_libraries(UndyneEngine PUBLIC SDL3::SDL3)
+
+#GLM
+#-----
+FetchContent_Declare(
+	glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG        1.0.3  
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(glm)
+target_link_libraries(UndyneEngine PUBLIC glm) 
+

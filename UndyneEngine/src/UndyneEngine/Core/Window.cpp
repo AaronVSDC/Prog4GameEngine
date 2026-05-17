@@ -32,16 +32,7 @@ namespace UndyneEngine
     {
         if (m_Window)
             SDL_DestroyWindow(m_Window);
+        m_Window = nullptr; 
         SDL_Quit();
     }
-
-    //void Window::pollEvents()
-    //{
-    //    SDL_Event event;
-    //    while (SDL_PollEvent(&event))
-    //    {
-    //        if (event.type == SDL_EVENT_QUIT)
-    //            m_ShouldClose = true;
-    //    }
-    //}
 }
