@@ -14,7 +14,7 @@ namespace UndyneEngine
 
 	Texture2D::Texture2D(SDL_Texture* texture) : m_Texture{texture}
 	{
-		if (!m_Texture) UDE_CORE_CRITICAL("Texture2D cannot be nullptr!"); 
+		if (!m_Texture) UDE_CORE_ERROR("Texture2D cannot be nullptr!"); 
 	}
 
 	Texture2D::Texture2D(const std::string& fullPath)

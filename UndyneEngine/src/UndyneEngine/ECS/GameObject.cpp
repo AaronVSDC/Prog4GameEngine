@@ -2,6 +2,12 @@
 
 namespace UndyneEngine
 {
+	unsigned int GameObject::s_NextID = 0;
+
+	GameObject::GameObject(std::optional<std::string> name)
+		: m_ID{ s_NextID++ },
+		m_Name{name ? std::move(*name) : "GameObject_" + std::to_string(m_ID)}
+	{}
 
 	void GameObject::start()
 	{

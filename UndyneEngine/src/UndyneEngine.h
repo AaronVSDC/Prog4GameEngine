@@ -6,9 +6,12 @@
 #include "UndyneEngine\Core\Application.h"
 #include "UndyneEngine\Log\Log.h"
 #include "UndyneEngine\ECS\GameObject.h" 
+#include "UndyneEngine\ECS\Scene\SceneManager.h"
 
-//#include "UndyneEngine\Window.h"
-//#include "UndyneEngine\Input\InputManager.h"
+//engine components
+#include "UndyneEngine\ECS\EngineComponents\TransformComponent.h"
+#include "UndyneEngine\ECS\EngineComponents\TextureComponent.h"
+
 
 //-------------
 //ENTRY POINT

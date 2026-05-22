@@ -19,7 +19,11 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/ECS/GameObject.cpp" 
 	"src/UndyneEngine/ECS/BaseComponent.cpp"
 	"src/UndyneEngine/Renderer/Renderer.cpp"
-	"src/UndyneEngine/Utils/Texture2D.cpp")
+	"src/UndyneEngine/Utils/Texture2D.cpp"
+	"src/UndyneEngine/ResourceManager/ResourceManager.cpp" 
+	"src/UndyneEngine/Utils/Font.cpp"
+	"src/UndyneEngine/ECS/EngineComponents/TransformComponent.cpp"
+	"src/UndyneEngine/ECS/EngineComponents/TextureComponent.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -56,6 +60,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3)
 target_link_libraries(UndyneEngine PUBLIC SDL3::SDL3)
 
+#SDL TTF
+#--------
+set(SDLTTF_VENDORED ON CACHE BOOL "" FORCE)  
+set(SDLTTF_SAMPLES  OFF CACHE BOOL "" FORCE)   
+
+FetchContent_Declare(
+	SDL3_ttf
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
+	GIT_TAG        release-3.2.2
+	GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(SDL3_ttf)
+target_link_libraries(UndyneEngine PUBLIC SDL3_ttf::SDL3_ttf)
+
+
 #GLM
 #-----
 FetchContent_Declare(
@@ -65,5 +84,5 @@ FetchContent_Declare(
     GIT_SHALLOW    TRUE
 )
 FetchContent_MakeAvailable(glm)
-target_link_libraries(UndyneEngine PUBLIC glm) 
+target_link_libraries(UndyneEngine PUBLIC glm::glm-header-only) 
 

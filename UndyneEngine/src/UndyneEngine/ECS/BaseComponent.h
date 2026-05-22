@@ -5,7 +5,7 @@
 namespace UndyneEngine
 {
 	class GameObject;
-	class UNDYNE_ENGINE_API BaseComponent
+	class UNDYNE_API BaseComponent
 	{
 		friend class GameObject;
 	public:
@@ -20,8 +20,6 @@ namespace UndyneEngine
 		virtual void fixedUpdate(float) {}
 		virtual void render() const {}
 		virtual void start() {}
-		//virtual void onEnable() {}
-		//virtual void onDisable() {}
 
 		GameObject* getOwner() const { return m_pOwner; }
 
@@ -30,7 +28,6 @@ namespace UndyneEngine
 
 	private:
 		GameObject* m_pOwner = nullptr;
-		bool m_Enabled = true;
 
 
 

@@ -9,7 +9,7 @@ namespace UndyneEngine
 {
 
 	class Window; 
-	class UNDYNE_ENGINE_API Application
+	class UNDYNE_API Application
 	{
 
 	public: 

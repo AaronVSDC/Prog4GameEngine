@@ -9,7 +9,7 @@
 struct SDL_Texture; 
 namespace UndyneEngine
 {
-	class UNDYNE_ENGINE_API Texture2D final
+	class UNDYNE_API Texture2D final
 	{
 	public:
 		[[nodiscard]] SDL_Texture* getSDLTexture() const;

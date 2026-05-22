@@ -17,10 +17,10 @@ namespace UndyneEngine
 		Log& operator=(Log& rhs) = delete; 
 		Log& operator=(Log&& rhs) = delete; 
 
-		static UNDYNE_ENGINE_API void init(); 
+		static UNDYNE_API void init(); 
 
-		static UNDYNE_ENGINE_API std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_CoreLogger; }
-		static UNDYNE_ENGINE_API std::shared_ptr<spdlog::logger>& getClientLogger() { return s_ClientLogger; }
+		static UNDYNE_API std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_CoreLogger; }
+		static UNDYNE_API std::shared_ptr<spdlog::logger>& getClientLogger() { return s_ClientLogger; }
 
 	private:
 

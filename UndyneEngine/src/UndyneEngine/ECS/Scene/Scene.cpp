@@ -1,15 +1,45 @@
 #include "Scene.h"
+#include <cassert>
+#include "..\..\Log\Log.h"
+#include "..\EngineComponents\TransformComponent.h"
 
 namespace UndyneEngine
 {
-	unsigned int Scene::m_ID = 0;
-
 	Scene::Scene(const std::string& name): m_Name{name} {}
+
+	void Scene::init()
+	{
+		for (auto& gameObject : m_GameObjects)
+		{
+			if (!gameObject->hasComponent<TransformComponent>())
+			{
+				UDE_CORE_WARN("GameObject \"{}\" does not have a transform component.", gameObject->getName()); 
+			}
+		}
+	}
 
 	void Scene::add(std::unique_ptr<GameObject> gameObject)
 	{
-		m_GameObjects.emplace_back(std::move(gameObject)); 
+		assert(gameObject && "Cannot add a null GameObject to the scene.");
+		m_GameObjects.emplace_back(std::move(gameObject));
 	}
+
+	GameObject* Scene::createGameObject(std::optional<std::string> name) //todo: check if this is a safe way of doing things. my reasoning right now is that gameobjects only get created in load() so adding them to the scene already and still returning a pointer is no issue. 
+	{
+		return m_GameObjects.emplace_back(std::make_unique<GameObject>(std::move(name))).get(); 
+	}
+
+	void Scene::remove(GameObject* gameObject)
+	{
+		std::erase_if(m_GameObjects,
+			[gameObject](const auto& ptr) { return ptr.get() == gameObject; });
+	}
+
+	void Scene::removeAll()
+	{
+		m_GameObjects.clear(); 
+	}
+
 	void Scene::start()
 	{
 		for (auto& gameObject : m_GameObjects)

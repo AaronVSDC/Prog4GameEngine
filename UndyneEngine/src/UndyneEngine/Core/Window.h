@@ -10,7 +10,7 @@
 struct SDL_Window; 
 namespace UndyneEngine
 {
-	struct UNDYNE_ENGINE_API WindowProps
+	struct UNDYNE_API WindowProps
 	{
 		std::string title; 
 		int width; 
@@ -23,7 +23,7 @@ namespace UndyneEngine
 	};
 
 
-    class UNDYNE_ENGINE_API Window final
+    class UNDYNE_API Window final
     {
     public:
         Window(const WindowProps& props = WindowProps{});

@@ -4,6 +4,7 @@
 #include "..\Input\InputManager.h"
 #include "..\ECS\Scene\SceneManager.h"
 #include "..\Renderer\Renderer.h"
+#include "..\ResourceManager\ResourceManager.h"
 
 //std
 #include <chrono>
@@ -15,16 +16,18 @@ namespace UndyneEngine
 		UDE_INITIALIZE_LOGGER; 
 		m_Window = std::make_unique<Window>();
 		Renderer::init(m_Window->getHandle()); 
-		load();
-		SceneManager::init();
+		ResourceManager::init(); 
+
 	}
 
 	Application::~Application()
 	{
 		Renderer::destroy(); 
+		ResourceManager::destroy();  
 	}
 	void Application::run()
 	{
+		load();
 		bool quit = false;
 
 		constexpr int desiredFPS{ 60 }; 
@@ -35,6 +38,7 @@ namespace UndyneEngine
 		auto lastTime = std::chrono::high_resolution_clock::now(); 
 		float lag = 0.f; 
 
+		SceneManager::init();
 		SceneManager::start(); 
 		while (!quit)
 		{
