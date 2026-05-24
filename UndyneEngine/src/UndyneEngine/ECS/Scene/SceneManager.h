@@ -22,6 +22,8 @@ namespace UndyneEngine
 		UNDYNE_API void render(); 
 		UNDYNE_API void start(); 
 
+		UNDYNE_API void cleanupMarked();
+
 
 
 	}

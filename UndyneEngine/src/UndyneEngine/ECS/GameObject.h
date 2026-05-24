@@ -3,6 +3,8 @@
 
 #include "BaseComponent.h"
 #include "..\Core\Core.h"
+#include "..\Log\Log.h"
+#include "..\Utils\Transform.h"
 
 //std
 #include <memory>
@@ -12,7 +14,7 @@
 
 namespace UndyneEngine
 {
-
+	
 	class UNDYNE_API GameObject final
 	{
 	public: 
@@ -29,13 +31,24 @@ namespace UndyneEngine
 		void fixedUpdate(float fixedTimeStep);
 		void render() const; 
 
+		void markForRemoval() noexcept; 
 
 		//---------------------
 		//getters and setters
 		//---------------------
-		const std::string& getName() { return m_Name;  }
-		void rename(const std::string& newName) { m_Name = newName;  }
-		[[nodiscard]] const unsigned int getID() const { return m_ID;  }
+		const std::string& getName() const noexcept { return m_Name;  }
+		void rename(const std::string& newName) noexcept { m_Name = newName;  }
+		const unsigned int getID() const noexcept { return m_ID;  }
+		GameObject* getParent() const noexcept { return m_Parent;  }
+		const std::vector<GameObject*>& getChildren() const noexcept { return m_Children;  }
+		Transform& getTransform() noexcept { return m_Transform;  }
+	    bool getMarkedForRemoval() const noexcept { return m_MarkedForRemoval;  }
+
+		//--------------------
+		//parent child logic
+		//--------------------
+		void setParent(GameObject* newParent, bool keepWorldPosition = true); 
+		void markChildrenTransformDirty();
 
 		//----------------
 		//component logic
@@ -44,7 +57,7 @@ namespace UndyneEngine
 		T* addComponent(Args&&... args)
 		{
 			auto component = std::make_unique<T>(std::forward<Args>(args)...);  
-			component->m_pOwner = this; 
+			component->m_Owner = this; 
 			T* raw = component.get(); 
 			m_Components.emplace_back(std::move(component)); 
 			return raw; 
@@ -74,13 +87,17 @@ namespace UndyneEngine
 		{
 			return getComponent<T>() != nullptr; 
 		}
-
-
 	private: 
+		std::string m_Name;
 		const unsigned int m_ID;
-		std::string m_Name; 
-		std::vector<std::unique_ptr<BaseComponent>> m_Components; 
 		static unsigned int s_NextID;
+		std::vector<std::unique_ptr<BaseComponent>> m_Components; 
+		std::vector<GameObject*> m_Children;
+		GameObject* m_Parent = nullptr;
+		Transform m_Transform;
+		bool m_MarkedForRemoval = false;
+
+
 
 	};
 

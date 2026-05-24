@@ -34,8 +34,6 @@ namespace UndyneEngine
         Window(Window&&) = delete;
         Window& operator=(Window&&) = delete;
 
-        //void pollEvents();
-
         int  getWidth()  const { return m_Props.width; }
         int  getHeight() const { return m_Props.height; }
         bool shouldClose() const { return m_ShouldClose; }

@@ -42,6 +42,8 @@ namespace UndyneEngine
 		SceneManager::start(); 
 		while (!quit)
 		{
+			SceneManager::cleanupMarked();
+
 			const auto currentTime = std::chrono::high_resolution_clock::now(); 
 			const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); 
 			lastTime = currentTime; 
@@ -56,6 +58,7 @@ namespace UndyneEngine
 			}
 			SceneManager::update(deltaTime); 
 			Renderer::render();
+
 
 			const auto sleepTime = currentTime + std::chrono::milliseconds(frameTimeMs) - std::chrono::high_resolution_clock::now(); 
 			std::this_thread::sleep_for(sleepTime); 

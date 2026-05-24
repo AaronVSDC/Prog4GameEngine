@@ -22,8 +22,8 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/Utils/Texture2D.cpp"
 	"src/UndyneEngine/ResourceManager/ResourceManager.cpp" 
 	"src/UndyneEngine/Utils/Font.cpp"
-	"src/UndyneEngine/ECS/EngineComponents/TransformComponent.cpp"
-	"src/UndyneEngine/ECS/EngineComponents/TextureComponent.cpp")
+	"src/UndyneEngine/Utils/Transform.cpp"
+	"src/UndyneEngine/ECS/EngineComponents/TextureComponent.cpp" )
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -21,13 +21,13 @@ namespace UndyneEngine
 		virtual void render() const {}
 		virtual void start() {}
 
-		GameObject* getOwner() const { return m_pOwner; }
+		GameObject* getOwner() const { return m_Owner; }
 
 	protected:
 		BaseComponent() = default;
 
 	private:
-		GameObject* m_pOwner = nullptr;
+		GameObject* m_Owner = nullptr;
 
 
 

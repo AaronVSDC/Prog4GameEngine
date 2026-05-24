@@ -70,4 +70,8 @@ namespace UndyneEngine::SceneManager
 	{
 		if (s_ActiveScene) s_ActiveScene->start();
 	}
+	void cleanupMarked()
+	{
+		if (s_ActiveScene) s_ActiveScene->cleanupMarked(); 
+	}
 }

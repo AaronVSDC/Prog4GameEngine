@@ -7,7 +7,7 @@
 
 extern UndyneEngine::Application* UndyneEngine::createApplication();  
 
-int main(int, char*)
+int main(int argc, char* argv[])
 {
 	auto app = UndyneEngine::createApplication(); 
 	app->run(); 

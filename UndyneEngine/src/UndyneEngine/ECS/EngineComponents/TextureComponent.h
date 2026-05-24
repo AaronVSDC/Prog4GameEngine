@@ -14,12 +14,10 @@ namespace UndyneEngine
 	{
 	public: 
 		TextureComponent(const std::string& file); 
-
 		void render() const override;
 
-
 	private: 
-		std::shared_ptr<Texture2D> m_pTexture; 
+		std::shared_ptr<Texture2D> m_Texture; 
 	};
 }
 

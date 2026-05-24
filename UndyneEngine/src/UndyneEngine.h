@@ -9,7 +9,6 @@
 #include "UndyneEngine\ECS\Scene\SceneManager.h"
 
 //engine components
-#include "UndyneEngine\ECS\EngineComponents\TransformComponent.h"
 #include "UndyneEngine\ECS\EngineComponents\TextureComponent.h"
 
 

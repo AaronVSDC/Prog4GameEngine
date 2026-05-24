@@ -19,6 +19,7 @@ namespace UndyneEngine
 		GameObject* createGameObject(std::optional<std::string> name = std::nullopt);
 		void remove(GameObject* gameObject); 
 		void removeAll(); 
+		void cleanupMarked(); 
 		void update(float deltaTime);
 		void fixedUpdate(float fixedTimeStep);
 		void render() const;

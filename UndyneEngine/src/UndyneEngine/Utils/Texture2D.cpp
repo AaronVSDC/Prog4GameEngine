@@ -7,7 +7,7 @@
 namespace UndyneEngine
 {
 
-	SDL_Texture* UndyneEngine::Texture2D::getSDLTexture() const
+	SDL_Texture* Texture2D::getSDLTexture() const
 	{
 		return m_Texture;
 	}
