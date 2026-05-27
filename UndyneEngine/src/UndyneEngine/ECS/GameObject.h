@@ -47,7 +47,7 @@ namespace UndyneEngine
 		//--------------------
 		//parent child logic
 		//--------------------
-		void setParent(GameObject* newParent, bool keepWorldPosition = true); 
+		void setParent(GameObject* newParent, bool keepWorldPosition = false); 
 		void markChildrenTransformDirty();
 
 		//----------------

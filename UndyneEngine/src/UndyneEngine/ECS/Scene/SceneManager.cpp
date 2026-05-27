@@ -46,9 +46,8 @@ namespace UndyneEngine::SceneManager
 	void setActiveScene(const std::string& name)
 	{
 		for (const auto& scene : s_Scenes)
-		{
 			if (scene->getName() == name) { s_ActiveScene = scene.get(); return; }
-		}
+		
 	}
 
 	void update(float deltaTime)

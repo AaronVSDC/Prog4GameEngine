@@ -1,21 +1,36 @@
+#define UNDYNE_ENTRY_POINT
+#include <UndyneEngine.h>
 #include "UndyneApp.h"
-#include "Components/RotatorComponent.h"
+#include "Components\RotatorComponent.h"
+#include "Commands\MoveCommand.h"
+
+using namespace UndyneEngine; 
+using namespace Digger; 
+
+UndyneEngine::Application* UndyneEngine::createApplication()
+{
+    return new UndyneApp();
+}
 
 void UndyneApp::load()
-{
-    auto* scene = UndyneEngine::SceneManager::createScene("DemoScene");
+{ 
+    auto* scene = SceneManager::createScene("DemoScene");
 
     auto* sun = scene->createGameObject("sun");
     sun->getTransform().setLocalPosition(400.0f, 300.0f, 0.0f);
-    sun->addComponent<UndyneEngine::TextureComponent>("logo.png");   
+    sun->addComponent<TextureComponent>("logo.png");   
 
     auto* earth = scene->createGameObject("earth");
     earth->setParent(sun);                               
-    earth->addComponent<UndyneEngine::TextureComponent>("logo.png");
-    earth->addComponent<Digger::RotatorComponent>(120.0f, 1.0f);   
+    earth->addComponent<TextureComponent>("logo.png");
+    earth->addComponent<RotatorComponent>(120.0f, 1.0f);   
 
     auto* moon = scene->createGameObject("moon");
-    moon->setParent(earth);
-    moon->addComponent<UndyneEngine::TextureComponent>("logo.png");
-    moon->addComponent<Digger::RotatorComponent>(35.0f, 4.0f);   
+    moon->addComponent<TextureComponent>("logo.png");
+    
+    auto keyboard = InputManager::addController(ControllerType::Keyboard); 
+
+
+    InputManager::bindCommand<MoveCommand>(keyboard, KeyboardKey::W, InputState::Down, moon, 0.f, -2.f); 
+
 }

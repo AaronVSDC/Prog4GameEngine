@@ -1,7 +1,7 @@
 #ifndef ROTATOR_COMPONENT_H
 #define ROTATOR_COMPONENT_H
 
-#include <UndyneEngine\ECS\BaseComponent.h>
+#include <UndyneEngine.h>
 
 namespace Digger
 {

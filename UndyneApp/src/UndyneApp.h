@@ -3,20 +3,14 @@
 
 #include <UndyneEngine.h>
 
-
 class UndyneApp final : public UndyneEngine::Application
 {
 public:
-	UndyneApp() {}
-	~UndyneApp() {}
+    UndyneApp() = default;
+    ~UndyneApp() override = default;
 
-protected:
-	void load() override;
+protected: 
+    void load() override;
 };
-
-UndyneEngine::Application* UndyneEngine::createApplication()
-{
-	return new UndyneApp();
-}
 
 #endif

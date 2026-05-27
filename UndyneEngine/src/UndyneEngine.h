@@ -7,15 +7,14 @@
 #include "UndyneEngine\Log\Log.h"
 #include "UndyneEngine\ECS\GameObject.h" 
 #include "UndyneEngine\ECS\Scene\SceneManager.h"
-
+#include "UndyneEngine\Input\Command.h"
+#include "UndyneEngine\Input\InputManager.h"
 //engine components
 #include "UndyneEngine\ECS\EngineComponents\TextureComponent.h"
 
 
-//-------------
-//ENTRY POINT
-//-------------
+#ifdef UNDYNE_ENTRY_POINT
 #include "UndyneEngine\Core\EntryPoint.h"
-
+#endif
 
 #endif

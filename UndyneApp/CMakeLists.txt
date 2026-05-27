@@ -3,7 +3,10 @@
 #---------------------------------
 
 
-add_executable(UndyneApp src/UndyneApp.cpp "src/UndyneApp.h" "src/Components/RotatorComponent.cpp" "src/Components/RotatorComponent.h")
+add_executable(UndyneApp 
+"src/UndyneApp.cpp"
+"src/Components/RotatorComponent.cpp"
+ "src/Commands/MoveCommand.h") 
 
 target_link_libraries(UndyneApp PRIVATE UndyneEngine)
 

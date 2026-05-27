@@ -17,11 +17,12 @@ namespace UndyneEngine
 		m_Window = std::make_unique<Window>();
 		Renderer::init(m_Window->getHandle()); 
 		ResourceManager::init(); 
-
+		InputManager::init(); 
 	}
 
 	Application::~Application()
 	{
+		InputManager::destroy(); 
 		Renderer::destroy(); 
 		ResourceManager::destroy();  
 	}
@@ -58,7 +59,6 @@ namespace UndyneEngine
 			}
 			SceneManager::update(deltaTime); 
 			Renderer::render();
-
 
 			const auto sleepTime = currentTime + std::chrono::milliseconds(frameTimeMs) - std::chrono::high_resolution_clock::now(); 
 			std::this_thread::sleep_for(sleepTime); 
