@@ -1,0 +1,10 @@
+S   B     LHHHS
+V  CC  C  V B  
+VB CC  C  V    
+V  CCB CB V CCC
+V  CC  C  V CCC
+LL CC  C  V CCC
+ V    B B V    
+ LHHL     V    
+C   V     V   C
+CC  LHHHHHL  CC

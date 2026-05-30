@@ -1,7 +1,7 @@
 #ifndef TEXTURE_2D_H
 #define TEXTURE_2D_H
-#include "..\Core\Core.h"
-#include <glm\vec2.hpp>
+#include "../Core/Core.h"
+#include <glm/vec2.hpp>
 
 //std
 #include <string>

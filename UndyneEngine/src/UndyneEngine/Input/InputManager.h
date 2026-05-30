@@ -1,6 +1,6 @@
 #ifndef INPUT_MANAGER_H
 #define INPUT_MANAGER_H
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 #include "Command.h"
 
 

@@ -1,6 +1,6 @@
 #ifndef BASE_COMPONENT_H
 #define BASE_COMPONENT_H
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 
 namespace UndyneEngine
 {

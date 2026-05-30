@@ -1,7 +1,7 @@
 #ifndef SCENE_MANAGER_H
 #define SCENE_MANAGER_H  
 #include "Scene.h"
-#include "..\..\Core\Core.h"
+#include "../../Core/Core.h"
 
 //std
 #include <string>

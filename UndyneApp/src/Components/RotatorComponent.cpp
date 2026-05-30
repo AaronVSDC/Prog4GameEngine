@@ -1,8 +1,8 @@
 #include "RotatorComponent.h"
-#include <UndyneEngine\ECS\GameObject.h>
+#include <UndyneEngine/ECS/GameObject.h>
 
 #include <cmath>
-#include <glm\vec3.hpp>
+#include <glm/vec3.hpp>
 
 namespace Digger
 {

@@ -1,7 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 
 struct SDL_Window;
 struct SDL_Renderer;

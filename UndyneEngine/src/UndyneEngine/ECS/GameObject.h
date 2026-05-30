@@ -2,9 +2,9 @@
 #define GAME_OBJECT_H
 
 #include "BaseComponent.h"
-#include "..\Core\Core.h"
-#include "..\Log\Log.h"
-#include "..\Utils\Transform.h"
+#include "../Core/Core.h"
+#include "../Log/Log.h"
+#include "../Utils/Transform.h"
 
 //std
 #include <memory>

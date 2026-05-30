@@ -1,6 +1,6 @@
 #ifndef RESOURCE_MANAGER_H
 #define RESOURCE_MANAGER_H
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 
 //std
 #include <filesystem>

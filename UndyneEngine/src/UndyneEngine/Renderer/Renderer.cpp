@@ -1,8 +1,8 @@
-#include <SDL3\SDL.h>
+#include <SDL3/SDL.h>
 #include "Renderer.h"
-#include "..\Log\Log.h"
-#include "..\ECS\Scene\SceneManager.h"
-#include "..\Utils\Texture2D.h"
+#include "../Log/Log.h"
+#include "../ECS/Scene/SceneManager.h"
+#include "../Utils/Texture2D.h"
 
 namespace UndyneEngine::Renderer
 {

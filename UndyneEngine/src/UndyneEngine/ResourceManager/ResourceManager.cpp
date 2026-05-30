@@ -1,8 +1,8 @@
 #include "ResourceManager.h"
-#include "..\Utils\Texture2D.h"
-#include "..\Utils\Font.h"
-#include "..\Renderer\Renderer.h"
-#include "..\Log\Log.h"
+#include "../Utils/Texture2D.h"
+#include "../Utils/Font.h"
+#include "../Renderer/Renderer.h"
+#include "../Log/Log.h"
 
 //std
 #include <map>

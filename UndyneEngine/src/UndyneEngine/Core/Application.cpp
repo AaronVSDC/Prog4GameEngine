@@ -1,11 +1,12 @@
 #include "Application.h"
 #include "Window.h"
-#include "..\Log\Log.h"
-#include "..\Input\InputManager.h"
-#include "..\ECS\Scene\SceneManager.h"
-#include "..\Renderer\Renderer.h"
-#include "..\ResourceManager\ResourceManager.h"
-
+#include "../Log/Log.h"
+#include "../Input/InputManager.h"
+#include "../ECS/Scene/SceneManager.h"
+#include "../Renderer/Renderer.h"
+#include "../ResourceManager/ResourceManager.h"
+#include "../Audio/SoundServiceLocator.h"
+#include "../Audio/SDLSoundSystem.h"
 //std
 #include <chrono>
 
@@ -18,6 +19,7 @@ namespace UndyneEngine
 		Renderer::init(m_Window->getHandle()); 
 		ResourceManager::init(); 
 		InputManager::init(); 
+		SoundServiceLocator::registerSoundSystem(std::make_unique<SDLSoundSystem>()); 
 	}
 
 	Application::~Application()

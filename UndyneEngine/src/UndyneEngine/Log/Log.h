@@ -4,8 +4,8 @@
 //std
 #include <memory>
 
-#include "..\Core\Core.h"
-#include "spdlog\spdlog.h" 
+#include "../Core/Core.h"
+#include "spdlog/spdlog.h"
 
 namespace UndyneEngine
 {

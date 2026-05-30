@@ -1,7 +1,7 @@
 #ifndef TEXTURE_COMPONENT_H
 #define TEXTURE_COMPONENT_H
-#include "..\..\Core\Core.h"
-#include "..\BaseComponent.h"
+#include "../../Core/Core.h"
+#include "../BaseComponent.h"
 
 //std
 #include <string>

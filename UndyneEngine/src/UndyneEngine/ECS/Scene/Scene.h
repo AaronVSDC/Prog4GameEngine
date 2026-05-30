@@ -1,7 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
-#include "..\GameObject.h"
-#include "UndyneEngine\Core\Core.h"
+#include "../GameObject.h"
+#include "UndyneEngine/Core/Core.h"
 
 namespace UndyneEngine
 {

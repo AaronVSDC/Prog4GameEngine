@@ -1,6 +1,6 @@
-#include <SDL3_ttf\SDL_ttf.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include "Font.h"
-#include "..\Log\Log.h"
+#include "../Log/Log.h"
 
 namespace UndyneEngine
 {

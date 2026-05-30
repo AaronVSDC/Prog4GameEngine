@@ -1,7 +1,7 @@
 #ifndef ICOMMAND_H
 #define ICOMMAND_H
-#include "..\Core\Core.h"
-#include <glm\vec2.hpp>
+#include "../Core/Core.h"
+#include <glm/vec2.hpp>
 
 namespace UndyneEngine
 {

@@ -1,8 +1,8 @@
 #define UNDYNE_ENTRY_POINT
 #include <UndyneEngine.h>
 #include "UndyneApp.h"
-#include "Components\RotatorComponent.h"
-#include "Commands\MoveCommand.h"
+#include "Components/RotatorComponent.h"
+#include "Commands/MoveCommand.h"
 
 using namespace UndyneEngine; 
 using namespace Digger; 
@@ -33,4 +33,8 @@ void UndyneApp::load()
 
     InputManager::bindCommand<MoveCommand>(keyboard, KeyboardKey::W, InputState::Down, moon, 0.f, -2.f); 
 
+    auto& audio = SoundServiceLocator::getSoundSystem();
+
+    audio.loadSound("audio/digger.wav", "BackgroundMusic"); 
+    audio.playSound("BackgroundMusic", true);
 }

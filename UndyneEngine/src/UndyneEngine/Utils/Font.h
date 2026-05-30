@@ -1,6 +1,6 @@
 #ifndef FONT_H
 #define FONT_H
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 
 //std
 #include <string>

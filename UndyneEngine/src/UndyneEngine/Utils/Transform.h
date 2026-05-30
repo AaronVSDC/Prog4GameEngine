@@ -1,8 +1,8 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
-#include "..\Core\Core.h"
+#include "../Core/Core.h"
 
-#include <glm\vec3.hpp>
+#include <glm/vec3.hpp>
 
 namespace UndyneEngine
 {

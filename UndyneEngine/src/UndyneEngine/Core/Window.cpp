@@ -1,6 +1,6 @@
 #include "Window.h"
-#include "..\Log\Log.h"
-#include <SDL3\SDL.h>
+#include "../Log/Log.h"
+#include <SDL3/SDL.h>
 
 namespace UndyneEngine
 {

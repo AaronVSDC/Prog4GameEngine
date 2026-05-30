@@ -3,8 +3,8 @@
 //
 //#include "InputManager.h" //todo: just put the enums in this file instead of the inputmanager
 //
-//#include <SDL3\SDL_joystick.h>
-//#include <glm\vec2.hpp>
+//#include <SDL3/SDL_joystick.h>
+//#include <glm/vec2.hpp>
 //
 //
 ////std

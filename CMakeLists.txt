@@ -36,3 +36,21 @@ endif()
 add_subdirectory(UndyneEngine)
 add_subdirectory(UndyneApp)
 
+# VISUAL LEAK DETECTOR (Debug only)
+#---------------------------------
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(VLD_ROOT "C:/Program Files (x86)/Visual Leak Detector")
+    if(EXISTS "${VLD_ROOT}/include/vld.h")
+        target_include_directories(UndyneApp PRIVATE "${VLD_ROOT}/include")
+        target_link_libraries(UndyneApp     PRIVATE "${VLD_ROOT}/lib/Win64/vld.lib")
+        target_compile_definitions(UndyneApp PRIVATE UDE_USE_VLD)
+
+        file(COPY
+                "${VLD_ROOT}/bin/Win64/vld_x64.dll"
+                "${VLD_ROOT}/bin/Win64/dbghelp.dll"
+                "${VLD_ROOT}/bin/Win64/Microsoft.DTfW.DHL.manifest"
+            DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+    else()
+        message(WARNING "Visual Leak Detector not found at ${VLD_ROOT} — leak detection disabled.")
+    endif()
+endif()

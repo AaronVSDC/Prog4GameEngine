@@ -25,6 +25,9 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/Utils/Transform.cpp"
 	"src/UndyneEngine/ECS/EngineComponents/TextureComponent.cpp" 
 	"src/UndyneEngine/Input/Command.h" 
+	"src/UndyneEngine/Audio/SoundServiceLocator.cpp"
+	"src/UndyneEngine/Audio/SDLSoundSystem.cpp"
+	"src/UndyneEngine/Audio/SoundSystem.h"
 )
 
 target_include_directories(UndyneEngine PUBLIC
@@ -61,6 +64,24 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3)
 target_link_libraries(UndyneEngine PUBLIC SDL3::SDL3)
+
+#SDL MIXER
+#----------
+set(SDLMIXER_VENDORED ON  CACHE BOOL "" FORCE)
+set(SDLMIXER_SAMPLES  OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_MOD      OFF CACHE BOOL "" FORCE)  
+set(SDLMIXER_MIDI     OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_OPUS     OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_FLAC     OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+    SDL3_mixer
+    GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+    GIT_TAG        main
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(SDL3_mixer)
+target_link_libraries(UndyneEngine PUBLIC SDL3_mixer::SDL3_mixer)
 
 #SDL TTF
 #--------

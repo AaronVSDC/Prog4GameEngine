@@ -1,5 +1,5 @@
 #include "SceneManager.h" 
-#include "..\..\Log\Log.h"
+#include "../../Log/Log.h"
 
 //std
 #include <vector>
