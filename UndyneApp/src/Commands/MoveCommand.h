@@ -1,25 +1,52 @@
 #ifndef MOVE_COMMAND_H
 #define MOVE_COMMAND_H
 #include <UndyneEngine.h>
+#include <glm/vec2.hpp>
 
 namespace Digger
 {
+    // Fired on a keyboard / gamepad button event. Moves by a fixed delta each fire.
     class MoveCommand final : public UndyneEngine::Command
     {
     public:
-        MoveCommand(UndyneEngine::GameObject* obj, float dx, float dy) noexcept
-            : m_Obj(obj), m_DX(dx), m_DY(dy) {
+        MoveCommand(UndyneEngine::GameObject* gameObject, float deltaX, float deltaY) noexcept
+            : m_GameObject(gameObject), m_DeltaX(deltaX), m_DeltaY(deltaY) {
         }
 
-        void execute(float value) override
+        void execute() override
         {
-            auto& t = m_Obj->getTransform();
-            const auto p = t.getLocalPosition();
-            t.setLocalPosition(p.x + m_DX * value, p.y + m_DY * value, p.z);
+            auto& transform = m_GameObject->getTransform();
+            const auto position = transform.getLocalPosition();
+            transform.setLocalPosition(position.x + m_DeltaX, position.y + m_DeltaY, position.z);
         }
     private:
-        UndyneEngine::GameObject* m_Obj;
-        float m_DX, m_DY;
+        UndyneEngine::GameObject* m_GameObject;
+        float m_DeltaX;
+        float m_DeltaY;
+    };
+
+    // Fired every frame with the analog stick's (x, y) vector after deadzone scaling.
+    // SDL's Y is positive when the stick is pushed down; flipped here so 'up' is positive.
+    class StickMoveCommand final : public UndyneEngine::StickCommand
+    {
+    public:
+        StickMoveCommand(UndyneEngine::GameObject* gameObject, float speed) noexcept
+            : m_GameObject(gameObject), m_Speed(speed) {
+        }
+
+        void execute(glm::vec2 stickValue) override
+        {
+            auto& transform = m_GameObject->getTransform();
+            const auto position = transform.getLocalPosition();
+            transform.setLocalPosition(
+                position.x + stickValue.x * m_Speed,
+                position.y - stickValue.y * m_Speed,
+                position.z
+            );
+        }
+    private:
+        UndyneEngine::GameObject* m_GameObject;
+        float m_Speed;
     };
 }
 #endif

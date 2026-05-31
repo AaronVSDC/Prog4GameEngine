@@ -4,6 +4,11 @@
 #include "Components/RotatorComponent.h"
 #include "Commands/MoveCommand.h"
 
+#ifdef UDE_DEBUG
+#include <vld.h>
+#endif
+
+
 using namespace UndyneEngine; 
 using namespace Digger; 
 
@@ -28,10 +33,10 @@ void UndyneApp::load()
     auto* moon = scene->createGameObject("moon");
     moon->addComponent<TextureComponent>("logo.png");
     
-    auto keyboard = InputManager::addController(ControllerType::Keyboard); 
+    auto gamepad = InputManager::addController();
 
-
-    InputManager::bindCommand<MoveCommand>(keyboard, KeyboardKey::W, InputState::Down, moon, 0.f, -2.f); 
+    InputManager::bindButtonCommand<MoveCommand>(KeyboardKey::W, InputState::Down, moon, 0.f, -2.f);
+    InputManager::bindStickCommand<StickMoveCommand>(gamepad, GamepadStick::Left, moon, 4.f);
 
     auto& audio = SoundServiceLocator::getSoundSystem();
 

@@ -37,7 +37,7 @@ add_subdirectory(UndyneEngine)
 add_subdirectory(UndyneApp)
 
 # VISUAL LEAK DETECTOR (Debug only)
-#---------------------------------
+#--------------------------------- 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(VLD_ROOT "C:/Program Files (x86)/Visual Leak Detector")
     if(EXISTS "${VLD_ROOT}/include/vld.h")

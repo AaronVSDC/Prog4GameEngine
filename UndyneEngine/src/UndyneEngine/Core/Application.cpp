@@ -24,9 +24,10 @@ namespace UndyneEngine
 
 	Application::~Application()
 	{
-		InputManager::destroy(); 
-		Renderer::destroy(); 
-		ResourceManager::destroy();  
+		SceneManager::destroy();
+		InputManager::destroy();
+		Renderer::destroy();
+		ResourceManager::destroy();
 	}
 	void Application::run()
 	{

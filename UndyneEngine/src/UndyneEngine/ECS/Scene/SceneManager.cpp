@@ -17,10 +17,16 @@ namespace UndyneEngine::SceneManager
 	{
 		if (!s_ActiveScene)
 		{
-			UDE_CORE_WARN("SceneManager has no active scene."); 
-			return; 
+			UDE_CORE_WARN("SceneManager has no active scene.");
+			return;
 		}
-		s_ActiveScene->init(); 
+		s_ActiveScene->init();
+	}
+
+	void destroy()
+	{
+		s_ActiveScene = nullptr;
+		s_Scenes.clear();
 	}
 
 	Scene* createScene(const std::string& name)

@@ -6,8 +6,9 @@
 //std
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <unordered_map>
-#include <variant>
+#include <utility>
 #include <vector>
 
 namespace UndyneEngine
@@ -106,74 +107,104 @@ namespace UndyneEngine
             return SDL_GAMEPAD_BUTTON_INVALID;
         }
 
-        SDL_GamepadAxis toSDL(GamepadAxis a) noexcept
+        std::pair<SDL_GamepadAxis, SDL_GamepadAxis> toSDL(GamepadStick stick) noexcept
         {
-            switch (a)
+            switch (stick)
             {
-            case GamepadAxis::LeftStickX:   return SDL_GAMEPAD_AXIS_LEFTX;
-            case GamepadAxis::LeftStickY:   return SDL_GAMEPAD_AXIS_LEFTY;
-            case GamepadAxis::RightStickX:  return SDL_GAMEPAD_AXIS_RIGHTX;
-            case GamepadAxis::RightStickY:  return SDL_GAMEPAD_AXIS_RIGHTY;
-            case GamepadAxis::LeftTrigger:  return SDL_GAMEPAD_AXIS_LEFT_TRIGGER;
-            case GamepadAxis::RightTrigger: return SDL_GAMEPAD_AXIS_RIGHT_TRIGGER;
+            case GamepadStick::Left:  return { SDL_GAMEPAD_AXIS_LEFTX,  SDL_GAMEPAD_AXIS_LEFTY  };
+            case GamepadStick::Right: return { SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY };
+            }
+            return { SDL_GAMEPAD_AXIS_INVALID, SDL_GAMEPAD_AXIS_INVALID };
+        }
+
+        SDL_GamepadAxis toSDL(GamepadTrigger trigger) noexcept
+        {
+            switch (trigger)
+            {
+            case GamepadTrigger::Left:  return SDL_GAMEPAD_AXIS_LEFT_TRIGGER;
+            case GamepadTrigger::Right: return SDL_GAMEPAD_AXIS_RIGHT_TRIGGER;
             }
             return SDL_GAMEPAD_AXIS_INVALID;
         }
 
-        struct ButtonBinding
+        float normalizeStickAxis(Sint16 raw) noexcept
         {
-            BindingID id; 
-            ControllerID controllerID; 
-            InputState state; 
-            std::variant<KeyboardKey, GamepadButton> trigger; 
+            return (raw >= 0) ? raw / 32767.0f : raw / 32768.0f;
+        }
+
+        struct KeyboardButtonBinding
+        {
+            BindingID    id;
+            InputState   state;
+            KeyboardKey  key;
             std::unique_ptr<Command> command;
         };
 
-        struct AxisBinding
+        struct GamepadButtonBinding
         {
-            BindingID id; 
-            ControllerID controllerID; 
-            GamepadAxis axis; 
-            float deadzone; 
-            std::unique_ptr<Command> command; 
+            BindingID     id;
+            ControllerID  controllerID;
+            InputState    state;
+            GamepadButton button;
+            std::unique_ptr<Command> command;
         };
+
+        struct StickBinding
+        {
+            BindingID id;
+            ControllerID controllerID;
+            GamepadStick stick;
+            float deadzone;
+            std::unique_ptr<StickCommand> command;
+        };
+
+        struct TriggerBinding
+        {
+            BindingID id;
+            ControllerID controllerID;
+            GamepadTrigger trigger;
+            float deadzone;
+            std::unique_ptr<TriggerCommand> command;
+        };
+
         struct ControllerData
         {
-            ControllerID id; 
-            ControllerType type; 
-            SDL_Gamepad* gamepad = nullptr; 
+            ControllerID id;
+            SDL_Gamepad* gamepad = nullptr;
         };
 
-        std::vector<ControllerData> s_Controllers; 
-        std::vector<ButtonBinding>  s_ButtonBindings;
-        std::vector<AxisBinding>    s_AxisBindings; 
-        std::uint32_t               s_NextControllerID = 1; 
-        std::uint64_t               s_NextBindingID = 1; 
+        std::vector<ControllerData>          s_Controllers;
+        std::vector<KeyboardButtonBinding>   s_KeyboardButtonBindings;
+        std::vector<GamepadButtonBinding>    s_GamepadButtonBindings;
+        std::vector<StickBinding>            s_StickBindings;
+        std::vector<TriggerBinding>          s_TriggerBindings;
+        std::uint32_t                        s_NextControllerID = 1;
+        std::uint64_t                        s_NextBindingID = 1;
 
-        std::vector<bool>           s_PreviousKeys; 
-        std::vector<bool>           s_CurrentKeys; 
+        std::vector<bool>           s_PreviousKeys;
+        std::vector<bool>           s_CurrentKeys;
 
-        std::unordered_map<SDL_JoystickID, std::array<bool, SDL_GAMEPAD_BUTTON_COUNT>> s_PreviousGamepadButtons; 
+        std::unordered_map<SDL_JoystickID, std::array<bool, SDL_GAMEPAD_BUTTON_COUNT>> s_PreviousGamepadButtons;
 
         ControllerData* findController(ControllerID id)
         {
-            auto it = std::ranges::find_if(s_Controllers, [&](const ControllerData& controller) {return controller.id == id;  }); 
-            return it == s_Controllers.end() ? nullptr : &*it; 
+            auto it = std::ranges::find_if(s_Controllers, [&](const ControllerData& controller) {return controller.id == id;  });
+            return it == s_Controllers.end() ? nullptr : &*it;
         }
 
         void assignNewGamepad(SDL_JoystickID which)
         {
             for (auto& controller : s_Controllers)
             {
-                if (controller.type == ControllerType::Gamepad and controller.gamepad == nullptr)
+                if (controller.gamepad == nullptr)
                 {
-                    controller.gamepad = SDL_OpenGamepad(which); 
+                    controller.gamepad = SDL_OpenGamepad(which);
                     if (controller.gamepad)
                     {
-                        s_PreviousGamepadButtons[which].fill(false); 
-                        UDE_CORE_INFO("Gamepad attached to controller {}", controller.id.value); 
+                        s_PreviousGamepadButtons[which].fill(false);
+                        UDE_CORE_INFO("Gamepad attached to controller {}", controller.id.value);
                     }
-                    return; 
+                    return;
                 }
             }
         }
@@ -184,11 +215,11 @@ namespace UndyneEngine
             {
                 if (controller.gamepad and SDL_GetGamepadID(controller.gamepad) == which)
                 {
-                    SDL_CloseGamepad(controller.gamepad); 
-                    controller.gamepad = nullptr; 
-                    s_PreviousGamepadButtons.erase(which); 
-                    UDE_CORE_INFO("Gamepad detached from controller {}", controller.id.value); 
-                    return; 
+                    SDL_CloseGamepad(controller.gamepad);
+                    controller.gamepad = nullptr;
+                    s_PreviousGamepadButtons.erase(which);
+                    UDE_CORE_INFO("Gamepad detached from controller {}", controller.id.value);
+                    return;
                 }
             }
         }
@@ -197,14 +228,13 @@ namespace UndyneEngine
         {
             switch (state)
             {
-                case InputState::Down: return now; 
-                case InputState::Pressed: return now and !previous; 
-                case InputState::Released: return !now and previous; 
+                case InputState::Down: return now;
+                case InputState::Pressed: return now and !previous;
+                case InputState::Released: return !now and previous;
             }
-            return false; 
+            return false;
         }
 	}
-
 
 
 
@@ -213,152 +243,179 @@ namespace InputManager
 {
     void init()
     {
-        SDL_InitSubSystem(SDL_INIT_GAMEPAD); 
+        SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     }
     void destroy()
     {
         for (auto& controller : s_Controllers)
-            if (controller.gamepad) SDL_CloseGamepad(controller.gamepad); 
-        SDL_QuitSubSystem(SDL_INIT_GAMEPAD); 
+            if (controller.gamepad) SDL_CloseGamepad(controller.gamepad);
+
+        s_KeyboardButtonBindings.clear();
+        s_GamepadButtonBindings.clear();
+        s_StickBindings.clear();
+        s_TriggerBindings.clear();
+        s_Controllers.clear();
+        s_PreviousGamepadButtons.clear();
+        s_PreviousKeys.clear();
+        s_CurrentKeys.clear();
+
+        SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
     }
     bool processInput()
     {
-        SDL_Event e;
+        SDL_Event sdlEvent;
 
-        while (SDL_PollEvent(&e))
+        while (SDL_PollEvent(&sdlEvent))
         {
-            if (e.type == SDL_EVENT_QUIT) return false;
+            if (sdlEvent.type == SDL_EVENT_QUIT) return false;
 
-            if (e.type == SDL_EVENT_GAMEPAD_ADDED)
-                assignNewGamepad(e.gdevice.which);
-            else if (e.type == SDL_EVENT_GAMEPAD_REMOVED)
-                releaseGamepad(e.gdevice.which); 
+            if (sdlEvent.type == SDL_EVENT_GAMEPAD_ADDED)
+                assignNewGamepad(sdlEvent.gdevice.which);
+            else if (sdlEvent.type == SDL_EVENT_GAMEPAD_REMOVED)
+                releaseGamepad(sdlEvent.gdevice.which);
         }
 
-        int numberKeys = 0; 
-        const bool* sdlKeys = SDL_GetKeyboardState(&numberKeys); 
+        int numberKeys = 0;
+        const bool* sdlKeys = SDL_GetKeyboardState(&numberKeys);
         if (static_cast<int>(s_CurrentKeys.size()) != numberKeys)
         {
-            s_CurrentKeys.assign(numberKeys, false); 
-            s_PreviousKeys.assign(numberKeys, false); 
+            s_CurrentKeys.assign(numberKeys, false);
+            s_PreviousKeys.assign(numberKeys, false);
         }
 
         for (int i = 0; i < numberKeys; ++i)
-            s_CurrentKeys[i] = sdlKeys[i]; 
+            s_CurrentKeys[i] = sdlKeys[i];
 
-        //evaluate all bindings
-        for (auto& buttonBinding : s_ButtonBindings)
+        //now evaluate all bindings
+        for (auto& binding : s_KeyboardButtonBindings)
         {
-            bool fire = false; 
+            const SDL_Scancode scancode = toSDL(binding.key);
+            if (scancode == SDL_SCANCODE_UNKNOWN) continue;
 
-            std::visit([&](auto&& trigger)
-            {
-               using T = std::decay_t<decltype(trigger)>; 
+            const bool now      = s_CurrentKeys[scancode];
+            const bool previous = s_PreviousKeys[scancode];
 
-               if constexpr (std::is_same_v<T, KeyboardKey>)
-               {
-                   const SDL_Scancode scancode = toSDL(trigger); 
-
-                   if (scancode == SDL_SCANCODE_UNKNOWN) return; 
-
-                   const bool now = s_CurrentKeys[scancode]; 
-                   const bool previous = s_PreviousKeys[scancode]; 
-
-                   fire = evaluateEdge(now, previous, buttonBinding.state); 
-               }
-
-               else if constexpr (std::is_same_v<T, GamepadButton>)
-               {
-                   ControllerData* controller = findController(buttonBinding.controllerID);
-
-                   if (!controller or !controller->gamepad) return; 
-
-                   const SDL_GamepadButton button = toSDL(trigger); 
-                   if (button == SDL_GAMEPAD_BUTTON_INVALID) return; 
-
-                   const SDL_JoystickID joystickID = SDL_GetGamepadID(controller->gamepad); 
-
-                   const bool now = SDL_GetGamepadButton(controller->gamepad, button); 
-                   const bool previous = s_PreviousGamepadButtons[joystickID][button]; 
-
-                   fire = evaluateEdge(now, previous, buttonBinding.state); 
-
-               }
-
-            }, buttonBinding.trigger); 
-            
-            if (fire and buttonBinding.command) buttonBinding.command->execute(1.0f); 
+            if (evaluateEdge(now, previous, binding.state) and binding.command)
+                binding.command->execute();
         }
 
-        for (auto& axisBinding : s_AxisBindings)
+        for (auto& binding : s_GamepadButtonBindings)
         {
-            ControllerData* controller = findController(axisBinding.controllerID); 
-            if (!controller or !controller->gamepad) continue; 
-            const SDL_GamepadAxis sdlAxis = toSDL(axisBinding.axis); 
-            if (sdlAxis == SDL_GAMEPAD_AXIS_INVALID) continue; 
+            ControllerData* controller = findController(binding.controllerID);
+            if (!controller or !controller->gamepad) continue;
 
-            const Sint16 raw = SDL_GetGamepadAxis(controller->gamepad, sdlAxis); 
-            float value = (raw >=0) ? raw / 32767.0f : raw / 32768.0f; //normalize [0, 1]
+            const SDL_GamepadButton sdlButton = toSDL(binding.button);
+            if (sdlButton == SDL_GAMEPAD_BUTTON_INVALID) continue;
 
-            const float magnitude = std::abs(value); 
-            if (magnitude < axisBinding.deadzone) continue; 
+            const SDL_JoystickID joystickID = SDL_GetGamepadID(controller->gamepad);
 
-            const float scaled = (magnitude - axisBinding.deadzone) / (1.0 - axisBinding.deadzone); 
-            value = (value < 0.f) ? -scaled : scaled; 
+            const bool now      = SDL_GetGamepadButton(controller->gamepad, sdlButton);
+            const bool previous = s_PreviousGamepadButtons[joystickID][sdlButton];
 
-            if (axisBinding.command) axisBinding.command->execute(value); 
+            if (evaluateEdge(now, previous, binding.state) and binding.command)
+                binding.command->execute();
+        }
+
+        for (auto& stickBinding : s_StickBindings)
+        {
+            ControllerData* controller = findController(stickBinding.controllerID);
+            if (!controller or !controller->gamepad) continue;
+
+            const auto [sdlAxisX, sdlAxisY] = toSDL(stickBinding.stick);
+            if (sdlAxisX == SDL_GAMEPAD_AXIS_INVALID) continue;
+
+            const float stickX = normalizeStickAxis(SDL_GetGamepadAxis(controller->gamepad, sdlAxisX));
+            const float stickY = normalizeStickAxis(SDL_GetGamepadAxis(controller->gamepad, sdlAxisY));
+
+            const float magnitude = std::sqrt(stickX * stickX + stickY * stickY);
+
+            if (magnitude < stickBinding.deadzone)
+            {
+                if (stickBinding.command) stickBinding.command->execute(glm::vec2{ 0.0f });
+                continue;
+            }
+
+            const float clampedMagnitude = std::min(magnitude, 1.0f);
+            const float scaledMagnitude  = (clampedMagnitude - stickBinding.deadzone)
+                                         / (1.0f - stickBinding.deadzone);
+
+            const glm::vec2 direction{ stickX / magnitude, stickY / magnitude };
+
+            if (stickBinding.command) stickBinding.command->execute(direction * scaledMagnitude);
+        }
+
+        for (auto& triggerBinding : s_TriggerBindings)
+        {
+            ControllerData* controller = findController(triggerBinding.controllerID);
+            if (!controller or !controller->gamepad) continue;
+
+            const SDL_GamepadAxis sdlAxis = toSDL(triggerBinding.trigger);
+            if (sdlAxis == SDL_GAMEPAD_AXIS_INVALID) continue;
+
+            const Sint16 raw = SDL_GetGamepadAxis(controller->gamepad, sdlAxis);
+            const float triggerValue = static_cast<float>(raw) / 32767.0f; 
+
+            if (triggerValue < triggerBinding.deadzone) continue;
+
+            const float scaledValue = (triggerValue - triggerBinding.deadzone)
+                                    / (1.0f - triggerBinding.deadzone);
+
+            if (triggerBinding.command) triggerBinding.command->execute(scaledValue);
         }
 
 
         //save previous keys for next frame
-        s_PreviousKeys = s_CurrentKeys; 
+        s_PreviousKeys = s_CurrentKeys;
         for (auto& controller : s_Controllers)
         {
-            if (!controller.gamepad) continue; 
-            const SDL_JoystickID joystickID = SDL_GetGamepadID(controller.gamepad); 
-            auto& previous = s_PreviousGamepadButtons[joystickID]; 
+            if (!controller.gamepad) continue;
+            const SDL_JoystickID joystickID = SDL_GetGamepadID(controller.gamepad);
+            auto& previous = s_PreviousGamepadButtons[joystickID];
             for (int i = 0; i < SDL_GAMEPAD_BUTTON_COUNT; ++i)
-                previous[i] = SDL_GetGamepadButton(controller.gamepad, static_cast<SDL_GamepadButton>(i)); 
+                previous[i] = SDL_GetGamepadButton(controller.gamepad, static_cast<SDL_GamepadButton>(i));
         }
 
         return true;
     }
 
-    ControllerID addController(ControllerType type)
+    ControllerID addController()
     {
-        ControllerID ID{ s_NextControllerID++ };
-        s_Controllers.push_back({ ID, type, nullptr }); 
+        ControllerID newControllerID{ s_NextControllerID++ };
+        s_Controllers.push_back({ newControllerID, nullptr });
 
-        if (type == ControllerType::Gamepad)
+        int count = 0;
+        SDL_JoystickID* joystickIDs = SDL_GetGamepads(&count);
+
+        if (joystickIDs)
         {
-            int count = 0;
-            SDL_JoystickID* joystickID = SDL_GetGamepads(&count); 
-
-            if (joystickID)
+            for (int i = 0; i < count; ++i)
             {
-                for (int i = 0; i < count; ++i)
+                bool alreadyBound = false;
+                for (auto& controller : s_Controllers)
                 {
-                    bool alreadyBound = false; 
-                    for (auto& controller : s_Controllers)
+                    if (controller.gamepad and SDL_GetGamepadID(controller.gamepad) == joystickIDs[i])
                     {
-                        if (controller.gamepad and SDL_GetGamepadID(controller.gamepad) == joystickID[i])
-                        {
-                            alreadyBound = true; break; 
-                        }
-
-                        if (!alreadyBound) { assignNewGamepad(joystickID[i]); break; }
+                        alreadyBound = true;
+                        break;
                     }
-                    SDL_free(joystickID); 
+                }
+
+                if (!alreadyBound)
+                {
+                    assignNewGamepad(joystickIDs[i]);
+                    break;
                 }
             }
-            return ID; 
+            SDL_free(joystickIDs);
         }
+
+        return newControllerID;
     }
 
 
     void removeController(ControllerID id)
     {
-        clearBindings(id); 
+        clearBindings(id);
         std::erase_if(s_Controllers, [&](ControllerData& controller)
         {
             if (controller.id == id)
@@ -367,29 +424,53 @@ namespace InputManager
                 return true;
             }
             return false;
-        }); 
+        });
     }
 
-    BindingID bindCommand(ControllerID id, KeyboardKey key, InputState state, std::unique_ptr<Command> command)
+    BindingID bindButtonCommand(KeyboardKey key, InputState state, std::unique_ptr<Command> command)
     {
-        BindingID binding{ s_NextBindingID++ }; 
-        s_ButtonBindings.push_back(ButtonBinding{ binding, id, state, key, std::move(command) }); 
-        return binding;
+        BindingID newBindingID{ s_NextBindingID++ };
+        s_KeyboardButtonBindings.push_back(KeyboardButtonBinding{ newBindingID, state, key, std::move(command) });
+        return newBindingID;
     }
-    
-    BindingID bindCommand(ControllerID id, GamepadButton key, InputState state, std::unique_ptr<Command> command)
+
+
+    BindingID bindButtonCommand(ControllerID id, GamepadButton button, InputState state, std::unique_ptr<Command> command)
     {
-        BindingID binding{ s_NextBindingID++ }; 
-        s_ButtonBindings.push_back(ButtonBinding{ binding, id, state, key, std::move(command) }); 
-        return binding;
+        BindingID newBindingID{ s_NextBindingID++ };
+        s_GamepadButtonBindings.push_back(GamepadButtonBinding{ newBindingID, id, state, button, std::move(command) });
+        return newBindingID;
     }
+
+    BindingID bindStickCommand(ControllerID id, GamepadStick stick, std::unique_ptr<StickCommand> command, float deadzone)
+    {
+        BindingID newBindingID{ s_NextBindingID++ };
+        s_StickBindings.push_back(StickBinding{ newBindingID, id, stick, deadzone, std::move(command) });
+        return newBindingID;
+    }
+
+    BindingID bindTriggerCommand(ControllerID id, GamepadTrigger trigger, std::unique_ptr<TriggerCommand> command, float deadzone)
+    {
+        BindingID newBindingID{ s_NextBindingID++ };
+        s_TriggerBindings.push_back(TriggerBinding{ newBindingID, id, trigger, deadzone, std::move(command) });
+        return newBindingID;
+    }
+
     void unbindCommand(BindingID id)
     {
-        std::erase_if(s_ButtonBindings, [&](const ButtonBinding& binding) { return binding.id == id; });
+        auto matchesID = [&](const auto& binding) { return binding.id == id; };
+        std::erase_if(s_KeyboardButtonBindings, matchesID);
+        std::erase_if(s_GamepadButtonBindings,  matchesID);
+        std::erase_if(s_StickBindings,          matchesID);
+        std::erase_if(s_TriggerBindings,        matchesID);
     }
+
     void clearBindings(ControllerID id)
     {
-        std::erase_if(s_ButtonBindings, [&](const ButtonBinding& binding) {return binding.controllerID == id;  });
+        auto matchesController = [&](const auto& binding) { return binding.controllerID == id; };
+        std::erase_if(s_GamepadButtonBindings, matchesController);
+        std::erase_if(s_StickBindings,         matchesController);
+        std::erase_if(s_TriggerBindings,       matchesController);
     }
 
 }

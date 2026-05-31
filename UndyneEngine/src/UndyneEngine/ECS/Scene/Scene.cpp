@@ -33,10 +33,8 @@ namespace UndyneEngine
 
 	void Scene::cleanupMarked()
 	{
-		std::erase_if(m_GameObjects, [](const std::unique_ptr<GameObject>& obj)
-			{
-				return obj->getMarkedForRemoval();
-			});
+		std::erase_if(m_GameObjects,
+			[](const std::unique_ptr<GameObject>& obj){return obj->getMarkedForRemoval();});
 	}
 
 	void Scene::start()

@@ -10,9 +10,10 @@ namespace UndyneEngine
 {
 	namespace SceneManager
 	{
-		UNDYNE_API void init(); 
-		UNDYNE_API Scene* createScene(const std::string& name); 
-		UNDYNE_API Scene* getActiveScene(); 
+		UNDYNE_API void init();
+		UNDYNE_API void destroy();
+		UNDYNE_API Scene* createScene(const std::string& name);
+		UNDYNE_API Scene* getActiveScene();
 
 		UNDYNE_API void setActiveScene(Scene* scene); 
 		UNDYNE_API void setActiveScene(const std::string& name); 

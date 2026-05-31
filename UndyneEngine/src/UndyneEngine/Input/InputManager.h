@@ -11,16 +11,10 @@
 namespace UndyneEngine
 {
 
-	enum class ControllerType : std::uint8_t
-	{
-		Keyboard,
-		Gamepad
-	};
-
 	enum class InputState : std::uint8_t
 	{
-		Pressed, 
-		Released, 
+		Pressed,
+		Released,
 		Down
 	};
 
@@ -45,64 +39,72 @@ namespace UndyneEngine
 	};
 
 	enum class GamepadStick : std::uint8_t
-	{ 
-		Left, 
-		Right 
-	};
-	enum class GamepadAxis : std::uint8_t
 	{
-		LeftStickX, LeftStickY,
-		RightStickX, RightStickY, 
-		LeftTrigger, RightTrigger
-	}; 
+		Left,
+		Right
+	};
+
+	enum class GamepadTrigger : std::uint8_t
+	{
+		Left,
+		Right
+	};
 
 	struct UNDYNE_API ControllerID
 	{
-		std::uint8_t value = 0; 
-		bool operator==(const ControllerID&) const = default; 
+		std::uint8_t value = 0;
+		bool operator==(const ControllerID&) const = default;
 	};
 
 	struct UNDYNE_API BindingID
 	{
-		std::uint64_t value = 0; 
-		bool operator==(const BindingID&) const = default; 
+		std::uint64_t value = 0;
+		bool operator==(const BindingID&) const = default;
 	};
 
 	namespace InputManager
 	{
-		UNDYNE_API void init(); 
-		UNDYNE_API void destroy(); 
+		UNDYNE_API void init();
+		UNDYNE_API void destroy();
 
 		UNDYNE_API bool processInput();
 
-		UNDYNE_API ControllerID addController(ControllerType type); 
-		UNDYNE_API void			removeController(ControllerID id); 
+		// "Controller" here means a gamepad slot. The keyboard is global and doesn't need one.
+		UNDYNE_API ControllerID addController();
+		UNDYNE_API void			removeController(ControllerID id);
 
-		UNDYNE_API BindingID bindCommand(ControllerID id, KeyboardKey key, InputState state, std::unique_ptr<Command> command); 
-		UNDYNE_API BindingID bindCommand(ControllerID id, GamepadButton button, InputState state, std::unique_ptr<Command> command); 
-		UNDYNE_API BindingID bindAxis(ControllerID id, GamepadAxis axis, std::unique_ptr<Command> command, float deadzone = 0.15f); 
+		UNDYNE_API BindingID bindButtonCommand (                  KeyboardKey   key,     InputState state, std::unique_ptr<Command> command);
+		UNDYNE_API BindingID bindButtonCommand (ControllerID id,  GamepadButton button,  InputState state, std::unique_ptr<Command> command);
+		UNDYNE_API BindingID bindStickCommand  (ControllerID id,  GamepadStick   stick,   std::unique_ptr<StickCommand>   command, float deadzone = 0.15f);
+		UNDYNE_API BindingID bindTriggerCommand(ControllerID id,  GamepadTrigger trigger, std::unique_ptr<TriggerCommand> command, float deadzone = 0.05f);
 
 		template<std::derived_from<Command> T, typename... Args>
-		BindingID bindCommand(ControllerID id, KeyboardKey key, InputState state, Args&&... args)
+		BindingID bindButtonCommand(KeyboardKey key, InputState state, Args&&... args)
 		{
-			return bindCommand(id, key, state, std::make_unique<T>(std::forward<Args>(args)...)); 
+			return bindButtonCommand(key, state, std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
 		template<std::derived_from<Command> T, typename... Args>
-		BindingID bindCommand(ControllerID id, GamepadButton button, InputState state, Args&&... args)
+		BindingID bindButtonCommand(ControllerID id, GamepadButton button, InputState state, Args&&... args)
 		{
-			return bindCommand(id, button, state, std::make_unique<T>(std::forward<Args>(args)...));
+			return bindButtonCommand(id, button, state, std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
-		template<std::derived_from<Command> T, typename... Args>
-		BindingID bindAxis(ControllerID id, GamepadAxis axis, Args&&... args)
+		template<std::derived_from<StickCommand> T, typename... Args>
+		BindingID bindStickCommand(ControllerID id, GamepadStick stick, Args&&... args)
 		{
-			return bindAxis(id, axis, std::make_unique<T>(std::forward<Args>(args)...));
+			return bindStickCommand(id, stick, std::make_unique<T>(std::forward<Args>(args)...));
+		}
+
+		template<std::derived_from<TriggerCommand> T, typename... Args>
+		BindingID bindTriggerCommand(ControllerID id, GamepadTrigger trigger, Args&&... args)
+		{
+			return bindTriggerCommand(id, trigger, std::make_unique<T>(std::forward<Args>(args)...));
 		}
 
 
-		UNDYNE_API void unbindCommand(BindingID binding); 
-		UNDYNE_API void clearBindings(ControllerID id); 
+		UNDYNE_API void unbindCommand(BindingID binding);
+		UNDYNE_API void clearBindings(ControllerID id);
 
 	};
 }
