@@ -28,7 +28,7 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/Audio/SoundServiceLocator.cpp"
 	"src/UndyneEngine/Audio/SDLSoundSystem.cpp"
 	"src/UndyneEngine/Audio/SoundSystem.h"
-)
+ "src/UndyneEngine/ECS/EngineComponents/SpriteComponent.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)

@@ -6,7 +6,8 @@
 add_executable(UndyneApp 
 "src/UndyneApp.cpp"
 "src/Components/RotatorComponent.cpp"
- "src/Commands/MoveCommand.h") 
+ "src/Commands/MoveCommand.h"
+ "src/Level/LevelLoader.cpp") 
 
 target_link_libraries(UndyneApp PRIVATE UndyneEngine)
 

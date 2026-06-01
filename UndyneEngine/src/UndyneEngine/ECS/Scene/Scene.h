@@ -16,7 +16,6 @@ namespace UndyneEngine
 
 		void init(); 
 		void add(std::unique_ptr<GameObject> gameObject); 
-		GameObject* createGameObject(std::optional<std::string> name = std::nullopt);
 		void remove(GameObject* gameObject); 
 		void removeAll(); 
 		void cleanupMarked(); 

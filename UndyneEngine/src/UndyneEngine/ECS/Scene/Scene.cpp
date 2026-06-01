@@ -14,12 +14,6 @@ namespace UndyneEngine
 		m_GameObjects.emplace_back(std::move(gameObject));
 	}
 
-	GameObject* Scene::createGameObject(std::optional<std::string> name) //todo: check if this is a safe way of doing things. my reasoning right now is that gameobjects only get created in load() so adding them to the scene already and still returning a pointer is no issue. 
-	{
-		//todo: check that the client cannot assign the same name to a game object. 
-		return m_GameObjects.emplace_back(std::make_unique<GameObject>(std::move(name))).get(); 
-	}
-
 	void Scene::remove(GameObject* gameObject)
 	{
 		std::erase_if(m_GameObjects,
