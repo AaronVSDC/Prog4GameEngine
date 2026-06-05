@@ -5,7 +5,6 @@
 
 namespace Digger
 {
-    // Fired on a keyboard / gamepad button event. Moves by a fixed delta each fire.
     class MoveCommand final : public UndyneEngine::Command
     {
     public:
@@ -25,8 +24,6 @@ namespace Digger
         float m_DeltaY;
     };
 
-    // Fired every frame with the analog stick's (x, y) vector after deadzone scaling.
-    // SDL's Y is positive when the stick is pushed down; flipped here so 'up' is positive.
     class StickMoveCommand final : public UndyneEngine::StickCommand
     {
     public:

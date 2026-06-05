@@ -2,6 +2,7 @@
 #include "../../ResourceManager/ResourceManager.h"
 #include "../GameObject.h"
 #include "../../Renderer/Renderer.h"
+#include "../../Utils/Texture2D.h"
 
 namespace UndyneEngine
 {
@@ -9,9 +10,29 @@ namespace UndyneEngine
 	{
 		m_Texture = ResourceManager::loadTexture(file);
 	}
+	 
+	glm::vec2 TextureComponent::getTextureSize() const
+	{
+		return m_Texture->getSize();
+	}
+
 	void TextureComponent::render() const
 	{
-		const auto& pos = getOwner()->getTransform().getWorldPosition();
-		Renderer::renderTexture(*m_Texture, pos.x, pos.y); 
+		const auto& worldPosition = getOwner()->getTransform().getWorldPosition();
+		if (m_SourceRect.has_value())
+		{
+			const glm::vec4& sourceRect = *m_SourceRect;
+			Renderer::renderTexture(*m_Texture,
+				worldPosition.x, worldPosition.y, 
+				sourceRect.z * m_Scale.x, sourceRect.w * m_Scale.y,
+				sourceRect.x, sourceRect.y, sourceRect.z, sourceRect.w);
+		}
+		else
+		{
+			const glm::vec2 textureSize = m_Texture->getSize();
+			Renderer::renderTexture(*m_Texture,
+				worldPosition.x, worldPosition.y,
+				textureSize.x * m_Scale.x, textureSize.y * m_Scale.y);
+		}
 	}
 }

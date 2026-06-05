@@ -54,4 +54,6 @@ namespace UndyneEngine::ResourceManager
 			m_LoadedFonts.insert(std::pair(key, std::make_shared<Font>(fullPath.string(), size)));
 		return m_LoadedFonts.at(key);
 	}
+	const std::filesystem::path& getDataPath() { return m_DataPath; }
+
 }

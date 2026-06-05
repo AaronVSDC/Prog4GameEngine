@@ -1,7 +1,7 @@
 #define UNDYNE_ENTRY_POINT
 #include <UndyneEngine.h>
 #include "UndyneApp.h"
-#include "Components/RotatorComponent.h"
+#include "Level/LevelLoader.h"
 #include "Commands/MoveCommand.h"
 
 #ifdef UDE_DEBUG
@@ -19,27 +19,12 @@ UndyneEngine::Application* UndyneEngine::createApplication()
 
 void UndyneApp::load()
 { 
-    auto* scene = SceneManager::createScene("DemoScene");
+    auto* scene = SceneManager::createScene("Level1");
 
-    auto* sun = scene->createGameObject("sun");
-    sun->getTransform().setLocalPosition(400.0f, 300.0f, 0.0f);
-    sun->addComponent<TextureComponent>("logo.png");   
-
-    auto* earth = scene->createGameObject("earth");
-    earth->setParent(sun);                               
-    earth->addComponent<TextureComponent>("logo.png");
-    earth->addComponent<RotatorComponent>(120.0f, 1.0f);   
-
-    auto* moon = scene->createGameObject("moon");
-    moon->addComponent<TextureComponent>("logo.png");
-    
-    auto gamepad = InputManager::addController();
-
-    InputManager::bindButtonCommand<MoveCommand>(KeyboardKey::W, InputState::Down, moon, 0.f, -2.f);
-    InputManager::bindStickCommand<StickMoveCommand>(gamepad, GamepadStick::Left, moon, 4.f);
+    LevelLoader levelLoader;
+    levelLoader.loadLevel(0, *scene);
 
     auto& audio = SoundServiceLocator::getSoundSystem();
-
-    audio.loadSound("audio/digger.wav", "BackgroundMusic"); 
+    audio.loadSound("Audio/digger.wav", "BackgroundMusic");
     audio.playSound("BackgroundMusic", true);
 }

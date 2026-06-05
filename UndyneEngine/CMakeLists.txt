@@ -28,7 +28,7 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/Audio/SoundServiceLocator.cpp"
 	"src/UndyneEngine/Audio/SDLSoundSystem.cpp"
 	"src/UndyneEngine/Audio/SoundSystem.h"
- "src/UndyneEngine/ECS/EngineComponents/SpriteComponent.cpp")
+ "src/UndyneEngine/ECS/EngineComponents/AnimationComponent.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -96,6 +96,22 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_ttf)
 target_link_libraries(UndyneEngine PUBLIC SDL3_ttf::SDL3_ttf)
+
+#SDL IMAGE
+#----------
+set(SDLIMAGE_VENDORED ON  CACHE BOOL "" FORCE)
+set(SDLIMAGE_SAMPLES  OFF CACHE BOOL "" FORCE)
+set(SDLIMAGE_AVIF     OFF CACHE BOOL "" FORCE)
+set(SDLIMAGE_JXL      OFF CACHE BOOL "" FORCE)
+
+FetchContent_Declare(
+	SDL3_image
+	GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+	GIT_TAG        release-3.2.4
+	GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(SDL3_image)
+target_link_libraries(UndyneEngine PUBLIC SDL3_image::SDL3_image)
 
 
 #GLM

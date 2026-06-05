@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include "Texture2D.h"
 #include "../Renderer/Renderer.h"
 #include "../Log/Log.h"
@@ -19,7 +20,7 @@ namespace UndyneEngine
 
 	Texture2D::Texture2D(const std::string& fullPath)
 	{
-		SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
+		SDL_Surface* surface = IMG_Load(fullPath.c_str());
 		if (!surface)
 			UDE_CORE_ERROR("Texture2D: Failed to load PNG: {}", SDL_GetError()); 
 		
@@ -32,7 +33,12 @@ namespace UndyneEngine
 		SDL_DestroySurface(surface);
 
 		if (!m_Texture)
-			UDE_CORE_ERROR("Texture2D: Failed to create texture from surface: {}", SDL_GetError()); 
+		{
+			UDE_CORE_ERROR("Texture2D: Failed to create texture from surface: {}", SDL_GetError());
+			return;
+		}
+
+		SDL_SetTextureScaleMode(m_Texture, SDL_SCALEMODE_NEAREST);
 		
 	}
 

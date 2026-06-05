@@ -17,7 +17,7 @@ namespace UndyneEngine
 
 		UNDYNE_API void renderTexture(const Texture2D& texture, float x, float y); 
 		UNDYNE_API void renderTexture(const Texture2D& texture, float x, float y, float width, float height); 
-
+		UNDYNE_API void renderTexture(const Texture2D& texture,float destinationX, float destinationY, float destinationWidth, float destinationHeight,float sourceX, float sourceY, float sourceWidth, float sourceHeight);
 		UNDYNE_API SDL_Renderer* getSDLRenderer(); 
 		
 	}

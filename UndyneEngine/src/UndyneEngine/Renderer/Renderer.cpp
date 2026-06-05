@@ -56,6 +56,14 @@ namespace UndyneEngine::Renderer
 		dst.h = height;
 		SDL_RenderTexture(s_Renderer, texture.getSDLTexture(), nullptr, &dst);
 	}
+	void renderTexture(const Texture2D& texture,
+		float destinationX, float destinationY, float destinationWidth, float destinationHeight,
+		float sourceX, float sourceY, float sourceWidth, float sourceHeight)
+	{
+		const SDL_FRect source{ sourceX, sourceY, sourceWidth, sourceHeight };
+		const SDL_FRect destination{ destinationX, destinationY, destinationWidth, destinationHeight };
+		SDL_RenderTexture(s_Renderer, texture.getSDLTexture(), &source, &destination);
+	}
 	SDL_Renderer* getSDLRenderer()
 	{
 		return s_Renderer;

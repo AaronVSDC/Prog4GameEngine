@@ -53,7 +53,7 @@ namespace UndyneEngine
 		//----------------
 		//component logic
 		//----------------
-		template<std::derived_from<BaseComponent> T, typename... Args> //cool cpp20 thing: "constrained template" 
+		template<std::derived_from<BaseComponent> T, typename... Args> 
 		T* addComponent(Args&&... args)
 		{
 			auto component = std::make_unique<T>(std::forward<Args>(args)...);  
