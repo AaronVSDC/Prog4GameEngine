@@ -69,7 +69,6 @@ namespace UndyneEngine
 
 		UNDYNE_API bool processInput();
 
-		// "Controller" here means a gamepad slot. The keyboard is global and doesn't need one.
 		UNDYNE_API ControllerID addController();
 		UNDYNE_API void			removeController(ControllerID id);
 
@@ -77,30 +76,6 @@ namespace UndyneEngine
 		UNDYNE_API BindingID bindButtonCommand (ControllerID id,  GamepadButton button,  InputState state, std::unique_ptr<Command> command);
 		UNDYNE_API BindingID bindStickCommand  (ControllerID id,  GamepadStick   stick,   std::unique_ptr<StickCommand>   command, float deadzone = 0.15f);
 		UNDYNE_API BindingID bindTriggerCommand(ControllerID id,  GamepadTrigger trigger, std::unique_ptr<TriggerCommand> command, float deadzone = 0.05f);
-
-		template<std::derived_from<Command> T, typename... Args>
-		BindingID bindButtonCommand(KeyboardKey key, InputState state, Args&&... args)
-		{
-			return bindButtonCommand(key, state, std::make_unique<T>(std::forward<Args>(args)...));
-		}
-
-		template<std::derived_from<Command> T, typename... Args>
-		BindingID bindButtonCommand(ControllerID id, GamepadButton button, InputState state, Args&&... args)
-		{
-			return bindButtonCommand(id, button, state, std::make_unique<T>(std::forward<Args>(args)...));
-		}
-
-		template<std::derived_from<StickCommand> T, typename... Args>
-		BindingID bindStickCommand(ControllerID id, GamepadStick stick, Args&&... args)
-		{
-			return bindStickCommand(id, stick, std::make_unique<T>(std::forward<Args>(args)...));
-		}
-
-		template<std::derived_from<TriggerCommand> T, typename... Args>
-		BindingID bindTriggerCommand(ControllerID id, GamepadTrigger trigger, Args&&... args)
-		{
-			return bindTriggerCommand(id, trigger, std::make_unique<T>(std::forward<Args>(args)...));
-		}
 
 
 		UNDYNE_API void unbindCommand(BindingID binding);

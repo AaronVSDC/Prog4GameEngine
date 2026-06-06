@@ -11,6 +11,17 @@ namespace UndyneEngine::Renderer
 		SDL_Renderer* s_Renderer{};
 		SDL_Window* s_Window{};
 		SDL_Color s_ClearColor{};
+
+		SDL_FlipMode toSDL(Flip flip) noexcept
+		{
+			switch (flip)
+			{
+			case Flip::Horizontal: return SDL_FLIP_HORIZONTAL;
+			case Flip::Vertical:   return SDL_FLIP_VERTICAL;
+			case Flip::None:       return SDL_FLIP_NONE;
+			}
+			return SDL_FLIP_NONE;
+		}
 	}
 	void init(SDL_Window* window)
 	{
@@ -56,13 +67,16 @@ namespace UndyneEngine::Renderer
 		dst.h = height;
 		SDL_RenderTexture(s_Renderer, texture.getSDLTexture(), nullptr, &dst);
 	}
-	void renderTexture(const Texture2D& texture,
-		float destinationX, float destinationY, float destinationWidth, float destinationHeight,
-		float sourceX, float sourceY, float sourceWidth, float sourceHeight)
+	void renderTexture(const Texture2D& texture, const TextureRenderInfo& renderInfo)
 	{
-		const SDL_FRect source{ sourceX, sourceY, sourceWidth, sourceHeight };
-		const SDL_FRect destination{ destinationX, destinationY, destinationWidth, destinationHeight };
-		SDL_RenderTexture(s_Renderer, texture.getSDLTexture(), &source, &destination);
+		const SDL_FRect source{
+			renderInfo.source.position.x, renderInfo.source.position.y,
+			renderInfo.source.size.x,     renderInfo.source.size.y };
+		const SDL_FRect destination{
+			renderInfo.destination.position.x, renderInfo.destination.position.y,
+			renderInfo.destination.size.x,     renderInfo.destination.size.y };
+		SDL_RenderTextureRotated(s_Renderer, texture.getSDLTexture(),
+			&source, &destination, renderInfo.rotation, nullptr, toSDL(renderInfo.flip));
 	}
 	SDL_Renderer* getSDLRenderer()
 	{

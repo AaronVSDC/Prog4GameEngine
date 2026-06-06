@@ -22,10 +22,12 @@ namespace UndyneEngine
 		if (m_SourceRect.has_value())
 		{
 			const glm::vec4& sourceRect = *m_SourceRect;
-			Renderer::renderTexture(*m_Texture,
-				worldPosition.x, worldPosition.y, 
-				sourceRect.z * m_Scale.x, sourceRect.w * m_Scale.y,
-				sourceRect.x, sourceRect.y, sourceRect.z, sourceRect.w);
+			Renderer::renderTexture(*m_Texture, Renderer::TextureRenderInfo{
+				.source      = { { sourceRect.x, sourceRect.y }, { sourceRect.z, sourceRect.w } },
+				.destination = { { worldPosition.x, worldPosition.y },
+								 { sourceRect.z * m_Scale.x, sourceRect.w * m_Scale.y } },
+				.flip        = m_Flip,
+				.rotation    = m_Rotation });
 		}
 		else
 		{

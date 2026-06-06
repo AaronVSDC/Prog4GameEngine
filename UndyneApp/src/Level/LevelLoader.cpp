@@ -49,7 +49,7 @@ namespace Digger
             {
                 switch (rowText[column])
                 {
-                case '1': addEntityTile(column, row, scene, "Sprites/Hole/StartHole.png"); break;
+                //case '1': addEntityTile(column, row, scene, "Sprites/Hole/StartHole.png"); break;
                 case '2': addEntityTile(column, row, scene, "Sprites/Gem.png");  break;
                 case '3': addEntityTile(column, row, scene, "Sprites/GoldBag.BMP"); break;
                 default: break;

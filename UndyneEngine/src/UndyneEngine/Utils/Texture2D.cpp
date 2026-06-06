@@ -4,7 +4,6 @@
 #include "../Renderer/Renderer.h"
 #include "../Log/Log.h"
 
-//todo: rework the renderer a little
 namespace UndyneEngine
 {
 

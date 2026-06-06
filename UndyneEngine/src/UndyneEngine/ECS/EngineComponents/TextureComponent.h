@@ -2,6 +2,7 @@
 #define TEXTURE_COMPONENT_H
 #include "../../Core/Core.h"
 #include "../BaseComponent.h"
+#include "../../Renderer/Renderer.h"
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 
@@ -23,11 +24,15 @@ namespace UndyneEngine
 		void clearSourceRect() noexcept { m_SourceRect.reset(); }
 		glm::vec2 getTextureSize() const;
 		void setScale(float uniformScale) noexcept { m_Scale = { uniformScale, uniformScale }; }
+		void setFlip(Renderer::Flip flip) noexcept { m_Flip = flip; }
+		void setRotation(float degrees) noexcept { m_Rotation = degrees; }
 
 	private:
 		std::shared_ptr<Texture2D> m_Texture;
 		std::optional<glm::vec4> m_SourceRect;
 		glm::vec2 m_Scale{ 1.0f, 1.0f };
+		Renderer::Flip m_Flip{ Renderer::Flip::None };
+		float m_Rotation{ 0.0f };
 	}; 
 }
 #endif
