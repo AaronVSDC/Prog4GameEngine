@@ -4,6 +4,8 @@
 #include "../ECS/Scene/SceneManager.h"
 #include "../Utils/Texture2D.h"
 
+#include <memory>
+
 namespace UndyneEngine::Renderer
 {
 	namespace
@@ -81,5 +83,30 @@ namespace UndyneEngine::Renderer
 	SDL_Renderer* getSDLRenderer()
 	{
 		return s_Renderer;
+	}
+	std::unique_ptr<Texture2D> createRenderTarget(int width, int height)
+	{
+		SDL_Texture* target = SDL_CreateTexture(s_Renderer,
+			SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height);
+		if (!target)
+		{
+			UDE_CORE_ERROR("Failed to create render target: {}", SDL_GetError());
+			return nullptr;
+		}
+		SDL_SetTextureBlendMode(target, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureScaleMode(target, SDL_SCALEMODE_NEAREST);
+
+		// Start the canvas fully transparent so only stamped pixels are visible.
+		SDL_Texture* previousTarget = SDL_GetRenderTarget(s_Renderer);
+		SDL_SetRenderTarget(s_Renderer, target);
+		SDL_SetRenderDrawColor(s_Renderer, 0, 0, 0, 0);
+		SDL_RenderClear(s_Renderer);
+		SDL_SetRenderTarget(s_Renderer, previousTarget);
+
+		return std::make_unique<Texture2D>(target);
+	}
+	void setRenderTarget(Texture2D* target)
+	{
+		SDL_SetRenderTarget(s_Renderer, target ? target->getSDLTexture() : nullptr);
 	}
 }

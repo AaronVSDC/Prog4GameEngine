@@ -26,6 +26,11 @@ namespace UndyneEngine
 		void setScale(float uniformScale) noexcept { m_Scale = { uniformScale, uniformScale }; }
 		void setFlip(Renderer::Flip flip) noexcept { m_Flip = flip; }
 		void setRotation(float degrees) noexcept { m_Rotation = degrees; }
+		// When centred, the sprite is drawn around the transform position instead of from
+		// its top-left corner. Off by default so existing tile placement is unaffected.
+		void setCentered(bool centered) noexcept { m_Centered = centered; }
+		Renderer::Flip getFlip() const noexcept { return m_Flip; }
+		float getRotation() const noexcept { return m_Rotation; }
 
 	private:
 		std::shared_ptr<Texture2D> m_Texture;
@@ -33,6 +38,7 @@ namespace UndyneEngine
 		glm::vec2 m_Scale{ 1.0f, 1.0f };
 		Renderer::Flip m_Flip{ Renderer::Flip::None };
 		float m_Rotation{ 0.0f };
+		bool m_Centered{ false };
 	}; 
 }
 #endif

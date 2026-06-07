@@ -3,6 +3,11 @@
 #include "UndyneApp.h"
 #include "Level/LevelLoader.h"
 #include "Commands/MoveCommand.h"
+#include "Components/MoveComponent.h"
+#include "Components/DigComponent.h"
+#include "Components/DigField.h"
+
+#include <glm/glm.hpp>
 
 #ifdef UDE_DEBUG
 #include <vld.h>
@@ -24,14 +29,34 @@ void UndyneApp::load()
     LevelLoader levelLoader;
     levelLoader.loadLevel(0, *scene);
 
+    DigField* digField = levelLoader.getDigField();
 
-    auto player = std::make_unique<GameObject>("Player"); 
+    auto player = std::make_unique<GameObject>("Player");
 
-    auto playerTextureComponent = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png"); 
-    playerTextureComponent->setScale(1.7f); 
-    int playerColumnCount = 4; 
-    player->addComponent<AnimationComponent>(playerColumnCount); 
-    player->addComponent<MoveComponent>(); 
+    const int playerColumnCount = 4;
+    auto* playerTextureComponent = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png");
+    player->addComponent<AnimationComponent>(playerColumnCount);
+    // Draw the player centred on its transform so it lines up with the lane it digs.
+    playerTextureComponent->setCentered(true);
+
+    if (digField)
+    {
+        // Size the player a bit smaller than a cell so the round hole shows around it, then
+        // drop its centre on the start cell.
+        const float frameWidth = playerTextureComponent->getTextureSize().x / playerColumnCount;
+        const float playerWidthInCells = 0.7f;
+        playerTextureComponent->setScale(digField->cellStride() * playerWidthInCells / frameWidth);
+
+        const glm::ivec2 startCell = levelLoader.getStartCell();
+        const glm::vec2 startCenter{ digField->laneCenterX(startCell.x), digField->laneCenterY(startCell.y) };
+        player->getTransform().setLocalPosition(startCenter.x, startCenter.y, 0.0f);
+    }
+
+    auto* moveComponent = player->addComponent<MoveComponent>();
+    moveComponent->setField(digField);
+
+    auto* digComponent = player->addComponent<DigComponent>();
+    digComponent->setField(digField);
 
     //commands
     //---------

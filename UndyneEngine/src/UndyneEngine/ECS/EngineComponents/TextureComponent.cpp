@@ -22,19 +22,24 @@ namespace UndyneEngine
 		if (m_SourceRect.has_value())
 		{
 			const glm::vec4& sourceRect = *m_SourceRect;
+			const glm::vec2 drawSize{ sourceRect.z * m_Scale.x, sourceRect.w * m_Scale.y };
+			const glm::vec2 origin = m_Centered
+				? glm::vec2{ worldPosition.x - drawSize.x * 0.5f, worldPosition.y - drawSize.y * 0.5f }
+				: glm::vec2{ worldPosition.x, worldPosition.y };
 			Renderer::renderTexture(*m_Texture, Renderer::TextureRenderInfo{
 				.source      = { { sourceRect.x, sourceRect.y }, { sourceRect.z, sourceRect.w } },
-				.destination = { { worldPosition.x, worldPosition.y },
-								 { sourceRect.z * m_Scale.x, sourceRect.w * m_Scale.y } },
+				.destination = { { origin.x, origin.y }, { drawSize.x, drawSize.y } },
 				.flip        = m_Flip,
 				.rotation    = m_Rotation });
 		}
 		else
 		{
 			const glm::vec2 textureSize = m_Texture->getSize();
-			Renderer::renderTexture(*m_Texture,
-				worldPosition.x, worldPosition.y,
-				textureSize.x * m_Scale.x, textureSize.y * m_Scale.y);
+			const glm::vec2 drawSize{ textureSize.x * m_Scale.x, textureSize.y * m_Scale.y };
+			const glm::vec2 origin = m_Centered
+				? glm::vec2{ worldPosition.x - drawSize.x * 0.5f, worldPosition.y - drawSize.y * 0.5f }
+				: glm::vec2{ worldPosition.x, worldPosition.y };
+			Renderer::renderTexture(*m_Texture, origin.x, origin.y, drawSize.x, drawSize.y);
 		}
 	}
 }

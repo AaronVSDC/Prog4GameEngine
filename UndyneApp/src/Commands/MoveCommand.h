@@ -24,34 +24,12 @@ namespace Digger
             }
             else
             {
-                UDE_WARN("GameObject you are trying to bind MoveCommand to has no MoveComponent."); 
+                UDE_WARN("MoveCommand execute(): GameObject you are trying to bind MoveCommand to has no MoveComponent."); 
             }
         }
     private:
         UndyneEngine::GameObject* m_GameObject;
         glm::vec2 m_Direction; 
     };
-
-    //class StickMoveCommand final : public UndyneEngine::StickCommand
-    //{
-    //public:
-    //    StickMoveCommand(UndyneEngine::GameObject* gameObject, float speed) noexcept
-    //        : m_GameObject(gameObject), m_Speed(speed) {
-    //    }
-
-    //    void execute(glm::vec2 stickValue) override
-    //    {
-    //        auto& transform = m_GameObject->getTransform();
-    //        const auto position = transform.getLocalPosition();
-    //        transform.setLocalPosition(
-    //            position.x + stickValue.x * m_Speed,
-    //            position.y - stickValue.y * m_Speed,
-    //            position.z
-    //        );
-    //    }
-    //private:
-    //    UndyneEngine::GameObject* m_GameObject;
-    //    float m_Speed;
-    //};
 }
 #endif
