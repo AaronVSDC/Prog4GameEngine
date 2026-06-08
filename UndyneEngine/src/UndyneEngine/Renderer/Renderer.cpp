@@ -84,6 +84,12 @@ namespace UndyneEngine::Renderer
 	{
 		return s_Renderer;
 	}
+	void getOutputSize(int& width, int& height)
+	{
+		width = 0;
+		height = 0;
+		SDL_GetRenderOutputSize(s_Renderer, &width, &height);
+	}
 	std::unique_ptr<Texture2D> createRenderTarget(int width, int height)
 	{
 		SDL_Texture* target = SDL_CreateTexture(s_Renderer,
@@ -96,7 +102,6 @@ namespace UndyneEngine::Renderer
 		SDL_SetTextureBlendMode(target, SDL_BLENDMODE_BLEND);
 		SDL_SetTextureScaleMode(target, SDL_SCALEMODE_NEAREST);
 
-		// Start the canvas fully transparent so only stamped pixels are visible.
 		SDL_Texture* previousTarget = SDL_GetRenderTarget(s_Renderer);
 		SDL_SetRenderTarget(s_Renderer, target);
 		SDL_SetRenderDrawColor(s_Renderer, 0, 0, 0, 0);

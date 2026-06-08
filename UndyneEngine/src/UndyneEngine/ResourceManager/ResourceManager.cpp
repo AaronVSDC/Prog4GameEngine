@@ -4,6 +4,8 @@
 #include "../Renderer/Renderer.h"
 #include "../Log/Log.h"
 
+#include <SDL3/SDL.h>
+
 //std
 #include <map>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -39,10 +41,14 @@ namespace UndyneEngine::ResourceManager
 	std::shared_ptr<Texture2D> loadTexture(const std::string& file)
 	{
 		const auto fullPath = m_DataPath / file;
-		const auto filename = fs::path(fullPath).filename().string(); 
+		const auto filename = fs::path(fullPath).filename().string();
 		if (m_LoadedTextures.find(filename) == m_LoadedTextures.end())
-			m_LoadedTextures.insert(std::pair(filename, std::make_shared<Texture2D>(fullPath.string()))); 
-		return m_LoadedTextures.at(filename); 
+		{
+			auto texture = std::make_shared<Texture2D>(fullPath.string());
+			SDL_SetTextureScaleMode(texture->getSDLTexture(), SDL_SCALEMODE_NEAREST);
+			m_LoadedTextures.insert(std::pair(filename, std::move(texture)));
+		}
+		return m_LoadedTextures.at(filename);
 
 	}
 	std::shared_ptr<Font> loadFont(const std::string& file, uint8_t size)

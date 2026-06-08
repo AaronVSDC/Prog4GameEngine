@@ -14,10 +14,12 @@
 
 namespace UndyneEngine
 {
-	
+	class Scene;
+
 	class UNDYNE_API GameObject final
 	{
-	public: 
+		friend class Scene;
+	public:
 		GameObject(std::optional<std::string> name = std::nullopt);
 		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
@@ -42,6 +44,7 @@ namespace UndyneEngine
 		GameObject* getParent() const noexcept { return m_Parent;  }
 		const std::vector<GameObject*>& getChildren() const noexcept { return m_Children;  }
 		Transform& getTransform() noexcept { return m_Transform;  }
+		Scene* getScene() const noexcept { return m_Scene;  }
 	    bool getMarkedForRemoval() const noexcept { return m_MarkedForRemoval;  }
 
 		//--------------------
@@ -96,6 +99,7 @@ namespace UndyneEngine
 		GameObject* m_Parent = nullptr;
 		Transform m_Transform;
 		bool m_MarkedForRemoval = false;
+		Scene* m_Scene = nullptr;
 
 
 

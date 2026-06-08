@@ -5,7 +5,7 @@
 
 namespace Digger
 {
-	class DigField;
+	class LevelGridComponent;
 
 	class MoveComponent final : public UndyneEngine::BaseComponent
 	{
@@ -17,13 +17,12 @@ namespace Digger
 		// lines the player up with the grid before committing to a perpendicular turn,
 		// so it never jumps across a lane.
 		void setDirection(const glm::vec2& direction) { m_DesiredDirection = direction; }
-		void setField(const DigField* field) noexcept { m_Field = field; }
 
 	private:
 		float m_Speed = 200.f;
 		glm::vec2 m_DesiredDirection{ 0.0f, 0.0f };
 		UndyneEngine::TextureComponent* m_TextureComponent{ nullptr };
-		const DigField* m_Field{ nullptr };
+		const LevelGridComponent* m_Grid{ nullptr };
 	};
 }
 

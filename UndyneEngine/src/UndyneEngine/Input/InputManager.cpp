@@ -380,7 +380,7 @@ namespace InputManager
 
     ControllerID addController()
     {
-        ControllerID newControllerID{ s_NextControllerID++ };
+        ControllerID newControllerID{ static_cast<std::uint8_t>(s_NextControllerID++) };
         s_Controllers.push_back({ newControllerID, nullptr });
 
         int count = 0;

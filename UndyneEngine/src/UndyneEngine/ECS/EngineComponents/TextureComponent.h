@@ -26,9 +26,7 @@ namespace UndyneEngine
 		void setScale(float uniformScale) noexcept { m_Scale = { uniformScale, uniformScale }; }
 		void setFlip(Renderer::Flip flip) noexcept { m_Flip = flip; }
 		void setRotation(float degrees) noexcept { m_Rotation = degrees; }
-		// When centred, the sprite is drawn around the transform position instead of from
-		// its top-left corner. Off by default so existing tile placement is unaffected.
-		void setCentered(bool centered) noexcept { m_Centered = centered; }
+		void setCentered(bool centered) noexcept { m_Centered = centered; }// When centred, the sprite is drawn around the transform position instead of from top left corner
 		Renderer::Flip getFlip() const noexcept { return m_Flip; }
 		float getRotation() const noexcept { return m_Rotation; }
 

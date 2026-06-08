@@ -13,6 +13,7 @@
 #include "UndyneEngine/Audio/SDLSoundSystem.h"
 #include "UndyneEngine/ResourceManager/ResourceManager.h"
 #include "UndyneEngine/Renderer/Renderer.h"
+#include "UndyneEngine/Utils/Texture2D.h"
 
 //engine components
 #include "UndyneEngine/ECS/EngineComponents/TextureComponent.h"

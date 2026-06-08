@@ -33,9 +33,13 @@ add_library(UndyneEngine SHARED
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-target_compile_definitions(UndyneEngine PRIVATE UDE_BUILD_DLL) 
+target_compile_definitions(UndyneEngine PRIVATE UDE_BUILD_DLL)
 
-
+if(MSVC)
+    target_compile_options(UndyneEngine PRIVATE /WX)
+else()
+    target_compile_options(UndyneEngine PRIVATE -Wall -Wextra -Werror)
+endif()
 
 #LIBRARIES
 #---------------

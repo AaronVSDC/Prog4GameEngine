@@ -1,41 +1,47 @@
 #ifndef LEVEL_LOADER_H
 #define LEVEL_LOADER_H
-#include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
-#include <UndyneEngine.h>
+
+//std
+#include <string>
+#include <vector>
+
+namespace UndyneEngine { class Scene; }
 
 namespace Digger
 {
-	class DigField;
+
+	struct LevelData
+	{
+		struct Placement
+		{
+			int column = 0;
+			int row = 0;
+			std::string texture;
+		};
+
+		int columns = 0;
+		int rows = 0;
+		float nativeCellSize = 0.0f;
+		glm::ivec2 startCell{ 0, 0 };
+		std::vector<glm::ivec2> dugCells;
+		std::vector<Placement> entities;
+	};
 
 	class LevelLoader final
 	{
 	public:
-		LevelLoader() = default; 
-		LevelLoader(const LevelLoader&) = delete; 
-		LevelLoader(const LevelLoader&&) = delete; 
-		LevelLoader& operator=(const LevelLoader&) = delete; 
-		LevelLoader& operator=(const LevelLoader&&) = delete; 
+		void load(int levelIndex, UndyneEngine::Scene& scene) const;
 
-		void loadLevel(int index, UndyneEngine::Scene& scene);
-
-		DigField* getDigField() const noexcept { return m_DigField; }
-		glm::ivec2 getStartCell() const noexcept { return m_StartCell; }
 	private:
-	    const int m_GridCollumns = 15; 
-		const int m_GridRows = 10; 
-		const float m_NativeCellSize = 20.f;
+		int m_GridColumns = 15;
+		int m_GridRows = 10;
+		float m_NativeCellSize = 20.0f;
 
-		DigField* m_DigField = nullptr;
-		glm::ivec2 m_StartCell{ 0, 0 };
 
+		bool parse(int levelIndex, LevelData& outData) const;
 		bool readLevelGrid(int levelIndex, std::vector<std::string>& outRows) const;
-		void addEntityTile(int column, int row, UndyneEngine::Scene& scene, const std::string& texturePath) const;
-
 	};
-
 }
-
-
 
 #endif

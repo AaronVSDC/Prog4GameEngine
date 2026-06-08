@@ -39,9 +39,7 @@ namespace UndyneEngine
 		UNDYNE_API void renderTexture(const Texture2D& texture, float x, float y, float width, float height); 
 		UNDYNE_API void renderTexture(const Texture2D& texture, const TextureRenderInfo& renderInfo);
 		UNDYNE_API SDL_Renderer* getSDLRenderer();
-
-		// Off-screen drawing. createRenderTarget returns a texture you can draw onto by
-		// passing it to setRenderTarget; pass nullptr to setRenderTarget to draw to the screen again.
+		UNDYNE_API void getOutputSize(int& width, int& height);
 		UNDYNE_API std::unique_ptr<Texture2D> createRenderTarget(int width, int height);
 		UNDYNE_API void setRenderTarget(Texture2D* target);
 		

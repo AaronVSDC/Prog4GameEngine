@@ -10,7 +10,8 @@ namespace UndyneEngine
 
 	void Scene::add(std::unique_ptr<GameObject> gameObject)
 	{
-		assert(gameObject && "Cannot add a null GameObject to the scene."); 
+		assert(gameObject && "Cannot add a null GameObject to the scene.");
+		gameObject->m_Scene = this;
 		m_GameObjects.emplace_back(std::move(gameObject));
 	}
 
@@ -33,30 +34,34 @@ namespace UndyneEngine
 
 	void Scene::start()
 	{
-		for (auto& gameObject : m_GameObjects)
+		// Index-based: a component's start() may add new GameObjects (e.g. a level
+		// builder), and those must be started too without invalidating iteration.
+		for (std::size_t i = 0; i < m_GameObjects.size(); ++i)
+			m_GameObjects[i]->start();
+	}
+
+	GameObject* Scene::findGameObjectByName(const std::string& name) const
+	{
+		for (const auto& gameObject : m_GameObjects)
 		{
-			gameObject->start(); 
+			if (gameObject->getName() == name)
+				return gameObject.get();
 		}
+		return nullptr;
 	}
 	void Scene::update(float deltaTime)
 	{
-		for (auto& gameObject : m_GameObjects)
-		{
-			gameObject->update(deltaTime);
-		}
+		for (std::size_t i = 0; i < m_GameObjects.size(); ++i)
+			m_GameObjects[i]->update(deltaTime);
 	}
 	void Scene::fixedUpdate(float fixedTimeStep)
 	{
-		for (auto& gameObject : m_GameObjects)
-		{
-			gameObject->fixedUpdate(fixedTimeStep);
-		}
+		for (std::size_t i = 0; i < m_GameObjects.size(); ++i)
+			m_GameObjects[i]->fixedUpdate(fixedTimeStep);
 	}
 	void Scene::render() const
 	{
-		for (auto& gameObject : m_GameObjects)
-		{
-			gameObject->render();
-		}
+		for (std::size_t i = 0; i < m_GameObjects.size(); ++i)
+			m_GameObjects[i]->render();
 	}
 }

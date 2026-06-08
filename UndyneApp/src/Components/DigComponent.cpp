@@ -1,42 +1,42 @@
 #include "DigComponent.h"
-#include "DigField.h"
+#include "LevelGridComponent.h"
+
+#include <glm/glm.hpp>
+
+//std
+#include <cmath>
 
 namespace Digger
 {
-	void DigComponent::update(float)
+	void DigComponent::start()
 	{
-		if (!m_Field) return;
-
-		// The player's transform stores its centre, which already rides the cell lane.
-		const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
-		const glm::vec2 center{ position.x, position.y };
-
-		if (!m_Initialized)
+		if (auto* scene = getOwner()->getScene())
 		{
-			m_PreviousCenter = center;
-			m_Initialized = true;
-			m_Field->markDug(m_Field->worldToCell(center));
-			m_Field->stampHole(m_Field->worldToNative(center));
-			return;
-		}
-
-		const glm::vec2 delta = center - m_PreviousCenter;
-		const float distance = glm::length(delta);
-		if (distance > 0.0001f)
-		{
-			m_Field->markDug(m_Field->worldToCell(center));
-
-			// Lay holes evenly along the distance travelled so the ribbon stays
-			// continuous however far the player moved this frame.
-			const glm::vec2 nativeCenter = m_Field->worldToNative(center);
-			m_NativeDistanceAccumulator += distance / m_Field->pixelScale();
-			while (m_NativeDistanceAccumulator >= k_StampSpacingNative)
+			if (auto* gridObject = scene->findGameObjectByName("LevelGrid"))
 			{
-				m_Field->stampHole(nativeCenter);
-				m_NativeDistanceAccumulator -= k_StampSpacingNative;
+				m_Grid = gridObject->getComponent<LevelGridComponent>();
+			}
+			else
+			{
+				UDE_WARN("Didn't find any object called \"LevelGrid\" in scene"); 
 			}
 		}
+	}
 
-		m_PreviousCenter = center;
+	void DigComponent::update(float deltaTime)
+	{
+		if (!m_Grid) return;
+
+		const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
+		const glm::vec2 center{ position.x, position.y };
+		const glm::ivec2 cell = m_Grid->worldToCell(center);
+
+		const glm::vec2 cellCenter{ m_Grid->laneCenterX(cell.x), m_Grid->laneCenterY(cell.y) };
+		const float maxOffset = m_Grid->cellSize() * m_VisitMargin;
+		if (std::abs(center.x - cellCenter.x) <= maxOffset and
+			std::abs(center.y - cellCenter.y) <= maxOffset)
+		{
+			m_Grid->markDug(cell);
+		}
 	}
 }
