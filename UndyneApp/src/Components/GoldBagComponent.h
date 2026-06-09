@@ -34,6 +34,7 @@ namespace Digger
 		void becomeGold();
 		void updateGold();
 		void squashIfPlayerHit();
+		void squashMonster();
 		void fitTextureToCell();
 		void setCellPosition();
 

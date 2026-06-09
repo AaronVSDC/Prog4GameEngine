@@ -3,9 +3,11 @@
 #include "MoveComponent.h"
 #include "ScoreComponent.h"
 #include "LivesComponent.h"
+#include "../AI/DeadState.h"
 
 #include <cmath>
 #include <vector>
+#include <memory>
 
 using namespace UndyneEngine;
 
@@ -120,6 +122,7 @@ namespace Digger
 		}
 
 		squashIfPlayerHit();
+		squashMonster();
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
 		const bool belowSolid = not m_Grid->inBounds(below) or not m_Grid->isDug(below) or m_Grid->objectAt(below) != nullptr;
@@ -185,6 +188,19 @@ namespace Digger
 		if (m_Grid->isOnCell(*m_Player, m_Cell))
 			if (LivesComponent* lives = m_Player->getComponent<LivesComponent>())
 				lives->die();
+	}
+
+	void GoldBagComponent::squashMonster()
+	{
+		Scene* scene = getOwner()->getScene();
+		if (not scene) return;
+
+		GameObject* monster = scene->findGameObjectByName("Nobbin");
+		if (not monster) return;
+
+		if (m_Grid->isOnCell(*monster, m_Cell))
+			if (StateMachineComponent* machine = monster->getComponent<StateMachineComponent>())
+				machine->changeState(std::make_unique<DeadState>());
 	}
 
 	bool GoldBagComponent::tryPush(int directionX)

@@ -76,4 +76,20 @@ namespace UndyneEngine
 		if (m_TextureComponent)
 			m_TextureComponent->setSourceRect({ 0.0f, 0.0f, m_FrameWidth, m_FrameHeight });
 	}
+
+	void AnimationComponent::setColumnCount(int columnCount)
+	{
+		m_ColumnCount = columnCount;
+		m_CurrentColumn = 0;
+		m_ElapsedFrameTime = 0.0f;
+		m_Finished = false;
+		m_Playing = m_Loop;
+		if (m_TextureComponent)
+		{
+			const glm::vec2 textureSize = m_TextureComponent->getTextureSize();
+			m_FrameWidth = textureSize.x / static_cast<float>(columnCount);
+			m_FrameHeight = textureSize.y;
+			m_TextureComponent->setSourceRect({ 0.0f, 0.0f, m_FrameWidth, m_FrameHeight });
+		}
+	}
 }

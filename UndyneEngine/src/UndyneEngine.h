@@ -23,6 +23,9 @@
 #include "UndyneEngine/ECS/EngineComponents/AnimationComponent.h"
 #include "UndyneEngine/ECS/EngineComponents/TextComponent.h"
 
+//state machine
+#include "UndyneEngine/StateMachine/StateMachineComponent.h"
+
 #ifdef UNDYNE_ENTRY_POINT
 #include "UndyneEngine/Core/EntryPoint.h"
 #endif

@@ -13,6 +13,7 @@ namespace UndyneEngine
 		void update(float deltaTime) override;
 
 		void play();
+		void setColumnCount(int columnCount);
 		bool isFinished() const noexcept { return m_Finished; }
 
 	private:

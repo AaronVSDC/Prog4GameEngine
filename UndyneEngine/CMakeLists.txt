@@ -33,7 +33,10 @@ add_library(UndyneEngine STATIC
 	"src/UndyneEngine/Observer/Subject.h"
 	"src/UndyneEngine/Observer/Subject.cpp"
 	"src/UndyneEngine/ECS/EngineComponents/TextComponent.h"
-	"src/UndyneEngine/ECS/EngineComponents/TextComponent.cpp")
+	"src/UndyneEngine/ECS/EngineComponents/TextComponent.cpp"
+	"src/UndyneEngine/StateMachine/State.h"
+	"src/UndyneEngine/StateMachine/StateMachineComponent.h"
+	"src/UndyneEngine/StateMachine/StateMachineComponent.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)

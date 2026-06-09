@@ -26,6 +26,7 @@ namespace Digger
 		float nativeCellSize = 0.0f;
 		glm::ivec2 startCell{ 0, 0 };
 		std::vector<glm::ivec2> dugCells;
+		std::vector<glm::ivec2> spawnCells;
 		std::vector<Placement> entities;
 	};
 

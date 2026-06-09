@@ -10,9 +10,6 @@ namespace Digger
 	{
 		m_Grid = getOwner()->getComponent<LevelGridComponent>();
 
-		if (UndyneEngine::Scene* scene = getOwner()->getScene())
-			m_Player = scene->findGameObjectByName("Player");
-
 		m_Hole = UndyneEngine::ResourceManager::loadTexture("Sprites/Hole/PlayerHole.png");
 
 		if (m_Grid)
@@ -21,14 +18,14 @@ namespace Digger
 				static_cast<int>(m_Grid->columns() * m_Grid->cellSize()),
 				static_cast<int>(m_Grid->rows() * m_Grid->cellSize()));
 
-			UndyneEngine::Renderer::setRenderTarget(m_Canvas.get());      
+			UndyneEngine::Renderer::setRenderTarget(m_Canvas.get());
 
 			//make a trail over all pre dug cells
 			for (int row = 0; row < m_Grid->rows(); ++row)
 			{
 				for (int column = 0; column < m_Grid->columns(); ++column)
 				{
-					if (!m_Grid->isDug({ column, row })) continue;
+					if (not m_Grid->isDug({ column, row })) continue;
 
 					const glm::vec2 center{ m_Grid->laneCenterX(column), m_Grid->laneCenterY(row) };
 					drawBrush(center);
@@ -39,42 +36,72 @@ namespace Digger
 						stampLine(center, { m_Grid->laneCenterX(column), m_Grid->laneCenterY(row + 1) });
 				}
 			}
+
+			UndyneEngine::Renderer::setRenderTarget(nullptr);
 		}
+	}
+
+	void DigTrailComponent::addFollower(const std::string& name)
+	{
+		for (const Follower& follower : m_Followers)
+			if (follower.name == name)
+				return;
+
+		Follower follower;
+		follower.name = name;
+		m_Followers.push_back(follower);
+	}
+
+	void DigTrailComponent::resetStamp() noexcept
+	{
+		for (Follower& follower : m_Followers)
+			follower.hasStamped = false;
 	}
 
 	void DigTrailComponent::update(float)
 	{
-		if (!m_Grid or !m_Player or !m_Canvas or !m_Hole) return;
-
-		const glm::vec3 position = m_Player->getTransform().getLocalPosition();
-		const glm::vec2 current{ position.x, position.y };
+		if (not m_Grid or not m_Canvas or not m_Hole) return;
 
 		UndyneEngine::Renderer::setRenderTarget(m_Canvas.get());
+		for (Follower& follower : m_Followers)
+			updateFollower(follower);
+		UndyneEngine::Renderer::setRenderTarget(nullptr);
+	}
 
-		if (!m_HasStamped)
+	void DigTrailComponent::updateFollower(Follower& follower)
+	{
+		UndyneEngine::Scene* scene = getOwner()->getScene();
+		UndyneEngine::GameObject* object = scene ? scene->findGameObjectByName(follower.name) : nullptr;
+		if (not object)
+		{
+			follower.hasStamped = false;
+			return;
+		}
+
+		const glm::vec3 position = object->getTransform().getLocalPosition();
+		const glm::vec2 current{ position.x, position.y };
+
+		if (not follower.hasStamped)
 		{
 			drawBrush(current);
-			m_LastStampPos = current;
-			m_HasStamped = true;
-		}
-		else
-		{
-			glm::vec2 delta = current - m_LastStampPos;
-			float distance = glm::length(delta);
-			if (distance > 0.0f)
-			{
-				const float spacing = m_Grid->cellSize() * m_StampSpacing;
-				const glm::vec2 stepDirection = delta / distance;
-				while (distance >= spacing)
-				{
-					m_LastStampPos += stepDirection * spacing;
-					drawBrush(m_LastStampPos);
-					distance -= spacing;
-				}
-			}
+			follower.lastStampPos = current;
+			follower.hasStamped = true;
+			return;
 		}
 
-		UndyneEngine::Renderer::setRenderTarget(nullptr);
+		glm::vec2 delta = current - follower.lastStampPos;
+		float distance = glm::length(delta);
+		if (distance > 0.0f)
+		{
+			const float spacing = m_Grid->cellSize() * m_StampSpacing;
+			const glm::vec2 stepDirection = delta / distance;
+			while (distance >= spacing)
+			{
+				follower.lastStampPos += stepDirection * spacing;
+				drawBrush(follower.lastStampPos);
+				distance -= spacing;
+			}
+		}
 	}
 
 	void DigTrailComponent::drawBrush(glm::vec2 worldPos) const
@@ -86,6 +113,7 @@ namespace Digger
 			worldPos.y - origin.y - brush * 0.5f,
 			brush, brush);
 	}
+
 	void DigTrailComponent::stampLine(glm::vec2 from, glm::vec2 to) const
 	{
 		const float spacing = m_Grid->cellSize() * m_StampSpacing;
@@ -95,12 +123,12 @@ namespace Digger
 
 		const glm::vec2 stepDirection = delta / distance;
 		for (float travelled = spacing; travelled < distance; travelled += spacing)
-			drawBrush(from + stepDirection * travelled);   
+			drawBrush(from + stepDirection * travelled);
 	}
 
 	void DigTrailComponent::render() const
 	{
-		if (!m_Canvas || !m_Grid) return;
+		if (not m_Canvas or not m_Grid) return;
 		const glm::vec2 origin = m_Grid->cellTopLeft(0, 0);
 		UndyneEngine::Renderer::renderTexture(*m_Canvas, origin.x, origin.y,
 			m_Grid->columns() * m_Grid->cellSize(),

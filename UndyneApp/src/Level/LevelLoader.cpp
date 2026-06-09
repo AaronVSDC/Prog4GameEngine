@@ -10,6 +10,8 @@
 #include "../Components/LivesComponent.h"
 #include "../Components/LivesDisplayComponent.h"
 #include "../Commands/MoveCommand.h"
+#include "../Components/GridMovementComponent.h"
+#include "../AI/NobbinChaseState.h"
 #include <UndyneEngine.h>
 
 //std
@@ -81,6 +83,24 @@ namespace Digger
 
 		scene.add(std::move(player));
 
+		for (const glm::ivec2& spawnCell : level.spawnCells)
+		{
+			auto nobbin = std::make_unique<GameObject>("Nobbin");
+			auto* nobbinTexture = nobbin->addComponent<TextureComponent>("Sprites/NobbinSprites.png");
+			nobbin->addComponent<AnimationComponent>(4);
+			nobbinTexture->setCentered(true);
+			const float nobbinFrameWidth = nobbinTexture->getTextureSize().x / 4.0f;
+			nobbinTexture->setScale(levelGrid->cellSize() * 0.7f / nobbinFrameWidth);
+			nobbin->getTransform().setLocalPosition(
+				levelGrid->laneCenterX(spawnCell.x), levelGrid->laneCenterY(spawnCell.y), 0.0f);
+			nobbin->addComponent<GridMovementComponent>();
+			auto* nobbinDig = nobbin->addComponent<DigComponent>();
+			nobbinDig->setAutoDig(false);
+			nobbinDig->setClearsObstacles(true);
+			nobbin->addComponent<StateMachineComponent>(std::make_unique<NobbinChaseState>());
+			scene.add(std::move(nobbin));
+		}
+
 		auto gravestone = std::make_unique<GameObject>("Gravestone");
 		auto* graveTexture = gravestone->addComponent<TextureComponent>("Sprites/GraveSprites.png");
 		gravestone->addComponent<AnimationComponent>(5, 3.0f, false);
@@ -140,8 +160,11 @@ namespace Digger
 				switch (rowText[column])
 				{
 				case '1':
+					outData.dugCells.push_back({ column, row });
+					break;
 				case '4':
 					outData.dugCells.push_back({ column, row });
+					outData.spawnCells.push_back({ column, row });
 					break;
 				case '2':
 					outData.entities.push_back({ column, row, "Sprites/Gem.png", 25 });
