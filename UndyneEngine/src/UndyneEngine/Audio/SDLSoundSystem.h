@@ -8,7 +8,7 @@
 
 namespace UndyneEngine
 {
-    class UNDYNE_API SDLSoundSystem final : public SoundSystem
+    class SDLSoundSystem final : public SoundSystem
     {
     public:
         SDLSoundSystem();

@@ -1,7 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "../Core/Core.h"
 
 #include <glm/vec2.hpp>
 #include <cstdint>
@@ -17,9 +16,15 @@ namespace UndyneEngine
 	class Font;
 	namespace Renderer
 	{
-		enum class Flip : std::uint8_t { None, Horizontal, Vertical };
+		enum class Flip : uint8_t { None, Horizontal, Vertical };
 
-		struct Color { std::uint8_t r{ 255 }, g{ 255 }, b{ 255 }, a{ 255 }; };
+		struct Color 
+		{
+			uint8_t r{ 255 }; 
+			uint8_t g{ 255 }; 
+			uint8_t b{ 255 }; 
+			uint8_t a{ 255 };
+		};
 
 		struct Rect
 		{
@@ -35,18 +40,18 @@ namespace UndyneEngine
 			float rotation{ 0.0f };
 		};
 
-		UNDYNE_API void init(SDL_Window* window);
-		UNDYNE_API void render(); 
-		UNDYNE_API void destroy(); 
+		void init(SDL_Window* window);
+		void render(); 
+		void destroy(); 
 
-		UNDYNE_API void renderTexture(const Texture2D& texture, float x, float y); 
-		UNDYNE_API void renderTexture(const Texture2D& texture, float x, float y, float width, float height); 
-		UNDYNE_API void renderTexture(const Texture2D& texture, const TextureRenderInfo& renderInfo);
-		UNDYNE_API SDL_Renderer* getSDLRenderer();
-		UNDYNE_API void getOutputSize(int& width, int& height);
-		UNDYNE_API std::unique_ptr<Texture2D> createRenderTarget(int width, int height);
-		UNDYNE_API void setRenderTarget(Texture2D* target);
-		UNDYNE_API std::unique_ptr<Texture2D> createTextTexture(const Font& font, const std::string& text, Color color);
+		void renderTexture(const Texture2D& texture, float x, float y); 
+		void renderTexture(const Texture2D& texture, float x, float y, float width, float height); 
+		void renderTexture(const Texture2D& texture, const TextureRenderInfo& renderInfo);
+		SDL_Renderer* getSDLRenderer();
+		void getOutputSize(int& width, int& height);
+		std::unique_ptr<Texture2D> createRenderTarget(int width, int height);
+		void setRenderTarget(Texture2D* target);
+		std::unique_ptr<Texture2D> createTextTexture(const Font& font, const std::string& text, Color color);
 
 	}
 }

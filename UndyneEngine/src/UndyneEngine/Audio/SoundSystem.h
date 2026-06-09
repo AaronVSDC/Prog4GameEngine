@@ -1,14 +1,13 @@
 #ifndef I_SOUND_SYSTEM_H
 #define I_SOUND_SYSTEM_H
 
-#include "../Core/Core.h"
 
 //std
 #include <string>
 
 namespace UndyneEngine
 {
-    class UNDYNE_API SoundSystem
+    class SoundSystem
     {
     public:
         virtual ~SoundSystem() = default;
@@ -33,7 +32,7 @@ namespace UndyneEngine
         SoundSystem() = default;
     };
 
-    class UNDYNE_API NullSoundSystem final : public SoundSystem
+    class NullSoundSystem final : public SoundSystem
     {
     public:
         NullSoundSystem() = default;

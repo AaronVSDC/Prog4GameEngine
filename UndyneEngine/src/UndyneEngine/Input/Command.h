@@ -1,11 +1,10 @@
 #ifndef ICOMMAND_H
 #define ICOMMAND_H
-#include "../Core/Core.h"
 #include <glm/vec2.hpp>
 
 namespace UndyneEngine
 {
-	class UNDYNE_API Command
+	class Command
 	{
 	public:
 		Command(const Command&)            = delete;
@@ -19,7 +18,7 @@ namespace UndyneEngine
 		Command() = default;
 	};
 
-	class UNDYNE_API StickCommand
+	class StickCommand
 	{
 	public:
 		StickCommand(const StickCommand&)            = delete;
@@ -34,7 +33,7 @@ namespace UndyneEngine
 		StickCommand() = default;
 	};
 
-	class UNDYNE_API TriggerCommand
+	class TriggerCommand
 	{
 	public:
 		TriggerCommand(const TriggerCommand&)            = delete;

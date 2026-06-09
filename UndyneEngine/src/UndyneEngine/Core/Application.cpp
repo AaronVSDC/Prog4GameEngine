@@ -25,6 +25,7 @@ namespace UndyneEngine
 	Application::~Application()
 	{
 		SceneManager::destroy();
+		SoundServiceLocator::registerSoundSystem(nullptr);
 		InputManager::destroy();
 		Renderer::destroy();
 		ResourceManager::destroy();

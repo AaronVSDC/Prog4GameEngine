@@ -1,6 +1,5 @@
 #ifndef SUBJECT_H
 #define SUBJECT_H
-#include "../Core/Core.h"
 #include "Event.h"
 
 #include <vector>
@@ -10,7 +9,7 @@ namespace UndyneEngine
 	class GameObject;
 	class Observer;
 
-	class UNDYNE_API Subject
+	class Subject
 	{
 	public:
 		Subject() = default;

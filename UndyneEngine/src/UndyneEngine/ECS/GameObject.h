@@ -2,7 +2,6 @@
 #define GAME_OBJECT_H
 
 #include "BaseComponent.h"
-#include "../Core/Core.h"
 #include "../Log/Log.h"
 #include "../Utils/Transform.h"
 
@@ -16,7 +15,7 @@ namespace UndyneEngine
 {
 	class Scene;
 
-	class UNDYNE_API GameObject final
+	class GameObject final
 	{
 		friend class Scene;
 	public:

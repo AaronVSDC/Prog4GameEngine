@@ -1,7 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "Core.h"
 
 //std
 #include <string>
@@ -10,7 +9,7 @@
 struct SDL_Window; 
 namespace UndyneEngine
 {
-	struct UNDYNE_API WindowProps
+	struct WindowProps
 	{
 		std::string title; 
 		int width; 
@@ -23,7 +22,7 @@ namespace UndyneEngine
 	};
 
 
-    class UNDYNE_API Window final
+    class Window final
     {
     public:
         Window(const WindowProps& props = WindowProps{});

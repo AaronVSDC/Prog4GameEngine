@@ -1,6 +1,5 @@
 #ifndef INPUT_MANAGER_H
 #define INPUT_MANAGER_H
-#include "../Core/Core.h"
 #include "Command.h"
 
 
@@ -50,13 +49,13 @@ namespace UndyneEngine
 		Right
 	};
 
-	struct UNDYNE_API ControllerID
+	struct ControllerID
 	{
 		std::uint8_t value = 0;
 		bool operator==(const ControllerID&) const = default;
 	};
 
-	struct UNDYNE_API BindingID
+	struct BindingID
 	{
 		std::uint64_t value = 0;
 		bool operator==(const BindingID&) const = default;
@@ -64,22 +63,22 @@ namespace UndyneEngine
 
 	namespace InputManager
 	{
-		UNDYNE_API void init();
-		UNDYNE_API void destroy();
+		void init();
+		void destroy();
 
-		UNDYNE_API bool processInput();
+		bool processInput();
 
-		UNDYNE_API ControllerID addController();
-		UNDYNE_API void			removeController(ControllerID id);
+		ControllerID addController();
+		void			removeController(ControllerID id);
 
-		UNDYNE_API BindingID bindButtonCommand (                  KeyboardKey   key,     InputState state, std::unique_ptr<Command> command);
-		UNDYNE_API BindingID bindButtonCommand (ControllerID id,  GamepadButton button,  InputState state, std::unique_ptr<Command> command);
-		UNDYNE_API BindingID bindStickCommand  (ControllerID id,  GamepadStick   stick,   std::unique_ptr<StickCommand>   command, float deadzone = 0.15f);
-		UNDYNE_API BindingID bindTriggerCommand(ControllerID id,  GamepadTrigger trigger, std::unique_ptr<TriggerCommand> command, float deadzone = 0.05f);
+		BindingID bindButtonCommand (                  KeyboardKey   key,     InputState state, std::unique_ptr<Command> command);
+		BindingID bindButtonCommand (ControllerID id,  GamepadButton button,  InputState state, std::unique_ptr<Command> command);
+		BindingID bindStickCommand  (ControllerID id,  GamepadStick   stick,   std::unique_ptr<StickCommand>   command, float deadzone = 0.15f);
+		BindingID bindTriggerCommand(ControllerID id,  GamepadTrigger trigger, std::unique_ptr<TriggerCommand> command, float deadzone = 0.05f);
 
 
-		UNDYNE_API void unbindCommand(BindingID binding);
-		UNDYNE_API void clearBindings(ControllerID id);
+		void unbindCommand(BindingID binding);
+		void clearBindings(ControllerID id);
 
 	};
 }

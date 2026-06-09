@@ -25,7 +25,7 @@ endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(UDE_RELEASE)
 endif()
-
+ 
 
 add_subdirectory(UndyneEngine)
 add_subdirectory(UndyneApp)

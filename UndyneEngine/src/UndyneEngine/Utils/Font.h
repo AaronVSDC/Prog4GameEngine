@@ -1,6 +1,5 @@
 #ifndef FONT_H
 #define FONT_H
-#include "../Core/Core.h"
 
 //std
 #include <string>
@@ -8,7 +7,7 @@
 struct TTF_Font;
 namespace UndyneEngine
 {
-	class UNDYNE_API Font final
+	class Font final
 	{
 	public:
 		[[nodiscard]] TTF_Font* getFont() const;

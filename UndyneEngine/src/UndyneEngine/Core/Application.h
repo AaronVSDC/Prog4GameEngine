@@ -1,7 +1,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "Core.h" 
 
 //std
 #include <memory>
@@ -9,7 +8,7 @@ namespace UndyneEngine
 {
 
 	class Window; 
-	class UNDYNE_API Application
+	class Application
 	{
 
 	public: 

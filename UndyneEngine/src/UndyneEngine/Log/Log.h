@@ -4,7 +4,6 @@
 //std
 #include <memory>
 
-#include "../Core/Core.h"
 #include "spdlog/spdlog.h"
 
 namespace UndyneEngine
@@ -17,10 +16,10 @@ namespace UndyneEngine
 		Log& operator=(Log& rhs) = delete; 
 		Log& operator=(Log&& rhs) = delete; 
 
-		static UNDYNE_API void init(); 
+		static void init(); 
 
-		static UNDYNE_API std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_CoreLogger; }
-		static UNDYNE_API std::shared_ptr<spdlog::logger>& getClientLogger() { return s_ClientLogger; }
+		static std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_CoreLogger; }
+		static std::shared_ptr<spdlog::logger>& getClientLogger() { return s_ClientLogger; }
 
 	private:
 

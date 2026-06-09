@@ -1,12 +1,11 @@
 #ifndef ANIMATION_COMPONENT_H
 #define ANIMATION_COMPONENT_H
-#include "../../Core/Core.h"
 #include "../BaseComponent.h"
 
 namespace UndyneEngine
 {
 	class TextureComponent;
-	class UNDYNE_API AnimationComponent final : public BaseComponent
+	class AnimationComponent final : public BaseComponent
 	{
 	public:
 		explicit AnimationComponent(int columnCount, float framesPerSecond = 8.0f, bool loop = true);

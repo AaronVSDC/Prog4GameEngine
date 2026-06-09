@@ -1,6 +1,5 @@
 #ifndef TEXTURE_2D_H
 #define TEXTURE_2D_H
-#include "../Core/Core.h"
 #include <glm/vec2.hpp>
 
 //std
@@ -9,7 +8,7 @@
 struct SDL_Texture; 
 namespace UndyneEngine
 {
-	class UNDYNE_API Texture2D final
+	class Texture2D final
 	{
 	public:
 		[[nodiscard]] SDL_Texture* getSDLTexture() const;

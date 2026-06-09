@@ -1,11 +1,10 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "../GameObject.h"
-#include "UndyneEngine/Core/Core.h"
 
 namespace UndyneEngine
 {
-	class UNDYNE_API Scene final
+	class Scene final
 	{
 	public:
 		Scene(const std::string& name);

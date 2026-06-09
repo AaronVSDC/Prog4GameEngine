@@ -1,11 +1,10 @@
 #ifndef BASE_COMPONENT_H
 #define BASE_COMPONENT_H
-#include "../Core/Core.h"
 
 namespace UndyneEngine
 {
 	class GameObject;
-	class UNDYNE_API BaseComponent
+	class BaseComponent
 	{
 		friend class GameObject;
 	public:

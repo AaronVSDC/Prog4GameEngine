@@ -3,10 +3,9 @@
 #--------------------------------------------
 
 
-add_library(UndyneEngine SHARED
+add_library(UndyneEngine STATIC
 	"src/UndyneEngine/Core/EntryPoint.h"
 	"src/UndyneEngine/Core/Application.cpp" 
-	"src/UndyneEngine/Core/Core.h"
 	"src/UndyneEngine.h"
 	"src/UndyneEngine/Log/Log.cpp" 
 	"src/UndyneEngine/Core/Window.h" 
@@ -38,8 +37,6 @@ add_library(UndyneEngine SHARED
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-target_compile_definitions(UndyneEngine PRIVATE UDE_BUILD_DLL)
 
 if(MSVC)
     target_compile_options(UndyneEngine PRIVATE /W4 /WX)

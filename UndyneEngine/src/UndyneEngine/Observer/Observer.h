@@ -1,6 +1,5 @@
 #ifndef OBSERVER_H
 #define OBSERVER_H
-#include "../Core/Core.h"
 #include "Event.h"
 
 namespace UndyneEngine
@@ -8,7 +7,7 @@ namespace UndyneEngine
 	class GameObject;
 	class Subject;
 
-	class UNDYNE_API Observer
+	class Observer
 	{
 	public:
 		virtual ~Observer() = default;

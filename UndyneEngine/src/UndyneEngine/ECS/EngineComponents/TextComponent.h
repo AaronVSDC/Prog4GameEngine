@@ -1,6 +1,5 @@
 #ifndef TEXT_COMPONENT_H
 #define TEXT_COMPONENT_H
-#include "../../Core/Core.h"
 #include "../BaseComponent.h"
 #include "../../Renderer/Renderer.h"
 
@@ -12,7 +11,7 @@ namespace UndyneEngine
 	class Font;
 	class Texture2D;
 
-	class UNDYNE_API TextComponent final : public BaseComponent
+	class TextComponent final : public BaseComponent
 	{
 	public:
 		TextComponent(const std::string& text, std::shared_ptr<Font> font, Renderer::Color color = {});

@@ -1,6 +1,5 @@
 #ifndef TEXTURE_COMPONENT_H
 #define TEXTURE_COMPONENT_H
-#include "../../Core/Core.h"
 #include "../BaseComponent.h"
 #include "../../Renderer/Renderer.h"
 #include <glm/vec2.hpp>
@@ -14,7 +13,7 @@
 namespace UndyneEngine
 {
 	class Texture2D;
-	class UNDYNE_API TextureComponent final : public BaseComponent
+	class TextureComponent final : public BaseComponent
 	{
 	public:
 		TextureComponent(const std::string& file);
