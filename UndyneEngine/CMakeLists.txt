@@ -28,7 +28,13 @@ add_library(UndyneEngine SHARED
 	"src/UndyneEngine/Audio/SoundServiceLocator.cpp"
 	"src/UndyneEngine/Audio/SDLSoundSystem.cpp"
 	"src/UndyneEngine/Audio/SoundSystem.h"
- "src/UndyneEngine/ECS/EngineComponents/AnimationComponent.cpp")
+ "src/UndyneEngine/ECS/EngineComponents/AnimationComponent.cpp"
+	"src/UndyneEngine/Observer/Event.h"
+	"src/UndyneEngine/Observer/Observer.h"
+	"src/UndyneEngine/Observer/Subject.h"
+	"src/UndyneEngine/Observer/Subject.cpp"
+	"src/UndyneEngine/ECS/EngineComponents/TextComponent.h"
+	"src/UndyneEngine/ECS/EngineComponents/TextComponent.cpp")
 
 target_include_directories(UndyneEngine PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -36,7 +42,7 @@ target_include_directories(UndyneEngine PUBLIC
 target_compile_definitions(UndyneEngine PRIVATE UDE_BUILD_DLL)
 
 if(MSVC)
-    target_compile_options(UndyneEngine PRIVATE /WX)
+    target_compile_options(UndyneEngine PRIVATE /W4 /WX)
 else()
     target_compile_options(UndyneEngine PRIVATE -Wall -Wextra -Werror)
 endif()

@@ -23,7 +23,7 @@ namespace Digger
 		}
 	}
 
-	void DigComponent::update(float deltaTime)
+	void DigComponent::update(float)
 	{
 		if (!m_Grid) return;
 

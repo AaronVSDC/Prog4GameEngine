@@ -7,7 +7,7 @@
 
 namespace Digger
 {
-	LevelGridComponent::LevelGridComponent(int columns, int rows, const std::vector<glm::ivec2>& dugCells)
+	LevelGridComponent::LevelGridComponent(int columns, int rows, float nativeCellSize, const std::vector<glm::ivec2>& dugCells)
 		: m_Columns{ columns }
 		, m_Rows{ rows }
 	{
@@ -15,11 +15,17 @@ namespace Digger
 		int outputHeight = 0;
 		UndyneEngine::Renderer::getOutputSize(outputWidth, outputHeight);
 
-		m_CellSize = std::floor(std::min(
-			static_cast<float>(outputWidth) / columns,
-			static_cast<float>(outputHeight) / rows));
+		constexpr float hudFraction = 0.12f;
+		const float topMargin = static_cast<float>(outputHeight) * hudFraction;
+		const float availableHeight = static_cast<float>(outputHeight) - topMargin;
+
+		const int scale = std::max(1, static_cast<int>(std::floor(std::min(
+			static_cast<float>(outputWidth) / (columns * nativeCellSize),
+			availableHeight / (rows * nativeCellSize)))));
+		m_CellSize = nativeCellSize * scale;
+
 		m_OriginX = (outputWidth - columns * m_CellSize) * 0.5f;
-		m_OriginY = (outputHeight - rows * m_CellSize) * 0.5f;
+		m_OriginY = topMargin + (availableHeight - rows * m_CellSize) * 0.5f;
 
 		m_Cells.assign(static_cast<std::size_t>(columns) * rows, CellState::Earth);
 		for (const glm::ivec2& cell : dugCells)

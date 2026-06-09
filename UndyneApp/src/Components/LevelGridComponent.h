@@ -17,7 +17,7 @@ namespace Digger
 	class LevelGridComponent final : public UndyneEngine::BaseComponent
 	{
 	public:
-		LevelGridComponent(int columns, int rows, const std::vector<glm::ivec2>& dugCells);
+		LevelGridComponent(int columns, int rows, float nativeCellSize, const std::vector<glm::ivec2>& dugCells);
 
 		void render() const override; 
 

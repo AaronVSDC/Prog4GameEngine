@@ -19,5 +19,5 @@ UndyneEngine::Application* UndyneEngine::createApplication()
 void UndyneApp::load()
 {
     auto* scene = SceneManager::createScene("Level1");
-    LevelLoader{}.load(2, *scene);
+    LevelLoader{}.load(1, *scene);
 }

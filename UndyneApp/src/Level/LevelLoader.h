@@ -18,6 +18,7 @@ namespace Digger
 			int column = 0;
 			int row = 0;
 			std::string texture;
+			int points = 0;
 		};
 
 		int columns = 0;

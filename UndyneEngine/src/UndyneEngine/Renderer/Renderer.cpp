@@ -1,8 +1,10 @@
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include "Renderer.h"
 #include "../Log/Log.h"
 #include "../ECS/Scene/SceneManager.h"
 #include "../Utils/Texture2D.h"
+#include "../Utils/Font.h"
 
 #include <memory>
 
@@ -113,5 +115,27 @@ namespace UndyneEngine::Renderer
 	void setRenderTarget(Texture2D* target)
 	{
 		SDL_SetRenderTarget(s_Renderer, target ? target->getSDLTexture() : nullptr);
+	}
+	std::unique_ptr<Texture2D> createTextTexture(const Font& font, const std::string& text, Color color)
+	{
+		const SDL_Color sdlColor{ color.r, color.g, color.b, color.a };
+		SDL_Surface* surface = TTF_RenderText_Blended(font.getFont(), text.c_str(), text.length(), sdlColor);
+		if (!surface)
+		{
+			UDE_CORE_ERROR("Failed to render text surface: {}", SDL_GetError());
+			return nullptr;
+		}
+
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(s_Renderer, surface);
+		SDL_DestroySurface(surface);
+		if (!texture)
+		{
+			UDE_CORE_ERROR("Failed to create text texture: {}", SDL_GetError());
+			return nullptr;
+		}
+
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+		return std::make_unique<Texture2D>(texture);
 	}
 }

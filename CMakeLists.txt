@@ -17,7 +17,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #COMPILE DEFINITIONS
 #----------------------
 add_compile_definitions(UDE_PLATFORM_WINDOWS)
-
+ 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(UDE_DEBUG)
 endif() 

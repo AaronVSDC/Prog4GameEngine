@@ -6,6 +6,7 @@
 #include <glm/vec2.hpp>
 #include <cstdint>
 #include <memory>
+#include <string>
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -13,9 +14,12 @@ struct SDL_Renderer;
 namespace UndyneEngine
 {
 	class Texture2D;
+	class Font;
 	namespace Renderer
 	{
 		enum class Flip : std::uint8_t { None, Horizontal, Vertical };
+
+		struct Color { std::uint8_t r{ 255 }, g{ 255 }, b{ 255 }, a{ 255 }; };
 
 		struct Rect
 		{
@@ -42,7 +46,8 @@ namespace UndyneEngine
 		UNDYNE_API void getOutputSize(int& width, int& height);
 		UNDYNE_API std::unique_ptr<Texture2D> createRenderTarget(int width, int height);
 		UNDYNE_API void setRenderTarget(Texture2D* target);
-		
+		UNDYNE_API std::unique_ptr<Texture2D> createTextTexture(const Font& font, const std::string& text, Color color);
+
 	}
 }
 

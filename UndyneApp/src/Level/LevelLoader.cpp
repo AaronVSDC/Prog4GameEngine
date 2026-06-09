@@ -3,6 +3,9 @@
 #include "../Components/DigTrailComponent.h"
 #include "../Components/MoveComponent.h"
 #include "../Components/DigComponent.h"
+#include "../Components/PickupComponent.h"
+#include "../Components/ScoreComponent.h"
+#include "../Components/ScoreDisplayComponent.h"
 #include "../Commands/MoveCommand.h"
 #include <UndyneEngine.h>
 
@@ -22,7 +25,7 @@ namespace Digger
 			return;
 
 		auto gridObject = std::make_unique<GameObject>("LevelGrid");
-		auto* levelGrid = gridObject->addComponent<LevelGridComponent>(level.columns, level.rows, level.dugCells);
+		auto* levelGrid = gridObject->addComponent<LevelGridComponent>(level.columns, level.rows, level.nativeCellSize, level.dugCells);
 		gridObject->addComponent<DigTrailComponent>(); 
 		scene.add(std::move(gridObject));
 
@@ -46,6 +49,9 @@ namespace Digger
 
 			pickup->getTransform().setLocalPosition(topLeft.x + offsetX, topLeft.y + offsetY, 0.0f);
 
+			if (placement.points > 0)
+				pickup->addComponent<PickupComponent>(placement.points, glm::ivec2{ placement.column, placement.row });
+
 			scene.add(std::move(pickup));
 		}
 
@@ -64,6 +70,7 @@ namespace Digger
 		player->getTransform().setLocalPosition(startCenter.x, startCenter.y, 0.0f);
 		player->addComponent<MoveComponent>();
 		player->addComponent<DigComponent>();
+		player->addComponent<ScoreComponent>();
 
 		//Commands
 		//----------
@@ -73,6 +80,16 @@ namespace Digger
 		InputManager::bindButtonCommand(KeyboardKey::D, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{  1.f, 0.f }));
 
 		scene.add(std::move(player));
+
+		auto hud = std::make_unique<GameObject>("Hud");
+		auto scoreFont = ResourceManager::loadFont("ScoreBoardFont.otf", 24);
+		hud->addComponent<TextComponent>("Score: 0", scoreFont);
+		hud->addComponent<ScoreDisplayComponent>();
+
+		const glm::vec2 playfieldTopLeft = levelGrid->cellTopLeft(0, 0);
+		hud->getTransform().setLocalPosition(playfieldTopLeft.x, playfieldTopLeft.y * 0.3f, 0.0f);
+
+		scene.add(std::move(hud));
 
 
 		//Audio
@@ -106,10 +123,10 @@ namespace Digger
 					outData.dugCells.push_back({ column, row });
 					break;
 				case '2':
-					outData.entities.push_back({ column, row, "Sprites/Gem.png" });
+					outData.entities.push_back({ column, row, "Sprites/Gem.png", 25 });
 					break;
 				case '3':
-					outData.entities.push_back({ column, row, "Sprites/GoldBag.BMP" });
+					outData.entities.push_back({ column, row, "Sprites/GoldBag.BMP", 0 });
 					break;
 				case '5':
 					outData.dugCells.push_back({ column, row });
