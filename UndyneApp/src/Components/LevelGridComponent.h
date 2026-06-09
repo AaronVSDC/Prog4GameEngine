@@ -43,6 +43,10 @@ namespace Digger
 		bool isDug(glm::ivec2 cell) const noexcept;
 		void markDug(glm::ivec2 cell) noexcept;
 
+		UndyneEngine::GameObject* objectAt(glm::ivec2 cell) const noexcept;
+		void setObjectAt(glm::ivec2 cell, UndyneEngine::GameObject* object) noexcept;
+		void clearObjectAt(glm::ivec2 cell) noexcept;
+
 	private:
 		enum class CellState : std::uint8_t { Earth, Dug };
 		std::size_t cellIndex(int column, int row) const noexcept;
@@ -54,6 +58,7 @@ namespace Digger
 		float m_OriginY{ 0.0f };
 
 		std::vector<CellState> m_Cells;
+		std::vector<UndyneEngine::GameObject*> m_Objects;
 		std::shared_ptr<UndyneEngine::Texture2D> m_Background;
 	};
 }

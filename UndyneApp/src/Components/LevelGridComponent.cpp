@@ -28,6 +28,7 @@ namespace Digger
 		m_OriginY = topMargin + (availableHeight - rows * m_CellSize) * 0.5f;
 
 		m_Cells.assign(static_cast<std::size_t>(columns) * rows, CellState::Earth);
+		m_Objects.assign(static_cast<std::size_t>(columns) * rows, nullptr);
 		for (const glm::ivec2& cell : dugCells)
 			markDug(cell);
 
@@ -114,5 +115,23 @@ namespace Digger
 	{
 		if (!inBounds(cell)) return;
 		m_Cells[cellIndex(cell.x, cell.y)] = CellState::Dug;
+	}
+
+	UndyneEngine::GameObject* LevelGridComponent::objectAt(glm::ivec2 cell) const noexcept
+	{
+		if (not inBounds(cell)) return nullptr;
+		return m_Objects[cellIndex(cell.x, cell.y)];
+	}
+
+	void LevelGridComponent::setObjectAt(glm::ivec2 cell, UndyneEngine::GameObject* object) noexcept
+	{
+		if (not inBounds(cell)) return;
+		m_Objects[cellIndex(cell.x, cell.y)] = object;
+	}
+
+	void LevelGridComponent::clearObjectAt(glm::ivec2 cell) noexcept
+	{
+		if (not inBounds(cell)) return;
+		m_Objects[cellIndex(cell.x, cell.y)] = nullptr;
 	}
 }

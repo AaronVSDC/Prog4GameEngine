@@ -22,7 +22,7 @@ namespace Digger
 					m_Subject = score;
 					score->addObserver(this);
 					if (m_Text)
-						m_Text->setText("Score: " + std::to_string(score->getScore()));
+						m_Text->setText(std::to_string(score->getScore()));
 				}
 	}
 
@@ -31,7 +31,7 @@ namespace Digger
 		if (event != UndyneEngine::Event::ScoreChanged or !m_Text)
 			return;
 		if (ScoreComponent* score = subject.getComponent<ScoreComponent>())
-			m_Text->setText("Score: " + std::to_string(score->getScore()));
+			m_Text->setText(std::to_string(score->getScore()));
 	}
 
 	void ScoreDisplayComponent::onSubjectDestroyed(UndyneEngine::Subject& subject)

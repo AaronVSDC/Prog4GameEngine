@@ -10,13 +10,12 @@ namespace Digger
 	class PickupComponent final : public UndyneEngine::BaseComponent
 	{
 	public:
-		PickupComponent(int pointValue, glm::ivec2 cell) noexcept;
+		explicit PickupComponent(glm::ivec2 cell) noexcept;
 
 		void start() override;
 		void update(float deltaTime) override;
 
 	private:
-		int m_PointValue;
 		glm::ivec2 m_Cell;
 		UndyneEngine::GameObject* m_Player{ nullptr };
 		const LevelGridComponent* m_Grid{ nullptr };

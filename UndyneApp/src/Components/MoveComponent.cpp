@@ -1,5 +1,6 @@
 #include "MoveComponent.h"
 #include "LevelGridComponent.h"
+#include "GoldBagComponent.h"
 
 //std
 #include <cmath>
@@ -13,17 +14,52 @@ namespace Digger
         if (UndyneEngine::Scene* scene = getOwner()->getScene())
             if (UndyneEngine::GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
                 m_Grid = gridObject->getComponent<LevelGridComponent>();
+
+        const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
+        m_SpawnPosition = glm::vec2{ position.x, position.y };
+    }
+
+    void MoveComponent::respawn()
+    {
+        getOwner()->getTransform().setLocalPosition(m_SpawnPosition.x, m_SpawnPosition.y, 0.0f);
+        m_DesiredDirection = glm::vec2{ 0.0f, 0.0f };
+    }
+
+    bool MoveComponent::tryEnterCell(glm::ivec2 cell, int directionX)
+    {
+        UndyneEngine::GameObject* object = m_Grid->objectAt(cell);
+        if (not object)
+            return true;
+
+        GoldBagComponent* bag = object->getComponent<GoldBagComponent>();
+        if (not bag)
+            return true;
+        if (bag->isGold())
+            return true;
+
+        if (bag->isRestingBag() and directionX != 0)
+        {
+            const glm::ivec2 beyond{ cell.x + directionX, cell.y };
+            if (m_Grid->inBounds(beyond) and m_Grid->isDug(beyond) and m_Grid->objectAt(beyond) == nullptr)
+            {
+                bag->pushTo(beyond);
+                return true;
+            }
+        }
+        return false;
     }
 
     void MoveComponent::update(float elapsedSec)
     {
+        if (not m_Enabled)
+            return;
 
         const glm::vec2 desired = m_DesiredDirection;
         m_DesiredDirection = glm::vec2{ 0.0f, 0.0f };
 
-        if (desired.x == 0.0f && desired.y == 0.0f)
+        if (desired.x == 0.0f and desired.y == 0.0f)
             return;
-        if (!m_Grid)
+        if (not m_Grid)
             return;
 
         auto& transform = getOwner()->getTransform();
@@ -46,8 +82,15 @@ namespace Digger
             else
             {
                 center.y = laneCenter;
-                movement.x = desired.x * step;
-                center.x += movement.x;
+                const int directionX = (desired.x > 0.0f) ? 1 : -1;
+                const glm::vec2 intended{ center.x + desired.x * step, center.y };
+                const glm::ivec2 currentCell = m_Grid->worldToCell(center);
+                const glm::ivec2 intendedCell = m_Grid->worldToCell(intended);
+                if (intendedCell.x == currentCell.x or tryEnterCell(intendedCell, directionX))
+                {
+                    movement.x = desired.x * step;
+                    center.x += movement.x;
+                }
             }
         }
         else
@@ -62,8 +105,14 @@ namespace Digger
             else
             {
                 center.x = laneCenter;
-                movement.y = desired.y * step;
-                center.y += movement.y;
+                const glm::vec2 intended{ center.x, center.y + desired.y * step };
+                const glm::ivec2 currentCell = m_Grid->worldToCell(center);
+                const glm::ivec2 intendedCell = m_Grid->worldToCell(intended);
+                if (intendedCell.y == currentCell.y or tryEnterCell(intendedCell, 0))
+                {
+                    movement.y = desired.y * step;
+                    center.y += movement.y;
+                }
             }
         }
 
@@ -73,7 +122,7 @@ namespace Digger
         position.y = center.y;
         transform.setLocalPosition(position);
 
-        if (m_TextureComponent && (movement.x != 0.0f || movement.y != 0.0f))
+        if (m_TextureComponent and (movement.x != 0.0f or movement.y != 0.0f))
         {
             if (movement.x != 0.0f)
             {

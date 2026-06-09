@@ -19,6 +19,8 @@ namespace Digger
 		void update(float elapsedSec) override;
 		void render() const override;
 
+		void resetStamp() noexcept { m_HasStamped = false; }
+
 	private:
 		void drawBrush(glm::vec2 worldPos) const;
 		void stampLine(glm::vec2 from, glm::vec2 to) const;

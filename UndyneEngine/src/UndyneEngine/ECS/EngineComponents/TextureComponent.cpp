@@ -10,6 +10,11 @@ namespace UndyneEngine
 	{
 		m_Texture = ResourceManager::loadTexture(file);
 	}
+
+	void TextureComponent::setTexture(const std::string& file)
+	{
+		m_Texture = ResourceManager::loadTexture(file);
+	}
 	 
 	glm::vec2 TextureComponent::getTextureSize() const
 	{
@@ -18,6 +23,8 @@ namespace UndyneEngine
 
 	void TextureComponent::render() const
 	{
+		if (not m_Visible)
+			return;
 		const auto& worldPosition = getOwner()->getTransform().getWorldPosition();
 		if (m_SourceRect.has_value())
 		{

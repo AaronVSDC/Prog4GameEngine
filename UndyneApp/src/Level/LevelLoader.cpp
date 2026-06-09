@@ -4,8 +4,11 @@
 #include "../Components/MoveComponent.h"
 #include "../Components/DigComponent.h"
 #include "../Components/PickupComponent.h"
+#include "../Components/GoldBagComponent.h"
 #include "../Components/ScoreComponent.h"
 #include "../Components/ScoreDisplayComponent.h"
+#include "../Components/LivesComponent.h"
+#include "../Components/LivesDisplayComponent.h"
 #include "../Commands/MoveCommand.h"
 #include <UndyneEngine.h>
 
@@ -33,26 +36,22 @@ namespace Digger
 
 		for (const LevelData::Placement& placement : level.entities)
 		{
-			auto pickup = std::make_unique<GameObject>("Pickup");
-			auto* pickupTexture = pickup->addComponent<TextureComponent>(placement.texture);
-			const float cellSize = levelGrid->cellSize();
-			const glm::vec2 textureSize = pickupTexture->getTextureSize();
-			const float scale = (cellSize * fillRatio) / textureSize.x;
-			pickupTexture->setScale(scale);
+			const glm::ivec2 cell{ placement.column, placement.row };
+			const bool isGoldBag = placement.texture == "Sprites/GoldBag.BMP";
 
-			const float renderedWidth = textureSize.x * scale; 
-			const float renderedHeight = textureSize.y * scale;
+			auto entity = std::make_unique<GameObject>(isGoldBag ? "GoldBag" : "Emerald");
+			auto* texture = entity->addComponent<TextureComponent>(placement.texture);
+			texture->setCentered(true);
+			texture->setScale((levelGrid->cellSize() * fillRatio) / texture->getTextureSize().x);
+			entity->getTransform().setLocalPosition(
+				levelGrid->laneCenterX(cell.x), levelGrid->laneCenterY(cell.y), 0.0f);
 
-			const glm::vec2 topLeft = levelGrid->cellTopLeft(placement.column, placement.row);
-			const float offsetX = (cellSize - renderedWidth) * 0.5f;
-			const float offsetY = (cellSize - renderedHeight) * 0.5f;
+			if (isGoldBag)
+				entity->addComponent<GoldBagComponent>(cell);
+			else
+				entity->addComponent<PickupComponent>(cell);
 
-			pickup->getTransform().setLocalPosition(topLeft.x + offsetX, topLeft.y + offsetY, 0.0f);
-
-			if (placement.points > 0)
-				pickup->addComponent<PickupComponent>(placement.points, glm::ivec2{ placement.column, placement.row });
-
-			scene.add(std::move(pickup));
+			scene.add(std::move(entity));
 		}
 
 		auto player = std::make_unique<GameObject>("Player");
@@ -71,6 +70,7 @@ namespace Digger
 		player->addComponent<MoveComponent>();
 		player->addComponent<DigComponent>();
 		player->addComponent<ScoreComponent>();
+		player->addComponent<LivesComponent>();
 
 		//Commands
 		//----------
@@ -81,15 +81,36 @@ namespace Digger
 
 		scene.add(std::move(player));
 
+		auto gravestone = std::make_unique<GameObject>("Gravestone");
+		auto* graveTexture = gravestone->addComponent<TextureComponent>("Sprites/GraveSprites.png");
+		gravestone->addComponent<AnimationComponent>(5);
+		graveTexture->setCentered(true);
+		graveTexture->setScale((levelGrid->cellSize() * fillRatio) / 15.0f);
+		graveTexture->setVisible(false);
+		scene.add(std::move(gravestone));
+
 		auto hud = std::make_unique<GameObject>("Hud");
-		auto scoreFont = ResourceManager::loadFont("ScoreBoardFont.otf", 24);
-		hud->addComponent<TextComponent>("Score: 0", scoreFont);
+		auto scoreFont = ResourceManager::loadFont("ScoreBoardFont.otf", 36);
+		hud->addComponent<TextComponent>("0", scoreFont);
 		hud->addComponent<ScoreDisplayComponent>();
 
 		const glm::vec2 playfieldTopLeft = levelGrid->cellTopLeft(0, 0);
 		hud->getTransform().setLocalPosition(playfieldTopLeft.x, playfieldTopLeft.y * 0.3f, 0.0f);
 
 		scene.add(std::move(hud));
+
+		auto livesHud = std::make_unique<GameObject>("LivesHud");
+		livesHud->addComponent<LivesDisplayComponent>();
+		const glm::vec2 fieldTopRight = levelGrid->cellTopLeft(level.columns, 0);
+		livesHud->getTransform().setLocalPosition(fieldTopRight.x - 130.0f, playfieldTopLeft.y * 0.3f, 0.0f);
+		scene.add(std::move(livesHud));
+
+		auto gameOver = std::make_unique<GameObject>("GameOverText");
+		auto gameOverFont = ResourceManager::loadFont("ScoreBoardFont.otf", 48);
+		gameOver->addComponent<TextComponent>("", gameOverFont);
+		gameOver->getTransform().setLocalPosition(
+			levelGrid->laneCenterX(level.columns / 2) - 130.0f, levelGrid->laneCenterY(level.rows / 2), 0.0f);
+		scene.add(std::move(gameOver));
 
 
 		//Audio

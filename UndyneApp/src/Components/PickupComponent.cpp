@@ -4,9 +4,8 @@
 
 namespace Digger
 {
-	PickupComponent::PickupComponent(int pointValue, glm::ivec2 cell) noexcept
-		: m_PointValue{ pointValue }
-		, m_Cell{ cell }
+	PickupComponent::PickupComponent(glm::ivec2 cell) noexcept
+		: m_Cell{ cell }
 	{
 	}
 
@@ -31,7 +30,7 @@ namespace Digger
 			return;
 
 		if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
-			score->addPoints(m_PointValue);
+			score->collectEmerald();
 
 		getOwner()->markForRemoval();
 	}

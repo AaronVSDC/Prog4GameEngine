@@ -7,7 +7,7 @@ add_executable(UndyneApp
 "src/UndyneApp.cpp"
 "src/Components/RotatorComponent.cpp"
  "src/Commands/MoveCommand.h"
- "src/Level/LevelLoader.cpp" "src/Components/MoveComponent.cpp" "src/Components/DigComponent.cpp" "src/Components/LevelGridComponent.cpp" "src/Components/DigTrailComponent.cpp" "src/Components/ScoreComponent.cpp" "src/Components/ScoreDisplayComponent.cpp" "src/Components/PickupComponent.cpp")
+ "src/Level/LevelLoader.cpp" "src/Components/MoveComponent.cpp" "src/Components/DigComponent.cpp" "src/Components/LevelGridComponent.cpp" "src/Components/DigTrailComponent.cpp" "src/Components/ScoreComponent.cpp" "src/Components/ScoreDisplayComponent.cpp" "src/Components/PickupComponent.cpp" "src/Components/GoldBagComponent.cpp" "src/Components/LivesComponent.cpp" "src/Components/LivesDisplayComponent.cpp")
 
 target_link_libraries(UndyneApp PRIVATE UndyneEngine)
 
