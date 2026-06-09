@@ -18,10 +18,11 @@ namespace Digger
 		// so it never jumps across a lane.
 		void setDirection(const glm::vec2& direction) { m_DesiredDirection = direction; }
 		void setEnabled(bool enabled) noexcept { m_Enabled = enabled; }
+		float speed() const noexcept { return m_Speed; }
 		void respawn();
 
 	private:
-		bool tryEnterCell(glm::ivec2 cell, int directionX);
+		bool tryEnterCell(glm::ivec2 cell, glm::ivec2 direction);
 
 		float m_Speed = 200.f;
 		glm::vec2 m_DesiredDirection{ 0.0f, 0.0f };

@@ -1,9 +1,11 @@
 #include "GoldBagComponent.h"
 #include "LevelGridComponent.h"
+#include "MoveComponent.h"
 #include "ScoreComponent.h"
 #include "LivesComponent.h"
 
 #include <cmath>
+#include <vector>
 
 using namespace UndyneEngine;
 
@@ -28,6 +30,10 @@ namespace Digger
 		if (not m_Grid) return;
 
 		m_FallSpeed = m_Grid->cellSize() * 8.0f;
+		m_SlideSpeed = m_FallSpeed;
+		if (m_Player)
+			if (MoveComponent* move = m_Player->getComponent<MoveComponent>())
+				m_SlideSpeed = move->speed();
 		m_Grid->setObjectAt(m_Cell, getOwner());
 		fitTextureToCell();
 		setCellPosition();
@@ -40,12 +46,12 @@ namespace Digger
 		switch (m_State)
 		{
 		case State::Resting:
-			if (not isSupported())
+			if (not isHeld())
 				enterWobbling();
 			break;
 		case State::Wobbling:
 		{
-			if (isSupported())
+			if (isHeld())
 			{
 				m_State = State::Resting;
 				setCellPosition();
@@ -63,10 +69,15 @@ namespace Digger
 		case State::Falling:
 			updateFalling(deltaTime);
 			break;
+		case State::Sliding:
+			updateSliding(deltaTime);
+			break;
 		case State::Gold:
 			updateGold();
 			break;
 		}
+
+		m_PushedFromBelow = false;
 	}
 
 	bool GoldBagComponent::isSupported() const
@@ -75,16 +86,12 @@ namespace Digger
 		if (not m_Grid->inBounds(below)) return true;
 		if (not m_Grid->isDug(below)) return true;
 		if (m_Grid->objectAt(below) != nullptr) return true;
-		if (playerOccupies(below)) return true;
 		return false;
 	}
 
-	bool GoldBagComponent::playerOccupies(glm::ivec2 cell) const
+	bool GoldBagComponent::isHeld() const
 	{
-		if (not m_Player) return false;
-		const glm::vec3 position = m_Player->getTransform().getLocalPosition();
-		const glm::ivec2 playerCell = m_Grid->worldToCell({ position.x, position.y });
-		return playerCell.x == cell.x and playerCell.y == cell.y;
+		return isSupported() or m_PushedFromBelow;
 	}
 
 	void GoldBagComponent::enterWobbling()
@@ -155,18 +162,13 @@ namespace Digger
 
 	void GoldBagComponent::updateGold()
 	{
-		if (m_Player)
+		if (m_Player and m_Grid->isOnCell(*m_Player, m_Cell))
 		{
-			const glm::vec3 playerPosition = m_Player->getTransform().getLocalPosition();
-			const glm::ivec2 playerCell = m_Grid->worldToCell({ playerPosition.x, playerPosition.y });
-			if (playerCell.x == m_Cell.x and playerCell.y == m_Cell.y)
-			{
-				if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
-					score->collectGold();
-				m_Grid->clearObjectAt(m_Cell);
-				getOwner()->markForRemoval();
-				return;
-			}
+			if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
+				score->collectGold();
+			m_Grid->clearObjectAt(m_Cell);
+			getOwner()->markForRemoval();
+			return;
 		}
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
@@ -180,20 +182,59 @@ namespace Digger
 	void GoldBagComponent::squashIfPlayerHit()
 	{
 		if (not m_Player) return;
-		const glm::vec3 playerPosition = m_Player->getTransform().getLocalPosition();
-		const glm::ivec2 playerCell = m_Grid->worldToCell({ playerPosition.x, playerPosition.y });
-		if (playerCell.x == m_Cell.x and playerCell.y == m_Cell.y)
+		if (m_Grid->isOnCell(*m_Player, m_Cell))
 			if (LivesComponent* lives = m_Player->getComponent<LivesComponent>())
 				lives->die();
 	}
 
-	void GoldBagComponent::pushTo(glm::ivec2 cell)
+	bool GoldBagComponent::tryPush(int directionX)
 	{
-		if (m_State != State::Resting) return;
+		if (m_State != State::Resting) return false;
+
+		std::vector<GoldBagComponent*> chain;
+		glm::ivec2 cell = m_Cell;
+		for (GoldBagComponent* bag = this; bag and bag->m_State == State::Resting; )
+		{
+			chain.push_back(bag);
+			cell = { cell.x + directionX, cell.y };
+			GameObject* occupant = m_Grid->objectAt(cell);
+			bag = occupant ? occupant->getComponent<GoldBagComponent>() : nullptr;
+		}
+
+		if (not m_Grid->inBounds(cell)) return false;
+		if (m_Grid->objectAt(cell) != nullptr) return false;
+
+		for (auto bag = chain.rbegin(); bag != chain.rend(); ++bag)
+			(*bag)->startSlide(directionX);
+		return true;
+	}
+
+	void GoldBagComponent::startSlide(int directionX)
+	{
 		m_Grid->clearObjectAt(m_Cell);
-		m_Cell = cell;
+		m_Cell = { m_Cell.x + directionX, m_Cell.y };
 		m_Grid->setObjectAt(m_Cell, getOwner());
-		setCellPosition();
+		m_SlideTargetX = m_Grid->laneCenterX(m_Cell.x);
+		m_State = State::Sliding;
+	}
+
+	void GoldBagComponent::updateSliding(float deltaTime)
+	{
+		const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
+		const float laneY = m_Grid->laneCenterY(m_Cell.y);
+		const float step = m_SlideSpeed * deltaTime;
+
+		if (std::abs(m_SlideTargetX - position.x) <= step)
+		{
+			getOwner()->getTransform().setLocalPosition(m_SlideTargetX, laneY, 0.0f);
+			m_State = State::Resting;
+			if (not isSupported())
+				enterFalling();
+			return;
+		}
+
+		const float nextX = position.x + ((m_SlideTargetX > position.x) ? step : -step);
+		getOwner()->getTransform().setLocalPosition(nextX, laneY, 0.0f);
 	}
 
 	void GoldBagComponent::fitTextureToCell()

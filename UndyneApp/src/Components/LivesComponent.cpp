@@ -22,14 +22,13 @@ namespace Digger
 		notify(*getOwner(), Event::LivesChanged);
 	}
 
-	void LivesComponent::update(float deltaTime)
+	void LivesComponent::update(float)
 	{
 		if (not m_Dying) return;
-
-		m_DeathTimer -= deltaTime;
-		if (m_DeathTimer > 0.0f) return;
+		if (m_DeathAnimation and not m_DeathAnimation->isFinished()) return;
 
 		m_Dying = false;
+		m_DeathAnimation = nullptr;
 		showGravestone(false);
 
 		if (TextureComponent* texture = getOwner()->getComponent<TextureComponent>())
@@ -59,10 +58,18 @@ namespace Digger
 			move->setEnabled(false);
 		showGravestone(true);
 
+		m_DeathAnimation = nullptr;
+		if (Scene* scene = getOwner()->getScene())
+			if (GameObject* grave = scene->findGameObjectByName("Gravestone"))
+				if (AnimationComponent* animation = grave->getComponent<AnimationComponent>())
+				{
+					m_DeathAnimation = animation;
+					animation->play();
+				}
+
 		if (m_Lives > 0)
 		{
 			m_Dying = true;
-			m_DeathTimer = m_DeathDuration;
 			return;
 		}
 

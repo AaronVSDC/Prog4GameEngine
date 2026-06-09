@@ -29,8 +29,7 @@ namespace Digger
 		int m_NextExtraLife{ 20000 };
 		bool m_GameOver{ false };
 		bool m_Dying{ false };
-		float m_DeathTimer{ 0.0f };
-		float m_DeathDuration{ 1.5f };
+		UndyneEngine::AnimationComponent* m_DeathAnimation{ nullptr };
 		UndyneEngine::Subject* m_Score{ nullptr };
 	};
 }

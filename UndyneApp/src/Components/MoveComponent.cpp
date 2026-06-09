@@ -25,7 +25,7 @@ namespace Digger
         m_DesiredDirection = glm::vec2{ 0.0f, 0.0f };
     }
 
-    bool MoveComponent::tryEnterCell(glm::ivec2 cell, int directionX)
+    bool MoveComponent::tryEnterCell(glm::ivec2 cell, glm::ivec2 direction)
     {
         UndyneEngine::GameObject* object = m_Grid->objectAt(cell);
         if (not object)
@@ -37,15 +37,11 @@ namespace Digger
         if (bag->isGold())
             return true;
 
-        if (bag->isRestingBag() and directionX != 0)
-        {
-            const glm::ivec2 beyond{ cell.x + directionX, cell.y };
-            if (m_Grid->inBounds(beyond) and m_Grid->isDug(beyond) and m_Grid->objectAt(beyond) == nullptr)
-            {
-                bag->pushTo(beyond);
-                return true;
-            }
-        }
+        if (direction.x != 0)
+            return bag->isRestingBag() and bag->tryPush(direction.x);
+
+        if (direction.y < 0)
+            bag->pushFromBelow();
         return false;
     }
 
@@ -86,7 +82,7 @@ namespace Digger
                 const glm::vec2 intended{ center.x + desired.x * step, center.y };
                 const glm::ivec2 currentCell = m_Grid->worldToCell(center);
                 const glm::ivec2 intendedCell = m_Grid->worldToCell(intended);
-                if (intendedCell.x == currentCell.x or tryEnterCell(intendedCell, directionX))
+                if (intendedCell.x == currentCell.x or tryEnterCell(intendedCell, glm::ivec2{ directionX, 0 }))
                 {
                     movement.x = desired.x * step;
                     center.x += movement.x;
@@ -105,10 +101,11 @@ namespace Digger
             else
             {
                 center.x = laneCenter;
+                const int directionY = (desired.y > 0.0f) ? 1 : -1;
                 const glm::vec2 intended{ center.x, center.y + desired.y * step };
                 const glm::ivec2 currentCell = m_Grid->worldToCell(center);
                 const glm::ivec2 intendedCell = m_Grid->worldToCell(intended);
-                if (intendedCell.y == currentCell.y or tryEnterCell(intendedCell, 0))
+                if (intendedCell.y == currentCell.y or tryEnterCell(intendedCell, glm::ivec2{ 0, directionY }))
                 {
                     movement.y = desired.y * step;
                     center.y += movement.y;

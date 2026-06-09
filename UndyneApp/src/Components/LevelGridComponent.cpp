@@ -134,4 +134,16 @@ namespace Digger
 		if (not inBounds(cell)) return;
 		m_Objects[cellIndex(cell.x, cell.y)] = nullptr;
 	}
+
+	glm::ivec2 LevelGridComponent::cellOf(UndyneEngine::GameObject& object) const noexcept
+	{
+		const glm::vec3 position = object.getTransform().getLocalPosition();
+		return worldToCell({ position.x, position.y });
+	}
+
+	bool LevelGridComponent::isOnCell(UndyneEngine::GameObject& object, glm::ivec2 cell) const noexcept
+	{
+		const glm::ivec2 occupied = cellOf(object);
+		return occupied.x == cell.x and occupied.y == cell.y;
+	}
 }

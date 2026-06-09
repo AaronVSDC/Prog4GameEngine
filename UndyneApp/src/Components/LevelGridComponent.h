@@ -47,6 +47,12 @@ namespace Digger
 		void setObjectAt(glm::ivec2 cell, UndyneEngine::GameObject* object) noexcept;
 		void clearObjectAt(glm::ivec2 cell) noexcept;
 
+		//--------
+		// queries
+		//--------
+		glm::ivec2 cellOf(UndyneEngine::GameObject& object) const noexcept;
+		bool isOnCell(UndyneEngine::GameObject& object, glm::ivec2 cell) const noexcept;
+
 	private:
 		enum class CellState : std::uint8_t { Earth, Dug };
 		std::size_t cellIndex(int column, int row) const noexcept;

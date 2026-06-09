@@ -17,16 +17,19 @@ namespace Digger
 
 		bool isRestingBag() const noexcept { return m_State == State::Resting; }
 		bool isGold() const noexcept { return m_State == State::Gold; }
-		void pushTo(glm::ivec2 cell);
+		bool tryPush(int directionX);
+		void pushFromBelow() noexcept { m_PushedFromBelow = true; }
 
 	private:
-		enum class State { Resting, Wobbling, Falling, Gold };
+		enum class State { Resting, Wobbling, Falling, Sliding, Gold };
 
 		bool isSupported() const;
-		bool playerOccupies(glm::ivec2 cell) const;
+		bool isHeld() const;
 		void enterWobbling();
 		void enterFalling();
 		void updateFalling(float deltaTime);
+		void startSlide(int directionX);
+		void updateSliding(float deltaTime);
 		void land();
 		void becomeGold();
 		void updateGold();
@@ -41,6 +44,9 @@ namespace Digger
 		float m_WobbleTimer{ 0.0f };
 		float m_FallY{ 0.0f };
 		float m_FallSpeed{ 0.0f };
+		float m_SlideTargetX{ 0.0f };
+		float m_SlideSpeed{ 0.0f };
+		bool m_PushedFromBelow{ false };
 
 		UndyneEngine::TextureComponent* m_Texture{ nullptr };
 		LevelGridComponent* m_Grid{ nullptr };

@@ -83,7 +83,7 @@ namespace Digger
 
 		auto gravestone = std::make_unique<GameObject>("Gravestone");
 		auto* graveTexture = gravestone->addComponent<TextureComponent>("Sprites/GraveSprites.png");
-		gravestone->addComponent<AnimationComponent>(5);
+		gravestone->addComponent<AnimationComponent>(5, 3.0f, false);
 		graveTexture->setCentered(true);
 		graveTexture->setScale((levelGrid->cellSize() * fillRatio) / 15.0f);
 		graveTexture->setVisible(false);

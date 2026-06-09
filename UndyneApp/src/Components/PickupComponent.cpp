@@ -21,12 +21,9 @@ namespace Digger
 
 	void PickupComponent::update(float)
 	{
-		if (!m_Player or !m_Grid)
+		if (not m_Player or not m_Grid)
 			return;
-
-		const glm::vec3 playerPosition = m_Player->getTransform().getLocalPosition();
-		const glm::ivec2 playerCell = m_Grid->worldToCell({ playerPosition.x, playerPosition.y });
-		if (playerCell.x != m_Cell.x or playerCell.y != m_Cell.y)
+		if (not m_Grid->isOnCell(*m_Player, m_Cell))
 			return;
 
 		if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
