@@ -1,12 +1,16 @@
 #include "DeadState.h"
+#include "../Components/EnemyComponent.h"
 #include <UndyneEngine.h>
 
 namespace Digger
 {
 	void DeadState::onEnter(UndyneEngine::GameObject& owner)
 	{
-		if (auto* texture = owner.getComponent<UndyneEngine::TextureComponent>())
-			texture->setVisible(false);
+		if (auto* enemy = owner.getComponent<EnemyComponent>())
+		{
+			enemy->markDead();
+			enemy->showDeathSprite();
+		}
 		UDE_INFO("[{}] -> Dead", owner.getName());
 	}
 

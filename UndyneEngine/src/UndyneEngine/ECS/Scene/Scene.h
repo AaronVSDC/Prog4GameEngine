@@ -2,6 +2,10 @@
 #define SCENE_H
 #include "../GameObject.h"
 
+//std
+#include <vector>
+#include <concepts>
+
 namespace UndyneEngine
 {
 	class Scene final
@@ -32,10 +36,21 @@ namespace UndyneEngine
 		// result — instead of having pointers injected into them.
 		GameObject* findGameObjectByName(const std::string& name) const;
 
+		template<std::derived_from<BaseComponent> T>
+		std::vector<GameObject*> findGameObjectsWithComponent() const
+		{
+			std::vector<GameObject*> matches;
+			for (const auto& gameObject : m_GameObjects)
+				if (gameObject->getComponent<T>() != nullptr)
+					matches.push_back(gameObject.get());
+			return matches;
+		}
+
 	private:
 
 		std::string m_Name;
 		std::vector<std::unique_ptr<GameObject>> m_GameObjects{};
+		bool m_Started{ false };
 
 	};
 }

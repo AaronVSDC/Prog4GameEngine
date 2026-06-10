@@ -70,6 +70,7 @@ namespace Digger
 		if (m_Lives > 0)
 		{
 			m_Dying = true;
+			notify(*getOwner(), Event::PlayerDied);
 			return;
 		}
 

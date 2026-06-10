@@ -2,6 +2,7 @@
 #include "NobbinChaseState.h"
 #include "../Components/GridMovementComponent.h"
 #include "../Components/DigComponent.h"
+#include "../Components/EnemyComponent.h"
 #include <UndyneEngine.h>
 
 namespace Digger
@@ -12,6 +13,8 @@ namespace Digger
 		if (m_Mover)
 			m_Mover->setSpeed(s_Speed);
 		applyForm(owner, "Sprites/HobbinSprites.png", 3);
+		if (m_Enemy)
+			m_Enemy->setDeathTexture("Sprites/HobbinDeath.png");
 		UDE_INFO("[{}] -> HobbinChase (Hobbin form, digging)", owner.getName());
 	}
 

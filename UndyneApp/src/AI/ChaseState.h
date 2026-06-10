@@ -14,6 +14,7 @@ namespace Digger
 	class GridMovementComponent;
 	class DigComponent;
 	class LevelGridComponent;
+	class EnemyComponent;
 
 	class ChaseState : public UndyneEngine::State
 	{
@@ -28,6 +29,7 @@ namespace Digger
 		GridMovementComponent* m_Mover{ nullptr };
 		DigComponent* m_Digger{ nullptr };
 		LevelGridComponent* m_Grid{ nullptr };
+		EnemyComponent* m_Enemy{ nullptr };
 	};
 }
 #endif

@@ -10,8 +10,9 @@
 #include "../Components/LivesComponent.h"
 #include "../Components/LivesDisplayComponent.h"
 #include "../Commands/MoveCommand.h"
-#include "../Components/GridMovementComponent.h"
-#include "../AI/NobbinChaseState.h"
+#include "../Commands/ShootCommand.h"
+#include "../Components/ShootComponent.h"
+#include "../Components/MonsterSpawnerComponent.h"
 #include <UndyneEngine.h>
 
 //std
@@ -73,6 +74,7 @@ namespace Digger
 		player->addComponent<DigComponent>();
 		player->addComponent<ScoreComponent>();
 		player->addComponent<LivesComponent>();
+		player->addComponent<ShootComponent>();
 
 		//Commands
 		//----------
@@ -80,25 +82,22 @@ namespace Digger
 		InputManager::bindButtonCommand(KeyboardKey::S, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{ 0.f,  1.f }));
 		InputManager::bindButtonCommand(KeyboardKey::A, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{ -1.f, 0.f }));
 		InputManager::bindButtonCommand(KeyboardKey::D, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{  1.f, 0.f }));
+		InputManager::bindButtonCommand(KeyboardKey::Space, InputState::Pressed, std::make_unique<ShootCommand>(player.get()));
 
 		scene.add(std::move(player));
 
-		for (const glm::ivec2& spawnCell : level.spawnCells)
+		if (not level.spawnCells.empty())
 		{
-			auto nobbin = std::make_unique<GameObject>("Nobbin");
-			auto* nobbinTexture = nobbin->addComponent<TextureComponent>("Sprites/NobbinSprites.png");
-			nobbin->addComponent<AnimationComponent>(4);
-			nobbinTexture->setCentered(true);
-			const float nobbinFrameWidth = nobbinTexture->getTextureSize().x / 4.0f;
-			nobbinTexture->setScale(levelGrid->cellSize() * 0.7f / nobbinFrameWidth);
-			nobbin->getTransform().setLocalPosition(
-				levelGrid->laneCenterX(spawnCell.x), levelGrid->laneCenterY(spawnCell.y), 0.0f);
-			nobbin->addComponent<GridMovementComponent>();
-			auto* nobbinDig = nobbin->addComponent<DigComponent>();
-			nobbinDig->setAutoDig(false);
-			nobbinDig->setClearsObstacles(true);
-			nobbin->addComponent<StateMachineComponent>(std::make_unique<NobbinChaseState>());
-			scene.add(std::move(nobbin));
+			const int cycleLevel = ((std::max(1, levelIndex) - 1) % 10) + 1;
+			const int monsterTotal = cycleLevel + 5;
+			const int monsterMaxAlive = (cycleLevel <= 1) ? 3 : (cycleLevel <= 7 ? 4 : 5);
+			constexpr float secondsPerSpawnTick = 0.08f;
+			const float monsterInterval = (45.0f - 2.0f * static_cast<float>(cycleLevel)) * secondsPerSpawnTick;
+
+			auto spawner = std::make_unique<GameObject>("MonsterSpawner");
+			auto* monsterSpawner = spawner->addComponent<MonsterSpawnerComponent>();
+			monsterSpawner->configure(level.spawnCells.front(), monsterTotal, monsterMaxAlive, monsterInterval);
+			scene.add(std::move(spawner));
 		}
 
 		auto gravestone = std::make_unique<GameObject>("Gravestone");

@@ -55,7 +55,7 @@ namespace Digger
 	{
 		if (not m_Texture or direction.x == 0)
 			return;
-		m_Texture->setFlip(direction.x < 0
+		m_Texture->setFlip(direction.x > 0
 			? UndyneEngine::Renderer::Flip::Horizontal
 			: UndyneEngine::Renderer::Flip::None);
 	}

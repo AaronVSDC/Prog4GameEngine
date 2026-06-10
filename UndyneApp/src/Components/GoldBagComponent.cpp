@@ -3,7 +3,8 @@
 #include "MoveComponent.h"
 #include "ScoreComponent.h"
 #include "LivesComponent.h"
-#include "../AI/DeadState.h"
+#include "EnemyComponent.h"
+#include "../AI/CrushedState.h"
 
 #include <cmath>
 #include <vector>
@@ -195,12 +196,15 @@ namespace Digger
 		Scene* scene = getOwner()->getScene();
 		if (not scene) return;
 
-		GameObject* monster = scene->findGameObjectByName("Nobbin");
-		if (not monster) return;
+		for (GameObject* monster : scene->findGameObjectsWithComponent<EnemyComponent>())
+		{
+			EnemyComponent* enemy = monster->getComponent<EnemyComponent>();
+			if (not enemy or not enemy->isAlive()) continue;
+			if (not m_Grid->isOnCell(*monster, m_Cell)) continue;
 
-		if (m_Grid->isOnCell(*monster, m_Cell))
 			if (StateMachineComponent* machine = monster->getComponent<StateMachineComponent>())
-				machine->changeState(std::make_unique<DeadState>());
+				machine->changeState(std::make_unique<CrushedState>());
+		}
 	}
 
 	bool GoldBagComponent::tryPush(int directionX)

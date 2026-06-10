@@ -3,6 +3,7 @@
 #include "../Components/DigComponent.h"
 #include "../Components/LevelGridComponent.h"
 #include "../Components/LivesComponent.h"
+#include "../Components/EnemyComponent.h"
 #include <UndyneEngine.h>
 
 //std
@@ -14,6 +15,7 @@ namespace Digger
 	{
 		m_Mover = owner.getComponent<GridMovementComponent>();
 		m_Digger = owner.getComponent<DigComponent>();
+		m_Enemy = owner.getComponent<EnemyComponent>();
 		if (auto* scene = owner.getScene())
 			if (auto* gridObject = scene->findGameObjectByName("LevelGrid"))
 				m_Grid = gridObject->getComponent<LevelGridComponent>();

@@ -7,7 +7,8 @@ namespace UndyneEngine
 	enum class Event
 	{
 		ScoreChanged,
-		LivesChanged
+		LivesChanged,
+		PlayerDied
 	};
 }
 #endif

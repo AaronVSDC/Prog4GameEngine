@@ -119,6 +119,11 @@ namespace Digger
         position.y = center.y;
         transform.setLocalPosition(position);
 
+        if (movement.x != 0.0f)
+            m_Facing = glm::ivec2{ movement.x < 0.0f ? -1 : 1, 0 };
+        else if (movement.y != 0.0f)
+            m_Facing = glm::ivec2{ 0, movement.y < 0.0f ? -1 : 1 };
+
         if (m_TextureComponent and (movement.x != 0.0f or movement.y != 0.0f))
         {
             if (movement.x != 0.0f)

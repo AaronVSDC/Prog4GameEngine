@@ -12,7 +12,9 @@ namespace UndyneEngine
 	{
 		assert(gameObject && "Cannot add a null GameObject to the scene.");
 		gameObject->m_Scene = this;
-		m_GameObjects.emplace_back(std::move(gameObject));
+		GameObject* added = m_GameObjects.emplace_back(std::move(gameObject)).get();
+		if (m_Started)
+			added->start();
 	}
 
 	void Scene::remove(GameObject* gameObject)
@@ -38,6 +40,7 @@ namespace UndyneEngine
 		// builder), and those must be started too without invalidating iteration.
 		for (std::size_t i = 0; i < m_GameObjects.size(); ++i)
 			m_GameObjects[i]->start();
+		m_Started = true;
 	}
 
 	GameObject* Scene::findGameObjectByName(const std::string& name) const
