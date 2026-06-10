@@ -9,27 +9,22 @@ namespace Digger
     class MoveCommand final : public UndyneEngine::Command
     {
     public:
-        MoveCommand(UndyneEngine::GameObject* gameObject, glm::vec2 direction) noexcept
-            : m_GameObject(gameObject), m_Direction{direction}
+        explicit MoveCommand(glm::vec2 direction) noexcept
+            : m_Direction{ direction }
         {
         }
 
         void execute() override
         {
-            if (m_GameObject->hasComponent<MoveComponent>())
-            {
-                auto* moveComponent = m_GameObject->getComponent<MoveComponent>();
-
-                moveComponent->setDirection(m_Direction);
-            }
-            else
-            {
-                UDE_WARN("MoveCommand execute(): GameObject you are trying to bind MoveCommand to has no MoveComponent."); 
-            }
+            UndyneEngine::Scene* scene = UndyneEngine::SceneManager::getActiveScene();
+            if (not scene)
+                return;
+            if (UndyneEngine::GameObject* player = scene->findGameObjectByName("Player"))
+                if (MoveComponent* moveComponent = player->getComponent<MoveComponent>())
+                    moveComponent->setDirection(m_Direction);
         }
     private:
-        UndyneEngine::GameObject* m_GameObject;
-        glm::vec2 m_Direction; 
+        glm::vec2 m_Direction;
     };
 }
 #endif

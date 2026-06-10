@@ -52,6 +52,9 @@ namespace Digger
 		//--------
 		glm::ivec2 cellOf(UndyneEngine::GameObject& object) const noexcept;
 		bool isOnCell(UndyneEngine::GameObject& object, glm::ivec2 cell) const noexcept;
+		bool containsWorldPoint(glm::vec2 worldPoint) const noexcept;
+		bool isOpen(glm::ivec2 cell) const noexcept;
+		bool isSolid(glm::ivec2 cell) const noexcept;
 
 	private:
 		enum class CellState : std::uint8_t { Earth, Dug };

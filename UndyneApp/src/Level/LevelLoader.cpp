@@ -9,10 +9,9 @@
 #include "../Components/ScoreDisplayComponent.h"
 #include "../Components/LivesComponent.h"
 #include "../Components/LivesDisplayComponent.h"
-#include "../Commands/MoveCommand.h"
-#include "../Commands/ShootCommand.h"
 #include "../Components/ShootComponent.h"
 #include "../Components/MonsterSpawnerComponent.h"
+#include "../Components/LevelController.h"
 #include <UndyneEngine.h>
 
 //std
@@ -37,6 +36,25 @@ namespace Digger
 
 		constexpr float fillRatio = 0.7f;
 
+		auto player = std::make_unique<GameObject>("Player");
+
+		const int playerColumnCount = 4;
+		auto* playerTexture = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png");
+		player->addComponent<AnimationComponent>(playerColumnCount);
+		playerTexture->setCentered(true);
+
+		const float frameWidth = playerTexture->getTextureSize().x / playerColumnCount;
+		playerTexture->setScale(levelGrid->cellSize() * fillRatio / frameWidth);
+
+		const glm::vec2 startCenter{ levelGrid->laneCenterX(level.startCell.x), levelGrid->laneCenterY(level.startCell.y) };
+		player->getTransform().setLocalPosition(startCenter.x, startCenter.y, 0.0f);
+		player->addComponent<MoveComponent>();
+		player->addComponent<DigComponent>();
+		player->addComponent<ScoreComponent>();
+		player->addComponent<LivesComponent>();
+		player->addComponent<ShootComponent>();
+		scene.add(std::move(player));
+
 		for (const LevelData::Placement& placement : level.entities)
 		{
 			const glm::ivec2 cell{ placement.column, placement.row };
@@ -56,35 +74,6 @@ namespace Digger
 
 			scene.add(std::move(entity));
 		}
-
-		auto player = std::make_unique<GameObject>("Player");
-
-		const int playerColumnCount = 4;
-		auto* playerTexture = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png");
-		player->addComponent<AnimationComponent>(playerColumnCount);
-		playerTexture->setCentered(true);
-
-		const float frameWidth = playerTexture->getTextureSize().x / playerColumnCount;
-		const float playerWidthInCells = 0.7f;
-		playerTexture->setScale(levelGrid->cellSize() * playerWidthInCells / frameWidth);
-
-		const glm::vec2 startCenter{ levelGrid->laneCenterX(level.startCell.x), levelGrid->laneCenterY(level.startCell.y) };
-		player->getTransform().setLocalPosition(startCenter.x, startCenter.y, 0.0f);
-		player->addComponent<MoveComponent>();
-		player->addComponent<DigComponent>();
-		player->addComponent<ScoreComponent>();
-		player->addComponent<LivesComponent>();
-		player->addComponent<ShootComponent>();
-
-		//Commands
-		//----------
-		InputManager::bindButtonCommand(KeyboardKey::W, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{ 0.f, -1.f }));
-		InputManager::bindButtonCommand(KeyboardKey::S, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{ 0.f,  1.f }));
-		InputManager::bindButtonCommand(KeyboardKey::A, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{ -1.f, 0.f }));
-		InputManager::bindButtonCommand(KeyboardKey::D, InputState::Down, std::make_unique<MoveCommand>(player.get(), glm::vec2{  1.f, 0.f }));
-		InputManager::bindButtonCommand(KeyboardKey::Space, InputState::Pressed, std::make_unique<ShootCommand>(player.get()));
-
-		scene.add(std::move(player));
 
 		if (not level.spawnCells.empty())
 		{
@@ -131,12 +120,9 @@ namespace Digger
 			levelGrid->laneCenterX(level.columns / 2) - 130.0f, levelGrid->laneCenterY(level.rows / 2), 0.0f);
 		scene.add(std::move(gameOver));
 
-
-		//Audio
-		//--------
-		auto& audio = SoundServiceLocator::getSoundSystem();
-		audio.loadSound("Audio/digger.wav", "BackgroundMusic");
-		audio.playSound("BackgroundMusic", true);
+		auto controller = std::make_unique<GameObject>("LevelController");
+		controller->addComponent<LevelController>();
+		scene.add(std::move(controller));
 	}
 
 	bool LevelLoader::parse(int levelIndex, LevelData& outData) const

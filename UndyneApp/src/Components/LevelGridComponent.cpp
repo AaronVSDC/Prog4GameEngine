@@ -146,4 +146,22 @@ namespace Digger
 		const glm::ivec2 occupied = cellOf(object);
 		return occupied.x == cell.x and occupied.y == cell.y;
 	}
+
+	bool LevelGridComponent::containsWorldPoint(glm::vec2 worldPoint) const noexcept
+	{
+		const float maxX = m_OriginX + m_Columns * m_CellSize;
+		const float maxY = m_OriginY + m_Rows * m_CellSize;
+		return worldPoint.x >= m_OriginX and worldPoint.x <= maxX
+			and worldPoint.y >= m_OriginY and worldPoint.y <= maxY;
+	}
+
+	bool LevelGridComponent::isOpen(glm::ivec2 cell) const noexcept
+	{
+		return inBounds(cell) and isDug(cell);
+	}
+
+	bool LevelGridComponent::isSolid(glm::ivec2 cell) const noexcept
+	{
+		return not inBounds(cell) or not isDug(cell) or objectAt(cell) != nullptr;
+	}
 }

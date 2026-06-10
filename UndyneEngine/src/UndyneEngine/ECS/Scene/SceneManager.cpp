@@ -44,6 +44,14 @@ namespace UndyneEngine::SceneManager
 		return scene; 
 	}
 
+	Scene* getScene(const std::string& name)
+	{
+		for (const auto& scene : s_Scenes)
+			if (scene->getName() == name)
+				return scene.get();
+		return nullptr;
+	}
+
 	Scene* getActiveScene()	{ return s_ActiveScene; }
 
 	void setActiveScene(Scene* scene) { s_ActiveScene = scene;  }

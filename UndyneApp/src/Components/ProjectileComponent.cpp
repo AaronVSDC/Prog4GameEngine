@@ -71,10 +71,7 @@ namespace Digger
 			return;
 		}
 
-		const glm::vec2 fieldTopLeft = m_Grid->cellTopLeft(0, 0);
-		const glm::vec2 fieldBottomRight = m_Grid->cellTopLeft(m_Grid->columns(), m_Grid->rows());
-		if (position.x < fieldTopLeft.x or position.x > fieldBottomRight.x
-			or position.y < fieldTopLeft.y or position.y > fieldBottomRight.y)
+		if (not m_Grid->containsWorldPoint({ position.x, position.y }))
 		{
 			getOwner()->markForRemoval();
 			return;

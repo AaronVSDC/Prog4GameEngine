@@ -86,10 +86,7 @@ namespace Digger
 	bool GoldBagComponent::isSupported() const
 	{
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
-		if (not m_Grid->inBounds(below)) return true;
-		if (not m_Grid->isDug(below)) return true;
-		if (m_Grid->objectAt(below) != nullptr) return true;
-		return false;
+		return m_Grid->isSolid(below);
 	}
 
 	bool GoldBagComponent::isHeld() const
@@ -126,7 +123,7 @@ namespace Digger
 		squashMonster();
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
-		const bool belowSolid = not m_Grid->inBounds(below) or not m_Grid->isDug(below) or m_Grid->objectAt(below) != nullptr;
+		const bool belowSolid = m_Grid->isSolid(below);
 		const float restY = m_Grid->laneCenterY(m_Cell.y);
 
 		if (belowSolid and m_FallY >= restY)
@@ -176,7 +173,7 @@ namespace Digger
 		}
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
-		if (m_Grid->inBounds(below) and m_Grid->isDug(below) and m_Grid->objectAt(below) == nullptr)
+		if (not m_Grid->isSolid(below))
 		{
 			m_Grid->clearObjectAt(m_Cell);
 			getOwner()->markForRemoval();

@@ -1,7 +1,7 @@
 #define UNDYNE_ENTRY_POINT
 #include <UndyneEngine.h>
 #include "UndyneApp.h"
-#include "Level/LevelLoader.h"
+#include "GameState.h"
 
 #ifdef UDE_DEBUG
 #include <vld.h>
@@ -18,6 +18,5 @@ UndyneEngine::Application* UndyneEngine::createApplication()
 
 void UndyneApp::load()
 {
-    auto* scene = SceneManager::createScene("Level1");
-    LevelLoader{}.load(1, *scene);
+    GameState::init();
 }

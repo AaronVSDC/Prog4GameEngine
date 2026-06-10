@@ -30,6 +30,7 @@ namespace UndyneEngine
 
 		//getters
 		const std::string& getName() { return m_Name;  }
+		bool hasStarted() const noexcept { return m_Started; }
 
 		// Finds the first GameObject in the scene with this name, or nullptr. Components use
 		// this to discover collaborators at runtime — then call getComponent<T>() on the

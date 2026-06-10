@@ -27,7 +27,7 @@ namespace Digger
 			if (direction == glm::ivec2{ 0, 0 })
 				return false;
 			const glm::ivec2 next = m_Grid->worldToCell(center) + direction;
-			if (not m_Grid->inBounds(next) or not m_Grid->isDug(next))
+			if (not m_Grid->isOpen(next))
 				return false;
 			m_SlideTarget = { m_Grid->laneCenterX(next.x), m_Grid->laneCenterY(next.y) };
 			m_Sliding = true;

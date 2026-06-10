@@ -12,6 +12,7 @@ namespace UndyneEngine
 		void init();
 		void destroy();
 		Scene* createScene(const std::string& name);
+		Scene* getScene(const std::string& name);
 		Scene* getActiveScene();
 
 		void setActiveScene(Scene* scene); 

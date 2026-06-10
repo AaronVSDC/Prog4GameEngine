@@ -54,7 +54,7 @@ namespace Digger
 			if (candidate == glm::ivec2{ 0, 0 })
 				continue;
 			const glm::ivec2 next = fromCell + candidate;
-			if (m_Grid->inBounds(next) and (throughEarth or m_Grid->isDug(next)))
+			if (throughEarth ? m_Grid->inBounds(next) : m_Grid->isOpen(next))
 				return candidate;
 		}
 		return { 0, 0 };

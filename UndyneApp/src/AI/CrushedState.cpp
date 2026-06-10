@@ -44,7 +44,7 @@ namespace Digger
 		m_Cell.y = std::max(m_Cell.y, cellNow.y);
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
-		const bool belowSolid = not m_Grid->inBounds(below) or not m_Grid->isDug(below) or m_Grid->objectAt(below) != nullptr;
+		const bool belowSolid = m_Grid->isSolid(below);
 		const float restY = m_Grid->laneCenterY(m_Cell.y);
 
 		if (belowSolid and m_FallY >= restY)
