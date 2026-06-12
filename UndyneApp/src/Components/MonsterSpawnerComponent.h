@@ -3,6 +3,9 @@
 #include <UndyneEngine.h>
 #include <glm/vec2.hpp>
 
+//std
+#include <vector>
+
 namespace UndyneEngine { class Scene; }
 
 namespace Digger
@@ -16,7 +19,7 @@ namespace Digger
 	public:
 		~MonsterSpawnerComponent() override;
 
-		void configure(glm::ivec2 spawnCell, int totalForLevel, int maxAlive, float interval) noexcept;
+		void configure(glm::ivec2 spawnCell, int totalForLevel, int maxAlive, float interval, bool manual = false) noexcept;
 
 		void start() override;
 		void update(float deltaTime) override;
@@ -38,8 +41,9 @@ namespace Digger
 		int m_SpawnedCount{ 0 };
 		float m_Interval{ 3.0f };
 		float m_Timer{ 1.0f };
+		bool m_Manual{ false };
 		LevelGridComponent* m_Grid{ nullptr };
-		UndyneEngine::Subject* m_LivesSubject{ nullptr };
+		std::vector<UndyneEngine::Subject*> m_LivesSubjects;
 	};
 }
 #endif

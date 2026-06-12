@@ -4,6 +4,7 @@
 #include "../Components/LevelGridComponent.h"
 #include "../Components/LivesComponent.h"
 #include "../Components/EnemyComponent.h"
+#include "../Components/MoveComponent.h"
 #include <UndyneEngine.h>
 
 //std
@@ -26,13 +27,30 @@ namespace Digger
 		if (not m_Grid)
 			return { 0, 0 };
 		auto* scene = owner.getScene();
-		auto* player = scene ? scene->findGameObjectByName("Player") : nullptr;
-		if (not player)
+		if (not scene)
 			return { 0, 0 };
 
 		const glm::vec3 ownerPosition = owner.getTransform().getLocalPosition();
+
+		UndyneEngine::GameObject* nearest = nullptr;
+		float nearestDistanceSq = 0.0f;
+		for (UndyneEngine::GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
+		{
+			const glm::vec3 diggerPosition = digger->getTransform().getLocalPosition();
+			const float deltaX = diggerPosition.x - ownerPosition.x;
+			const float deltaY = diggerPosition.y - ownerPosition.y;
+			const float distanceSq = deltaX * deltaX + deltaY * deltaY;
+			if (not nearest or distanceSq < nearestDistanceSq)
+			{
+				nearest = digger;
+				nearestDistanceSq = distanceSq;
+			}
+		}
+		if (not nearest)
+			return { 0, 0 };
+
 		const glm::ivec2 fromCell = m_Grid->worldToCell({ ownerPosition.x, ownerPosition.y });
-		const glm::vec3 playerPosition = player->getTransform().getLocalPosition();
+		const glm::vec3 playerPosition = nearest->getTransform().getLocalPosition();
 		const glm::ivec2 targetCell = m_Grid->worldToCell({ playerPosition.x, playerPosition.y });
 		const glm::ivec2 delta = targetCell - fromCell;
 
@@ -65,12 +83,29 @@ namespace Digger
 		if (not m_Grid)
 			return;
 		auto* scene = owner.getScene();
-		auto* player = scene ? scene->findGameObjectByName("Player") : nullptr;
-		if (not player)
+		if (not scene)
 			return;
-		if (m_Grid->isOnCell(*player, m_Grid->cellOf(owner)))
-			if (auto* lives = player->getComponent<LivesComponent>())
-				lives->die();
+
+		UndyneEngine::GameObject* primary = scene->findGameObjectByName("Player");
+		LivesComponent* lives = primary ? primary->getComponent<LivesComponent>() : nullptr;
+		if (not lives)
+			return;
+
+		const glm::vec3 ownerPosition = owner.getTransform().getLocalPosition();
+		const float reach = m_Grid->cellSize() * 0.5f;
+		const float reachSq = reach * reach;
+
+		for (UndyneEngine::GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
+		{
+			const glm::vec3 diggerPosition = digger->getTransform().getLocalPosition();
+			const float deltaX = diggerPosition.x - ownerPosition.x;
+			const float deltaY = diggerPosition.y - ownerPosition.y;
+			if (deltaX * deltaX + deltaY * deltaY <= reachSq)
+			{
+				lives->die(*digger);
+				return;
+			}
+		}
 	}
 
 	void ChaseState::applyForm(UndyneEngine::GameObject& owner, const std::string& texturePath, int columnCount) const

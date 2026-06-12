@@ -17,6 +17,7 @@ namespace Digger
 
 	private:
 		bool hitEnemy(glm::ivec2 cell);
+		void detonate();
 
 		glm::ivec2 m_Direction;
 		float m_Speed{ 0.0f };

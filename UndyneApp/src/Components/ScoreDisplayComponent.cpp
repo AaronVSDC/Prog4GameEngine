@@ -1,42 +1,57 @@
 #include "ScoreDisplayComponent.h"
 #include "ScoreComponent.h"
 
+//std
+#include <algorithm>
 #include <string>
+
+using namespace UndyneEngine;
 
 namespace Digger
 {
 	ScoreDisplayComponent::~ScoreDisplayComponent()
 	{
-		if (m_Subject)
-			m_Subject->removeObserver(this);
+		for (Subject* subject : m_Subjects)
+			subject->removeObserver(this);
 	}
 
 	void ScoreDisplayComponent::start()
 	{
-		m_Text = getOwner()->getComponent<UndyneEngine::TextComponent>();
+		m_Text = getOwner()->getComponent<TextComponent>();
 
-		if (UndyneEngine::Scene* scene = getOwner()->getScene())
-			if (UndyneEngine::GameObject* player = scene->findGameObjectByName("Player"))
+		if (Scene* scene = getOwner()->getScene())
+			for (GameObject* player : scene->findGameObjectsWithComponent<ScoreComponent>())
 				if (ScoreComponent* score = player->getComponent<ScoreComponent>())
 				{
-					m_Subject = score;
+					m_Subjects.push_back(score);
 					score->addObserver(this);
-					if (m_Text)
-						m_Text->setText(std::to_string(score->getScore()));
 				}
+
+		refresh();
 	}
 
-	void ScoreDisplayComponent::onNotify(UndyneEngine::GameObject& subject, UndyneEngine::Event event)
+	void ScoreDisplayComponent::onNotify(GameObject&, Event event)
 	{
-		if (event != UndyneEngine::Event::ScoreChanged or !m_Text)
+		if (event == Event::ScoreChanged)
+			refresh();
+	}
+
+	void ScoreDisplayComponent::onSubjectDestroyed(Subject& subject)
+	{
+		std::erase(m_Subjects, &subject);
+	}
+
+	void ScoreDisplayComponent::refresh()
+	{
+		if (not m_Text)
 			return;
-		if (ScoreComponent* score = subject.getComponent<ScoreComponent>())
-			m_Text->setText(std::to_string(score->getScore()));
-	}
 
-	void ScoreDisplayComponent::onSubjectDestroyed(UndyneEngine::Subject& subject)
-	{
-		if (m_Subject == &subject)
-			m_Subject = nullptr;
+		int total = 0;
+		if (Scene* scene = getOwner()->getScene())
+			for (GameObject* player : scene->findGameObjectsWithComponent<ScoreComponent>())
+				if (ScoreComponent* score = player->getComponent<ScoreComponent>())
+					total += score->getScore();
+
+		m_Text->setText(std::to_string(total));
 	}
 }

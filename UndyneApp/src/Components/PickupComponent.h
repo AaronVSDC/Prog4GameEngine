@@ -17,7 +17,6 @@ namespace Digger
 
 	private:
 		glm::ivec2 m_Cell;
-		UndyneEngine::GameObject* m_Player{ nullptr };
 		const LevelGridComponent* m_Grid{ nullptr };
 	};
 }

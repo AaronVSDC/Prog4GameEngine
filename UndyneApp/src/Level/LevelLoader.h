@@ -1,6 +1,7 @@
 #ifndef LEVEL_LOADER_H
 #define LEVEL_LOADER_H
 #include <glm/vec2.hpp>
+#include "../GameState.h"
 
 //std
 #include <string>
@@ -33,7 +34,7 @@ namespace Digger
 	class LevelLoader final
 	{
 	public:
-		void load(int levelIndex, UndyneEngine::Scene& scene) const;
+		void load(int levelIndex, UndyneEngine::Scene& scene, GameState::Mode mode) const;
 
 	private:
 		int m_GridColumns = 15;

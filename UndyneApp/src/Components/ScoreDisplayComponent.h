@@ -2,6 +2,9 @@
 #define SCORE_DISPLAY_COMPONENT_H
 #include <UndyneEngine.h>
 
+//std
+#include <vector>
+
 namespace Digger
 {
 	class ScoreDisplayComponent final : public UndyneEngine::BaseComponent, public UndyneEngine::Observer
@@ -14,8 +17,10 @@ namespace Digger
 		void onSubjectDestroyed(UndyneEngine::Subject& subject) override;
 
 	private:
+		void refresh();
+
 		UndyneEngine::TextComponent* m_Text{ nullptr };
-		UndyneEngine::Subject* m_Subject{ nullptr };
+		std::vector<UndyneEngine::Subject*> m_Subjects;
 	};
 }
 #endif

@@ -14,7 +14,6 @@ namespace Digger
 			switch (GameState::phase())
 			{
 			case GameState::Phase::Menu:
-				GameState::startGame();
 				break;
 			case GameState::Phase::Playing:
 				if (UndyneEngine::Scene* scene = UndyneEngine::SceneManager::getActiveScene())

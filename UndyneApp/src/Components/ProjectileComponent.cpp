@@ -18,6 +18,8 @@ namespace Digger
 
 	void ProjectileComponent::start()
 	{
+		SoundServiceLocator::getSoundSystem().loadSound("Audio/explode.wav", "explode");
+
 		if (Scene* scene = getOwner()->getScene())
 			if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
 				m_Grid = gridObject->getComponent<LevelGridComponent>();
@@ -26,6 +28,12 @@ namespace Digger
 			m_Speed = m_Grid->cellSize() * 10.0f;
 			m_MaxDistance = m_Grid->cellSize() * 8.0f;
 		}
+	}
+
+	void ProjectileComponent::detonate()
+	{
+		SoundServiceLocator::getSoundSystem().playSound("explode");
+		getOwner()->markForRemoval();
 	}
 
 	bool ProjectileComponent::hitEnemy(glm::ivec2 cell)
@@ -67,24 +75,24 @@ namespace Digger
 		m_TravelledDistance += step;
 		if (m_TravelledDistance >= m_MaxDistance)
 		{
-			getOwner()->markForRemoval();
+			detonate();
 			return;
 		}
 
 		if (not m_Grid->containsWorldPoint({ position.x, position.y }))
 		{
-			getOwner()->markForRemoval();
+			detonate();
 			return;
 		}
 
 		const glm::ivec2 cell = m_Grid->worldToCell({ position.x, position.y });
 		if (not m_Grid->isDug(cell))
 		{
-			getOwner()->markForRemoval();
+			detonate();
 			return;
 		}
 
 		if (hitEnemy(cell))
-			getOwner()->markForRemoval();
+			detonate();
 	}
 }

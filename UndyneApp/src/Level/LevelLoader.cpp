@@ -1,17 +1,13 @@
 #include "LevelLoader.h"
 #include "../Components/LevelGridComponent.h"
 #include "../Components/DigTrailComponent.h"
-#include "../Components/MoveComponent.h"
-#include "../Components/DigComponent.h"
 #include "../Components/PickupComponent.h"
 #include "../Components/GoldBagComponent.h"
-#include "../Components/ScoreComponent.h"
 #include "../Components/ScoreDisplayComponent.h"
-#include "../Components/LivesComponent.h"
 #include "../Components/LivesDisplayComponent.h"
-#include "../Components/ShootComponent.h"
 #include "../Components/MonsterSpawnerComponent.h"
 #include "../Components/LevelController.h"
+#include "../Factory/PlayerFactory.h"
 #include <UndyneEngine.h>
 
 //std
@@ -23,7 +19,7 @@ using namespace UndyneEngine;
 
 namespace Digger
 {
-	void LevelLoader::load(int levelIndex, Scene& scene) const
+	void LevelLoader::load(int levelIndex, Scene& scene, GameState::Mode mode) const
 	{
 		LevelData level;
 		if (!parse(levelIndex, level))
@@ -31,29 +27,16 @@ namespace Digger
 
 		auto gridObject = std::make_unique<GameObject>("LevelGrid");
 		auto* levelGrid = gridObject->addComponent<LevelGridComponent>(level.columns, level.rows, level.nativeCellSize, level.dugCells);
-		gridObject->addComponent<DigTrailComponent>(); 
+		gridObject->addComponent<DigTrailComponent>();
 		scene.add(std::move(gridObject));
 
 		constexpr float fillRatio = 0.7f;
 
-		auto player = std::make_unique<GameObject>("Player");
-
-		const int playerColumnCount = 4;
-		auto* playerTexture = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png");
-		player->addComponent<AnimationComponent>(playerColumnCount);
-		playerTexture->setCentered(true);
-
-		const float frameWidth = playerTexture->getTextureSize().x / playerColumnCount;
-		playerTexture->setScale(levelGrid->cellSize() * fillRatio / frameWidth);
-
 		const glm::vec2 startCenter{ levelGrid->laneCenterX(level.startCell.x), levelGrid->laneCenterY(level.startCell.y) };
-		player->getTransform().setLocalPosition(startCenter.x, startCenter.y, 0.0f);
-		player->addComponent<MoveComponent>();
-		player->addComponent<DigComponent>();
-		player->addComponent<ScoreComponent>();
-		player->addComponent<LivesComponent>();
-		player->addComponent<ShootComponent>();
-		scene.add(std::move(player));
+		scene.add(PlayerFactory::createPlayer("Player", startCenter, levelGrid->cellSize(), true));
+
+		if (mode == GameState::Mode::Coop)
+			scene.add(PlayerFactory::createPlayer("Player2", startCenter, levelGrid->cellSize(), false));
 
 		for (const LevelData::Placement& placement : level.entities)
 		{
@@ -77,15 +60,26 @@ namespace Digger
 
 		if (not level.spawnCells.empty())
 		{
-			const int cycleLevel = ((std::max(1, levelIndex) - 1) % 10) + 1;
-			const int monsterTotal = cycleLevel + 5;
-			const int monsterMaxAlive = (cycleLevel <= 1) ? 3 : (cycleLevel <= 7 ? 4 : 5);
-			constexpr float secondsPerSpawnTick = 0.08f;
-			const float monsterInterval = (45.0f - 2.0f * static_cast<float>(cycleLevel)) * secondsPerSpawnTick;
-
 			auto spawner = std::make_unique<GameObject>("MonsterSpawner");
 			auto* monsterSpawner = spawner->addComponent<MonsterSpawnerComponent>();
-			monsterSpawner->configure(level.spawnCells.front(), monsterTotal, monsterMaxAlive, monsterInterval);
+
+			if (mode == GameState::Mode::Versus)
+			{
+				constexpr int endlessTotal = 999;
+				constexpr int oneAtATime = 1;
+				constexpr float respawnDelay = 1.5f;
+				monsterSpawner->configure(level.spawnCells.front(), endlessTotal, oneAtATime, respawnDelay, true);
+			}
+			else
+			{
+				const int cycleLevel = ((std::max(1, levelIndex) - 1) % 10) + 1;
+				const int monsterTotal = cycleLevel + 5;
+				const int monsterMaxAlive = (cycleLevel <= 1) ? 3 : (cycleLevel <= 7 ? 4 : 5);
+				constexpr float secondsPerSpawnTick = 0.08f;
+				const float monsterInterval = (45.0f - 2.0f * static_cast<float>(cycleLevel)) * secondsPerSpawnTick;
+				monsterSpawner->configure(level.spawnCells.front(), monsterTotal, monsterMaxAlive, monsterInterval, false);
+			}
+
 			scene.add(std::move(spawner));
 		}
 

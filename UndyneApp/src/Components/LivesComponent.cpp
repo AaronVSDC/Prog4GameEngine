@@ -2,6 +2,7 @@
 #include "ScoreComponent.h"
 #include "MoveComponent.h"
 #include "DigTrailComponent.h"
+#include "../GameState.h"
 
 using namespace UndyneEngine;
 
@@ -14,6 +15,11 @@ namespace Digger
 
 	void LivesComponent::start()
 	{
+		auto& soundSystem = SoundServiceLocator::getSoundSystem();
+		soundSystem.loadSound("Audio/die.wav", "die");
+		soundSystem.loadSound("Audio/dietune.wav", "dietune");
+		soundSystem.loadSound("Audio/1up.wav", "1up");
+
 		if (ScoreComponent* score = getOwner()->getComponent<ScoreComponent>())
 		{
 			m_Score = score;
@@ -22,40 +28,54 @@ namespace Digger
 		notify(*getOwner(), Event::LivesChanged);
 	}
 
-	void LivesComponent::update(float)
+	void LivesComponent::update(float deltaTime)
 	{
+		if (m_DeathPending)
+		{
+			m_DeathTimer -= deltaTime;
+			if (m_DeathTimer <= 0.0f)
+			{
+				m_DeathPending = false;
+				beginDeath();
+			}
+			return;
+		}
+
 		if (not m_Dying) return;
 		if (m_DeathAnimation and not m_DeathAnimation->isFinished()) return;
 
 		m_Dying = false;
 		m_DeathAnimation = nullptr;
 		showGravestone(false);
-
-		if (TextureComponent* texture = getOwner()->getComponent<TextureComponent>())
-			texture->setVisible(true);
-		if (MoveComponent* move = getOwner()->getComponent<MoveComponent>())
-		{
-			move->respawn();
-			move->setEnabled(true);
-		}
-
-		if (Scene* scene = getOwner()->getScene())
-			if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
-				if (DigTrailComponent* trail = gridObject->getComponent<DigTrailComponent>())
-					trail->resetStamp();
+		respawn();
+		m_DyingPlayer = nullptr;
+		GameState::resumeAction();
 	}
 
-	void LivesComponent::die()
+	void LivesComponent::die(GameObject& dyingPlayer)
 	{
-		if (m_GameOver or m_Dying) return;
+		if (m_GameOver or m_DeathPending or m_Dying) return;
 
+		SoundServiceLocator::getSoundSystem().playSound("die");
+
+		m_DyingPlayer = &dyingPlayer;
+		if (MoveComponent* move = dyingPlayer.getComponent<MoveComponent>())
+			move->setEnabled(false);
+
+		m_DeathPending = true;
+		m_DeathTimer = s_DeathDelay;
+		GameState::pauseAction();
+		notify(*getOwner(), Event::PlayerDied);
+	}
+
+	void LivesComponent::beginDeath()
+	{
 		--m_Lives;
 		notify(*getOwner(), Event::LivesChanged);
 
-		if (TextureComponent* texture = getOwner()->getComponent<TextureComponent>())
-			texture->setVisible(false);
-		if (MoveComponent* move = getOwner()->getComponent<MoveComponent>())
-			move->setEnabled(false);
+		if (m_DyingPlayer)
+			if (TextureComponent* texture = m_DyingPlayer->getComponent<TextureComponent>())
+				texture->setVisible(false);
 		showGravestone(true);
 
 		m_DeathAnimation = nullptr;
@@ -70,15 +90,33 @@ namespace Digger
 		if (m_Lives > 0)
 		{
 			m_Dying = true;
-			notify(*getOwner(), Event::PlayerDied);
 			return;
 		}
 
 		m_GameOver = true;
+		SoundServiceLocator::getSoundSystem().playSound("dietune");
 		if (Scene* scene = getOwner()->getScene())
 			if (GameObject* textObject = scene->findGameObjectByName("GameOverText"))
 				if (TextComponent* text = textObject->getComponent<TextComponent>())
 					text->setText("GAME OVER");
+	}
+
+	void LivesComponent::respawn()
+	{
+		if (not m_DyingPlayer) return;
+
+		if (TextureComponent* texture = m_DyingPlayer->getComponent<TextureComponent>())
+			texture->setVisible(true);
+		if (MoveComponent* move = m_DyingPlayer->getComponent<MoveComponent>())
+		{
+			move->respawn();
+			move->setEnabled(true);
+		}
+
+		if (Scene* scene = getOwner()->getScene())
+			if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
+				if (DigTrailComponent* trail = gridObject->getComponent<DigTrailComponent>())
+					trail->resetStamp();
 	}
 
 	void LivesComponent::showGravestone(bool visible)
@@ -89,9 +127,9 @@ namespace Digger
 		GameObject* grave = scene->findGameObjectByName("Gravestone");
 		if (not grave) return;
 
-		if (visible)
+		if (visible and m_DyingPlayer)
 		{
-			const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
+			const glm::vec3 position = m_DyingPlayer->getTransform().getLocalPosition();
 			grave->getTransform().setLocalPosition(position.x, position.y, 0.0f);
 		}
 		if (TextureComponent* texture = grave->getComponent<TextureComponent>())
@@ -107,6 +145,7 @@ namespace Digger
 		{
 			++m_Lives;
 			m_NextExtraLife += 20000;
+			SoundServiceLocator::getSoundSystem().playSound("1up");
 			notify(*getOwner(), Event::LivesChanged);
 		}
 	}

@@ -1,6 +1,7 @@
 #include "MoveComponent.h"
 #include "LevelGridComponent.h"
 #include "GoldBagComponent.h"
+#include "../GameState.h"
 
 //std
 #include <cmath>
@@ -47,6 +48,8 @@ namespace Digger
 
     void MoveComponent::update(float elapsedSec)
     {
+        if (GameState::isActionPaused())
+            return;
         if (not m_Enabled)
             return;
 

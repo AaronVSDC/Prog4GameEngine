@@ -3,6 +3,7 @@
 #include "../Components/GridMovementComponent.h"
 #include "../Components/DigComponent.h"
 #include "../Components/EnemyComponent.h"
+#include "../GameState.h"
 #include <UndyneEngine.h>
 
 namespace Digger
@@ -20,6 +21,8 @@ namespace Digger
 
 	std::unique_ptr<UndyneEngine::State> HobbinChaseState::update(UndyneEngine::GameObject& owner, float deltaTime)
 	{
+		if (GameState::isActionPaused())
+			return nullptr;
 		if (not m_Mover or not m_Digger)
 			return nullptr;
 

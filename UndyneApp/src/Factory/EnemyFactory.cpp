@@ -3,6 +3,7 @@
 #include "../Components/DigComponent.h"
 #include "../Components/EnemyComponent.h"
 #include "../AI/NobbinChaseState.h"
+#include "../AI/ManualControlState.h"
 #include <UndyneEngine.h>
 
 using namespace UndyneEngine;
@@ -10,7 +11,7 @@ using namespace UndyneEngine;
 namespace Digger
 {
 	std::unique_ptr<GameObject> EnemyFactory::createMonster(
-		const std::string& name, glm::vec2 worldPosition, float cellSize)
+		const std::string& name, glm::vec2 worldPosition, float cellSize, bool manual)
 	{
 		constexpr int columnCount = 4;
 		constexpr float fillRatio = 0.7f;
@@ -30,8 +31,17 @@ namespace Digger
 		DigComponent* dig = monster->addComponent<DigComponent>();
 		dig->setAutoDig(false);
 		dig->setClearsObstacles(true);
-		monster->addComponent<EnemyComponent>();
-		monster->addComponent<StateMachineComponent>(std::make_unique<NobbinChaseState>());
+
+		EnemyComponent* enemy = monster->addComponent<EnemyComponent>();
+		if (manual)
+		{
+			enemy->markManualControlled();
+			monster->addComponent<StateMachineComponent>(std::make_unique<ManualControlState>());
+		}
+		else
+		{
+			monster->addComponent<StateMachineComponent>(std::make_unique<NobbinChaseState>());
+		}
 
 		return monster;
 	}

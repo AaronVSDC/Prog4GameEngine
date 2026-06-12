@@ -12,6 +12,8 @@ namespace Digger
 {
 	void ShootComponent::start()
 	{
+		SoundServiceLocator::getSoundSystem().loadSound("Audio/fire.wav", "fire");
+
 		m_Move = getOwner()->getComponent<MoveComponent>();
 
 		if (Scene* scene = getOwner()->getScene())
@@ -55,5 +57,6 @@ namespace Digger
 
 		scene->add(std::move(projectile));
 		m_Cooldown = s_FireCooldown;
+		SoundServiceLocator::getSoundSystem().playSound("fire");
 	}
 }

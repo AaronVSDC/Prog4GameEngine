@@ -3,8 +3,10 @@
 #include "EnemyComponent.h"
 #include "LivesComponent.h"
 #include "../Factory/EnemyFactory.h"
+#include "../GameState.h"
 
 //std
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -14,16 +16,17 @@ namespace Digger
 {
 	MonsterSpawnerComponent::~MonsterSpawnerComponent()
 	{
-		if (m_LivesSubject)
-			m_LivesSubject->removeObserver(this);
+		for (Subject* subject : m_LivesSubjects)
+			subject->removeObserver(this);
 	}
 
-	void MonsterSpawnerComponent::configure(glm::ivec2 spawnCell, int totalForLevel, int maxAlive, float interval) noexcept
+	void MonsterSpawnerComponent::configure(glm::ivec2 spawnCell, int totalForLevel, int maxAlive, float interval, bool manual) noexcept
 	{
 		m_SpawnCell = spawnCell;
 		m_TotalForLevel = totalForLevel;
 		m_MaxAlive = maxAlive;
 		m_Interval = interval;
+		m_Manual = manual;
 	}
 
 	void MonsterSpawnerComponent::start()
@@ -35,16 +38,18 @@ namespace Digger
 		if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
 			m_Grid = gridObject->getComponent<LevelGridComponent>();
 
-		if (GameObject* player = scene->findGameObjectByName("Player"))
+		for (GameObject* player : scene->findGameObjectsWithComponent<LivesComponent>())
 			if (LivesComponent* lives = player->getComponent<LivesComponent>())
 			{
-				m_LivesSubject = lives;
+				m_LivesSubjects.push_back(lives);
 				lives->addObserver(this);
 			}
 	}
 
 	void MonsterSpawnerComponent::update(float deltaTime)
 	{
+		if (GameState::isActionPaused())
+			return;
 		if (not m_Grid or hasSpawnedAll())
 			return;
 
@@ -79,7 +84,7 @@ namespace Digger
 	{
 		const glm::vec2 worldPosition{ m_Grid->laneCenterX(m_SpawnCell.x), m_Grid->laneCenterY(m_SpawnCell.y) };
 		const std::string name = "Monster_" + std::to_string(m_SpawnedCount);
-		scene.add(EnemyFactory::createMonster(name, worldPosition, m_Grid->cellSize()));
+		scene.add(EnemyFactory::createMonster(name, worldPosition, m_Grid->cellSize(), m_Manual));
 		++m_SpawnedCount;
 	}
 
@@ -91,8 +96,7 @@ namespace Digger
 
 	void MonsterSpawnerComponent::onSubjectDestroyed(Subject& subject)
 	{
-		if (m_LivesSubject == &subject)
-			m_LivesSubject = nullptr;
+		std::erase(m_LivesSubjects, &subject);
 	}
 
 	void MonsterSpawnerComponent::resetWave()

@@ -5,6 +5,7 @@
 #include "LivesComponent.h"
 #include "EnemyComponent.h"
 #include "../AI/CrushedState.h"
+#include "../GameState.h"
 
 #include <cmath>
 #include <vector>
@@ -21,6 +22,13 @@ namespace Digger
 
 	void GoldBagComponent::start()
 	{
+		auto& soundSystem = SoundServiceLocator::getSoundSystem();
+		soundSystem.loadSound("Audio/wobble.wav", "wobble");
+		soundSystem.loadSound("Audio/fall.wav", "fall");
+		soundSystem.loadSound("Audio/bag2gold.wav", "bag2gold");
+		soundSystem.loadSound("Audio/gold.wav", "gold");
+		soundSystem.loadSound("Audio/eatmonster.wav", "eatmonster");
+
 		m_Texture = getOwner()->getComponent<TextureComponent>();
 
 		if (Scene* scene = getOwner()->getScene())
@@ -44,6 +52,7 @@ namespace Digger
 
 	void GoldBagComponent::update(float deltaTime)
 	{
+		if (GameState::isActionPaused()) return;
 		if (not m_Grid) return;
 
 		switch (m_State)
@@ -98,6 +107,7 @@ namespace Digger
 	{
 		m_State = State::Wobbling;
 		m_WobbleTimer = m_WobbleDuration;
+		SoundServiceLocator::getSoundSystem().playSound("wobble");
 	}
 
 	void GoldBagComponent::enterFalling()
@@ -106,6 +116,7 @@ namespace Digger
 		m_State = State::Falling;
 		m_RowsFallen = 0;
 		m_FallY = m_Grid->laneCenterY(m_Cell.y);
+		SoundServiceLocator::getSoundSystem().playSound("fall");
 	}
 
 	void GoldBagComponent::updateFalling(float deltaTime)
@@ -139,6 +150,7 @@ namespace Digger
 
 	void GoldBagComponent::land()
 	{
+		SoundServiceLocator::getSoundSystem().stopSound("fall");
 		if (m_RowsFallen > 1)
 		{
 			becomeGold();
@@ -151,6 +163,7 @@ namespace Digger
 	void GoldBagComponent::becomeGold()
 	{
 		m_State = State::Gold;
+		SoundServiceLocator::getSoundSystem().playSound("bag2gold");
 		if (m_Texture)
 		{
 			m_Texture->setTexture("Sprites/Gold.png");
@@ -163,14 +176,18 @@ namespace Digger
 
 	void GoldBagComponent::updateGold()
 	{
-		if (m_Player and m_Grid->isOnCell(*m_Player, m_Cell))
-		{
-			if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
-				score->collectGold();
-			m_Grid->clearObjectAt(m_Cell);
-			getOwner()->markForRemoval();
-			return;
-		}
+		Scene* scene = getOwner()->getScene();
+		if (scene)
+			for (GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
+				if (m_Grid->isOnCell(*digger, m_Cell))
+				{
+					if (ScoreComponent* score = digger->getComponent<ScoreComponent>())
+						score->collectGold();
+					SoundServiceLocator::getSoundSystem().playSound("gold");
+					m_Grid->clearObjectAt(m_Cell);
+					getOwner()->markForRemoval();
+					return;
+				}
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
 		if (not m_Grid->isSolid(below))
@@ -182,10 +199,18 @@ namespace Digger
 
 	void GoldBagComponent::squashIfPlayerHit()
 	{
-		if (not m_Player) return;
-		if (m_Grid->isOnCell(*m_Player, m_Cell))
-			if (LivesComponent* lives = m_Player->getComponent<LivesComponent>())
-				lives->die();
+		Scene* scene = getOwner()->getScene();
+		if (not scene) return;
+
+		LivesComponent* lives = m_Player ? m_Player->getComponent<LivesComponent>() : nullptr;
+		if (not lives) return;
+
+		for (GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
+			if (m_Grid->isOnCell(*digger, m_Cell))
+			{
+				lives->die(*digger);
+				return;
+			}
 	}
 
 	void GoldBagComponent::squashMonster()
@@ -200,7 +225,10 @@ namespace Digger
 			if (not m_Grid->isOnCell(*monster, m_Cell)) continue;
 
 			if (StateMachineComponent* machine = monster->getComponent<StateMachineComponent>())
+			{
 				machine->changeState(std::make_unique<CrushedState>());
+				SoundServiceLocator::getSoundSystem().playSound("eatmonster");
+			}
 		}
 	}
 

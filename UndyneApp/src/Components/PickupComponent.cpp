@@ -1,6 +1,9 @@
 #include "PickupComponent.h"
 #include "LevelGridComponent.h"
 #include "ScoreComponent.h"
+#include "MoveComponent.h"
+
+using namespace UndyneEngine;
 
 namespace Digger
 {
@@ -11,24 +14,26 @@ namespace Digger
 
 	void PickupComponent::start()
 	{
-		if (UndyneEngine::Scene* scene = getOwner()->getScene())
-		{
-			m_Player = scene->findGameObjectByName("Player");
-			if (UndyneEngine::GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
+		if (Scene* scene = getOwner()->getScene())
+			if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
 				m_Grid = gridObject->getComponent<LevelGridComponent>();
-		}
 	}
 
 	void PickupComponent::update(float)
 	{
-		if (not m_Player or not m_Grid)
+		if (!m_Grid)
 			return;
-		if (not m_Grid->isOnCell(*m_Player, m_Cell))
+		Scene* scene = getOwner()->getScene();
+		if (!scene)
 			return;
 
-		if (ScoreComponent* score = m_Player->getComponent<ScoreComponent>())
-			score->collectEmerald();
-
-		getOwner()->markForRemoval();
+		for (GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
+			if (m_Grid->isOnCell(*digger, m_Cell))
+			{
+				if (ScoreComponent* score = digger->getComponent<ScoreComponent>())
+					score->collectEmerald();
+				getOwner()->markForRemoval();
+				return;
+			}
 	}
 }

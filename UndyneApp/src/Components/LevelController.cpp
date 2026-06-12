@@ -16,23 +16,44 @@ namespace Digger
 			m_HadGems = not scene->findGameObjectsWithComponent<PickupComponent>().empty();
 	}
 
-	void LevelController::update(float)
+	void LevelController::update(float deltaTime)
 	{
 		if (m_Resolved)
+		{
+			if (m_WinPending)
+			{
+				m_WinTimer -= deltaTime;
+				if (m_WinTimer <= 0.0f)
+				{
+					m_WinPending = false;
+					GameState::winCurrentLevel();
+				}
+			}
 			return;
+		}
 
 		Scene* scene = getOwner()->getScene();
 		if (not scene)
 			return;
 
-		if (GameObject* player = scene->findGameObjectByName("Player"))
+		const auto players = scene->findGameObjectsWithComponent<LivesComponent>();
+		bool everyoneGameOver = not players.empty();
+		for (GameObject* player : players)
 			if (LivesComponent* lives = player->getComponent<LivesComponent>())
-				if (lives->isGameOver())
+				if (not lives->isGameOver())
 				{
-					m_Resolved = true;
-					GameState::enterGameOver();
-					return;
+					everyoneGameOver = false;
+					break;
 				}
+		if (everyoneGameOver)
+		{
+			m_Resolved = true;
+			GameState::enterGameOver();
+			return;
+		}
+
+		if (GameState::isActionPaused())
+			return;
 
 		const bool gemsCleared = m_HadGems and scene->findGameObjectsWithComponent<PickupComponent>().empty();
 
@@ -45,7 +66,13 @@ namespace Digger
 		if (gemsCleared or enemiesCleared)
 		{
 			m_Resolved = true;
-			GameState::winCurrentLevel();
+			m_WinPending = true;
+			m_WinTimer = s_WinDelay;
+
+			for (GameObject* enemy : scene->findGameObjectsWithComponent<EnemyComponent>())
+				enemy->markForRemoval();
+			if (GameObject* spawnerObject = scene->findGameObjectByName("MonsterSpawner"))
+				spawnerObject->markForRemoval();
 		}
 	}
 }
