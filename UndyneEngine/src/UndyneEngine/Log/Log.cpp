@@ -3,13 +3,9 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 
-namespace UndyneEngine
+namespace UndyneEngine::Log
 {
-
-	std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
-	std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
-
-	void Log::init()
+	void init()
 	{
 		//begin color,{thread}, [timestamp],logger name, actual message, end color
 		spdlog::set_pattern("%^{%t} [%T] %n %l: %v%$");

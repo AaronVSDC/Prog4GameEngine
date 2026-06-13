@@ -24,9 +24,13 @@ namespace UndyneEngine
         void pauseAllSounds()  override;
         void resumeAllSounds() override;
         void stopAllSounds()   override;
+
+        void setMuted(bool muted) override;
+        bool isMuted() const override;
     private:
         class SDLSoundSystemImpl;
         std::unique_ptr<SDLSoundSystemImpl> m_pImpl;
+        bool m_Muted{ false };
     };
 }
 

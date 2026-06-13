@@ -56,6 +56,7 @@ namespace UndyneEngine
         void requestPauseAll() { enqueue({ RequestType::PauseAll,  {},{}, nullptr, false }); }
         void requestResumeAll() { enqueue({ RequestType::ResumeAll, {},{},nullptr, false }); }
         void requestStopAll() { enqueue({ RequestType::StopAll,   {},{},nullptr, false }); }
+        void requestSetMute(bool muted) { enqueue({ muted ? RequestType::Mute : RequestType::Unmute, {}, {}, nullptr, false }); }
 
     private:
         enum class RequestType
@@ -64,6 +65,7 @@ namespace UndyneEngine
             Play,
             PauseName, ResumeName, StopName,
             PauseAll, ResumeAll, StopAll,
+            Mute, Unmute,
             TrackFinished,
             Quit
         };
@@ -126,6 +128,8 @@ namespace UndyneEngine
             case RequestType::PauseAll:      handlePauseAll();                                 break;
             case RequestType::ResumeAll:     handleResumeAll();                                break;
             case RequestType::StopAll:       handleStopAll();                                  break;
+            case RequestType::Mute:          handleMute();                                     break;
+            case RequestType::Unmute:        handleUnmute();                                   break;
             case RequestType::TrackFinished: handleTrackFinished(request.track);               break;
             case RequestType::Quit:                                                            break;
             }
@@ -286,6 +290,18 @@ namespace UndyneEngine
             UDE_CORE_INFO("Stopped all sounds.");
         }
 
+        void handleMute()
+        {
+            MIX_SetMixerGain(m_Mixer, 0.0f);
+            UDE_CORE_INFO("Muted all sounds.");
+        }
+
+        void handleUnmute()
+        {
+            MIX_SetMixerGain(m_Mixer, 1.0f);
+            UDE_CORE_INFO("Unmuted all sounds.");
+        }
+
         void handleTrackFinished(MIX_Track* track)
         {
             const auto ownerIter = m_TrackOwner.find(track);
@@ -338,4 +354,6 @@ namespace UndyneEngine
     void SDLSoundSystem::pauseAllSounds() { m_pImpl->requestPauseAll(); }
     void SDLSoundSystem::resumeAllSounds() { m_pImpl->requestResumeAll(); }
     void SDLSoundSystem::stopAllSounds() { m_pImpl->requestStopAll(); }
+    void SDLSoundSystem::setMuted(bool muted) { m_Muted = muted; m_pImpl->requestSetMute(muted); }
+    bool SDLSoundSystem::isMuted() const { return m_Muted; }
 }

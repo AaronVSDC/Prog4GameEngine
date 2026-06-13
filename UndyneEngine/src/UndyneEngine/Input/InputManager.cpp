@@ -194,6 +194,10 @@ namespace UndyneEngine
 
         void assignNewGamepad(SDL_JoystickID which)
         {
+            for (const auto& controller : s_Controllers)
+                if (controller.gamepad and SDL_GetGamepadID(controller.gamepad) == which)
+                    return;
+
             for (auto& controller : s_Controllers)
             {
                 if (controller.gamepad == nullptr)

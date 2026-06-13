@@ -8,40 +8,29 @@
 
 namespace UndyneEngine
 {
-	class Log final
+	namespace Log
 	{
-	public:
-		Log(Log& other) = delete; 
-		Log(Log&& other) = delete; 
-		Log& operator=(Log& rhs) = delete; 
-		Log& operator=(Log&& rhs) = delete; 
+		void init();
 
-		static void init(); 
+		inline std::shared_ptr<spdlog::logger> s_CoreLogger;
+		inline std::shared_ptr<spdlog::logger> s_ClientLogger;
 
-		static std::shared_ptr<spdlog::logger>& getCoreLogger() { return s_CoreLogger; }
-		static std::shared_ptr<spdlog::logger>& getClientLogger() { return s_ClientLogger; }
-
-	private:
-
-		static std::shared_ptr<spdlog::logger> s_CoreLogger;
-		static std::shared_ptr<spdlog::logger> s_ClientLogger;
-
-	};
+	}
 }
 
 #ifdef UDE_DEBUG
 
-#define UDE_CORE_CRITICAL(...) ::UndyneEngine::Log::getCoreLogger()->critical(__VA_ARGS__)  
-#define UDE_CORE_ERROR(...)    ::UndyneEngine::Log::getCoreLogger()->error(__VA_ARGS__)
-#define UDE_CORE_WARN(...)     ::UndyneEngine::Log::getCoreLogger()->warn(__VA_ARGS__) 
-#define UDE_CORE_TRACE(...)    ::UndyneEngine::Log::getCoreLogger()->trace(__VA_ARGS__)  
-#define UDE_CORE_INFO(...)     ::UndyneEngine::Log::getCoreLogger()->info(__VA_ARGS__) 
+#define UDE_CORE_CRITICAL(...) ::UndyneEngine::Log::s_CoreLogger->critical(__VA_ARGS__)  
+#define UDE_CORE_ERROR(...)    ::UndyneEngine::Log::s_CoreLogger->error(__VA_ARGS__)
+#define UDE_CORE_WARN(...)     ::UndyneEngine::Log::s_CoreLogger->warn(__VA_ARGS__) 
+#define UDE_CORE_TRACE(...)    ::UndyneEngine::Log::s_CoreLogger->trace(__VA_ARGS__)  
+#define UDE_CORE_INFO(...)     ::UndyneEngine::Log::s_CoreLogger->info(__VA_ARGS__) 
 								
-#define UDE_CRITICAL(...)	   ::UndyneEngine::Log::getClientLogger()->critical(__VA_ARGS__) 
-#define UDE_ERROR(...)	       ::UndyneEngine::Log::getClientLogger()->error(__VA_ARGS__)
-#define UDE_WARN(...)	       ::UndyneEngine::Log::getClientLogger()->warn(__VA_ARGS__) 
-#define UDE_TRACE(...)	       ::UndyneEngine::Log::getClientLogger()->trace(__VA_ARGS__) 
-#define UDE_INFO(...)	       ::UndyneEngine::Log::getClientLogger()->info(__VA_ARGS__)
+#define UDE_CRITICAL(...)	   ::UndyneEngine::Log::s_ClientLogger->critical(__VA_ARGS__) 
+#define UDE_ERROR(...)	       ::UndyneEngine::Log::s_ClientLogger->error(__VA_ARGS__)
+#define UDE_WARN(...)	       ::UndyneEngine::Log::s_ClientLogger->warn(__VA_ARGS__) 
+#define UDE_TRACE(...)	       ::UndyneEngine::Log::s_ClientLogger->trace(__VA_ARGS__) 
+#define UDE_INFO(...)	       ::UndyneEngine::Log::s_ClientLogger->info(__VA_ARGS__)
 
 #define UDE_INITIALIZE_LOGGER  ::UndyneEngine::Log::init();
 

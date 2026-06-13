@@ -23,6 +23,9 @@ namespace UndyneEngine
         virtual void resumeAllSounds() = 0;
         virtual void stopAllSounds() = 0;
 
+        virtual void setMuted(bool muted) = 0;
+        virtual bool isMuted() const = 0;
+
         SoundSystem(const SoundSystem&) = delete;
         SoundSystem(SoundSystem&&) = delete;
         SoundSystem& operator=(const SoundSystem&) = delete;
@@ -48,6 +51,12 @@ namespace UndyneEngine
         void pauseAllSounds()  override {};
         void resumeAllSounds() override {};
         void stopAllSounds()   override {};
+
+        void setMuted(bool muted) override { m_Muted = muted; };
+        bool isMuted() const override { return m_Muted; };
+
+    private:
+        bool m_Muted{ false };
     };
 }
 

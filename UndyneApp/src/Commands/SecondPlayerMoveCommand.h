@@ -4,6 +4,7 @@
 #include <glm/vec2.hpp>
 #include "../Components/MoveComponent.h"
 #include "../Components/EnemyComponent.h"
+#include "../GameState/GameState.h"
 
 namespace Digger
 {
@@ -37,6 +38,11 @@ namespace Digger
 					return;
 				}
 			}
+
+			if (GameState::mode() == GameState::Mode::Normal)
+				if (UndyneEngine::GameObject* player = scene->findGameObjectByName("Player"))
+					if (MoveComponent* move = player->getComponent<MoveComponent>())
+						move->setDirection(m_Direction);
 		}
 
 	private:
