@@ -157,6 +157,6 @@ namespace Digger
 		m_SpawnedCount -= aliveCount;
 		if (m_SpawnedCount < 0)
 			m_SpawnedCount = 0;
-		m_Timer = s_RespawnDelay;
+		m_Timer = RESPAWN_DELAY;
 	}
 }

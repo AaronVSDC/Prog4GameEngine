@@ -36,7 +36,7 @@ namespace Digger
 		std::unique_ptr<UndyneEngine::GameObject> createEnemy(const std::string& name, glm::vec2 worldPosition, float cellSize, bool manual = false);
 		void resetWave();
 
-		static constexpr float s_RespawnDelay{ 1.0f };
+		const float RESPAWN_DELAY{ 1.0f };
 
 		glm::ivec2 m_SpawnCell{ 0, 0 };
 		int m_TotalForLevel{ 0 };

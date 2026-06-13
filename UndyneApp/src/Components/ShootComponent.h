@@ -18,7 +18,7 @@ namespace Digger
 	private:
 		void fire();
 
-		static constexpr float s_FireCooldown{ 7.0f };
+		const float FIRE_COOLDOWN{ 7.0f };
 
 		bool m_WantsToFire{ false };
 		float m_Cooldown{ 0.0f };

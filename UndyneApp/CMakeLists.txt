@@ -11,8 +11,11 @@ add_executable(UndyneApp
 
 target_link_libraries(UndyneApp PRIVATE UndyneEngine)
 
-if(MSVC) 
+if(MSVC)
     target_compile_options(UndyneApp PRIVATE /W4 /WX)
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_link_options(UndyneApp PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+    endif()
 else()
     target_compile_options(UndyneApp PRIVATE -Wall -Wextra -Werror)
 endif()

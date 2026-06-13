@@ -56,7 +56,7 @@ namespace Digger
 		projectile->addComponent<ProjectileComponent>(direction);
 
 		scene->add(std::move(projectile));
-		m_Cooldown = s_FireCooldown;
+		m_Cooldown = FIRE_COOLDOWN;
 		SoundServiceLocator::getSoundSystem().playSound("fire");
 	}
 }

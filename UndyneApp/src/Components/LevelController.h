@@ -11,7 +11,7 @@ namespace Digger
 		void update(float deltaTime) override;
 
 	private:
-		static constexpr float s_WinDelay{ 1.5f };
+		const float WIN_DELAY{ 1.5f };
 
 		bool m_HadGems{ false };
 		bool m_Resolved{ false };

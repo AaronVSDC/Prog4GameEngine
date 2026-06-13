@@ -16,8 +16,8 @@ namespace Digger
 		std::unique_ptr<UndyneEngine::State> update(UndyneEngine::GameObject& owner, float deltaTime) override;
 
 	private:
-		static constexpr float s_RemoveDelay{ 1.0f };
-		float m_Timer{ s_RemoveDelay };
+		const float REMOVE_DELAY{ 1.0f };
+		float m_Timer{ REMOVE_DELAY };
 	};
 }
 #endif

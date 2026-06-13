@@ -63,7 +63,7 @@ namespace Digger
 			move->setEnabled(false);
 
 		m_DeathPending = true;
-		m_DeathTimer = s_DeathDelay;
+		m_DeathTimer = DEATH_DELAY;
 		GameState::pauseAction();
 		notify(*getOwner(), Event::PlayerDied);
 	}

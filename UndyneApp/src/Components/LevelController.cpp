@@ -67,7 +67,7 @@ namespace Digger
 		{
 			m_Resolved = true;
 			m_WinPending = true;
-			m_WinTimer = s_WinDelay;
+			m_WinTimer = WIN_DELAY;
 
 			for (GameObject* enemy : scene->findGameObjectsWithComponent<EnemyComponent>())
 				enemy->markForRemoval();

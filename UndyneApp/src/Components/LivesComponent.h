@@ -27,7 +27,7 @@ namespace Digger
 		void respawn();
 		void showGravestone(bool visible);
 
-		static constexpr float s_DeathDelay{ 1.0f };
+		const float DEATH_DELAY{ 1.0f };
 
 		int m_Lives{ 3 };
 		int m_NextExtraLife{ 20000 };

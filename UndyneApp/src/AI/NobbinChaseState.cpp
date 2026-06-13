@@ -20,7 +20,7 @@ namespace Digger
 				m_Grid = gridObject->getComponent<LevelGridComponent>();
 
 		if (m_Mover)
-			m_Mover->setSpeed(s_Speed);
+			m_Mover->setSpeed(SPEED);
 		applyForm(owner);
 		if (m_Enemy)
 			m_Enemy->setDeathTexture("Sprites/NobbinDeath.png");
@@ -48,7 +48,7 @@ namespace Digger
 		}
 
 		m_StuckTimer += deltaTime;
-		if (m_StuckTimer > s_StuckLimit)
+		if (m_StuckTimer > STUCK_LIMIT)
 			return std::make_unique<HobbinChaseState>();
 		return nullptr;
 	}

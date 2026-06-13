@@ -2,23 +2,35 @@
 #define HIGH_SCORE_TABLE_H
 
 //std
+#include <cstddef>
 #include <string>
 #include <vector>
 
-namespace Digger::HighScores
+namespace Digger
 {
-	struct Entry
+	class HighScoreTable final
 	{
-		std::string initials;
-		int score{ 0 };
+	public:
+		struct Entry
+		{
+			std::string initials;
+			int score{ 0 };
+		};
+
+		void load();
+		void save() const;
+
+		const std::vector<Entry>& entries() const noexcept { return m_Entries; }
+
+		bool qualifies(int score) const;
+		void insert(const std::string& initials, int score);
+
+	private:
+		void sortAndTrim();
+		void seedDefaults();
+
+		const std::size_t MAX_ENTRIES{ 10 };
+		std::vector<Entry> m_Entries;
 	};
-
-	void load();
-	void save();
-
-	const std::vector<Entry>& entries();
-
-	bool qualifies(int score);
-	void insert(const std::string& initials, int score);
 }
 #endif

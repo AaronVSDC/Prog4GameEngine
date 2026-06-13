@@ -32,6 +32,7 @@ namespace Digger::GameState
 		std::size_t s_LevelCursor{ 0 };
 		int s_RunScore{ 0 };
 		int s_FinalScore{ 0 };
+		HighScoreTable s_HighScores;
 
 		int currentPlayerScore()
 		{
@@ -55,7 +56,7 @@ namespace Digger::GameState
 			const float rowSpacing = height * 0.045f;
 			float rowY = topY + height * 0.06f;
 			int rank = 1;
-			for (const HighScores::Entry& entry : HighScores::entries())
+			for (const HighScoreTable::Entry& entry : s_HighScores.entries())
 			{
 				const std::string line = std::to_string(rank) + ".   " + entry.initials + "     " + std::to_string(entry.score);
 				auto row = std::make_unique<GameObject>("HighScoreRow" + std::to_string(rank));
@@ -177,7 +178,7 @@ namespace Digger::GameState
 			s_ActionPaused = false;
 			SoundServiceLocator::getSoundSystem().stopSound("digger");
 
-			const bool qualifies = HighScores::qualifies(finalScore);
+			const bool qualifies = s_HighScores.qualifies(finalScore);
 			s_Phase = qualifies ? Phase::EnterHighScore : Phase::GameOver;
 			activate(buildEndScene(qualifies, finalScore));
 		}
@@ -242,7 +243,7 @@ namespace Digger::GameState
 
 	void init()
 	{
-		HighScores::load();
+		s_HighScores.load();
 		bindInput();
 		buildMenuScene();
 		s_Phase = Phase::Menu;
@@ -295,8 +296,8 @@ namespace Digger::GameState
 	{
 		if (s_Phase != Phase::EnterHighScore)
 			return;
-		HighScores::insert(initials, s_FinalScore);
-		HighScores::save();
+		s_HighScores.insert(initials, s_FinalScore);
+		s_HighScores.save();
 		returnToMenu();
 	}
 

@@ -23,8 +23,8 @@ namespace Digger
 		glm::ivec2 chooseDirection(UndyneEngine::GameObject& owner) const;
 		void applyForm(UndyneEngine::GameObject& owner) const;
 
-		static constexpr float s_Speed{ 90.0f };
-		static constexpr float s_StuckLimit{ 0.5f };
+		const float SPEED{ 90.0f };
+		const float STUCK_LIMIT{ 0.5f };
 
 		GridMovementComponent* m_Mover{ nullptr };
 		LevelGridComponent* m_Grid{ nullptr };
