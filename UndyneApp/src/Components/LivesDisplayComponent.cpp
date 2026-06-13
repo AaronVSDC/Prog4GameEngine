@@ -38,7 +38,7 @@ namespace Digger
 
 	void LivesDisplayComponent::render() const
 	{
-		if (not m_Icon) return;
+		if (!m_Icon) return;
 		const glm::vec3& position = getOwner()->getTransform().getWorldPosition();
 		const float iconWidth = 32.0f;
 		const float iconHeight = 30.0f;

@@ -2,8 +2,11 @@
 #include "LevelGridComponent.h"
 #include "EnemyComponent.h"
 #include "LivesComponent.h"
-#include "../Factory/EnemyFactory.h"
-#include "../GameState.h"
+#include "GridMovementComponent.h"
+#include "DigComponent.h"
+#include "../AI/NobbinChaseState.h"
+#include "ManualControlComponent.h"
+#include "../GameState/GameState.h"
 
 //std
 #include <algorithm>
@@ -32,7 +35,7 @@ namespace Digger
 	void MonsterSpawnerComponent::start()
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene)
+		if (!scene)
 			return;
 
 		if (GameObject* gridObject = scene->findGameObjectByName("LevelGrid"))
@@ -50,7 +53,7 @@ namespace Digger
 	{
 		if (GameState::isActionPaused())
 			return;
-		if (not m_Grid or hasSpawnedAll())
+		if (!m_Grid or hasSpawnedAll())
 			return;
 
 		m_Timer -= deltaTime;
@@ -58,7 +61,7 @@ namespace Digger
 			return;
 
 		Scene* scene = getOwner()->getScene();
-		if (not scene)
+		if (!scene)
 			return;
 
 		int livingCount = 0;
@@ -66,7 +69,7 @@ namespace Digger
 		for (GameObject* monster : scene->findGameObjectsWithComponent<EnemyComponent>())
 		{
 			EnemyComponent* enemy = monster->getComponent<EnemyComponent>();
-			if (not enemy or not enemy->isAlive())
+			if (!enemy or !enemy->isAlive())
 				continue;
 			++livingCount;
 			if (m_Grid->isOnCell(*monster, m_SpawnCell))
@@ -84,8 +87,45 @@ namespace Digger
 	{
 		const glm::vec2 worldPosition{ m_Grid->laneCenterX(m_SpawnCell.x), m_Grid->laneCenterY(m_SpawnCell.y) };
 		const std::string name = "Monster_" + std::to_string(m_SpawnedCount);
-		scene.add(EnemyFactory::createMonster(name, worldPosition, m_Grid->cellSize(), m_Manual));
+		scene.add(createEnemy(name, worldPosition, m_Grid->cellSize(), m_Manual));
 		++m_SpawnedCount;
+	}
+
+	std::unique_ptr<GameObject> MonsterSpawnerComponent::createEnemy(
+		const std::string& name, glm::vec2 worldPosition, float cellSize, bool manual)
+	{
+		constexpr int columnCount = 4;
+		constexpr float fillRatio = 0.7f;
+
+		auto monster = std::make_unique<GameObject>(name);
+		TextureComponent* texture = monster->addComponent<TextureComponent>("Sprites/NobbinSprites.png");
+		monster->addComponent<AnimationComponent>(columnCount);
+		texture->setCentered(true);
+
+		const float frameWidth = texture->getTextureSize().x / static_cast<float>(columnCount);
+		if (frameWidth > 0.0f)
+			texture->setScale(cellSize * fillRatio / frameWidth);
+
+		monster->getTransform().setLocalPosition(worldPosition.x, worldPosition.y, 0.0f);
+
+		monster->addComponent<GridMovementComponent>();
+		DigComponent* dig = monster->addComponent<DigComponent>();
+		dig->setAutoDig(false);
+		dig->setClearsObstacles(true);
+
+		EnemyComponent* enemy = monster->addComponent<EnemyComponent>();
+		if (manual)
+		{
+			enemy->markManualControlled();
+			monster->addComponent<ManualControlComponent>();
+			monster->addComponent<StateMachineComponent>();
+		}
+		else
+		{
+			monster->addComponent<StateMachineComponent>(std::make_unique<NobbinChaseState>());
+		}
+
+		return monster;
 	}
 
 	void MonsterSpawnerComponent::onNotify(GameObject&, Event event)
@@ -107,7 +147,7 @@ namespace Digger
 			for (GameObject* monster : scene->findGameObjectsWithComponent<EnemyComponent>())
 			{
 				EnemyComponent* enemy = monster->getComponent<EnemyComponent>();
-				if (not enemy or not enemy->isAlive())
+				if (!enemy or !enemy->isAlive())
 					continue;
 				++aliveCount;
 				monster->markForRemoval();

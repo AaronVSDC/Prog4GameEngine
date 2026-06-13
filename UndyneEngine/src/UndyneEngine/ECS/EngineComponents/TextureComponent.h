@@ -33,7 +33,7 @@ namespace UndyneEngine
 		float getRotation() const noexcept { return m_Rotation; }
 
 	private:
-		std::shared_ptr<Texture2D> m_Texture;
+		Texture2D* m_Texture{ nullptr };
 		std::optional<glm::vec4> m_SourceRect;
 		glm::vec2 m_Scale{ 1.0f, 1.0f };
 		Renderer::Flip m_Flip{ Renderer::Flip::None };

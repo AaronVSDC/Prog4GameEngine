@@ -21,6 +21,7 @@ namespace Digger
 		void markDead() noexcept { m_Alive = false; }
 
 		void showDeathSprite();
+		void touchPlayer() const;
 
 		void markManualControlled() noexcept { m_ManualControlled = true; }
 		bool isManualControlled() const noexcept { return m_ManualControlled; }

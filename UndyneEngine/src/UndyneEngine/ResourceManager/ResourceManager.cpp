@@ -17,8 +17,8 @@ namespace UndyneEngine::ResourceManager
 	namespace
 	{
 		std::filesystem::path m_DataPath;
-		std::map<std::string, std::shared_ptr<Texture2D>> m_LoadedTextures;
-		std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_LoadedFonts;
+		std::map<std::string, std::unique_ptr<Texture2D>> m_LoadedTextures;
+		std::map<std::pair<std::string, uint8_t>, std::unique_ptr<Font>> m_LoadedFonts;
 	}
 	void init()
 	{
@@ -38,27 +38,27 @@ namespace UndyneEngine::ResourceManager
 		m_LoadedTextures.clear();
 		TTF_Quit();
 	}
-	std::shared_ptr<Texture2D> loadTexture(const std::string& file)
+	Texture2D* loadTexture(const std::string& file)
 	{
 		const auto fullPath = m_DataPath / file;
 		const auto filename = fs::path(fullPath).filename().string();
 		if (m_LoadedTextures.find(filename) == m_LoadedTextures.end())
 		{
-			auto texture = std::make_shared<Texture2D>(fullPath.string());
+			auto texture = std::make_unique<Texture2D>(fullPath.string());
 			SDL_SetTextureScaleMode(texture->getSDLTexture(), SDL_SCALEMODE_NEAREST);
 			m_LoadedTextures.insert(std::pair(filename, std::move(texture)));
 		}
-		return m_LoadedTextures.at(filename);
+		return m_LoadedTextures.at(filename).get();
 
 	}
-	std::shared_ptr<Font> loadFont(const std::string& file, uint8_t size)
+	Font* loadFont(const std::string& file, uint8_t size)
 	{
 		const auto fullPath = m_DataPath / file;
 		const auto filename = fs::path(fullPath).filename().string();
 		const auto key = std::pair<std::string, uint8_t>(filename, size);
 		if (m_LoadedFonts.find(key) == m_LoadedFonts.end())
-			m_LoadedFonts.insert(std::pair(key, std::make_shared<Font>(fullPath.string(), size)));
-		return m_LoadedFonts.at(key);
+			m_LoadedFonts.insert(std::pair(key, std::make_unique<Font>(fullPath.string(), size)));
+		return m_LoadedFonts.at(key).get();
 	}
 	const std::filesystem::path& getDataPath() { return m_DataPath; }
 

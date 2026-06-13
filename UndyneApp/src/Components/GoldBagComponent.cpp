@@ -5,7 +5,7 @@
 #include "LivesComponent.h"
 #include "EnemyComponent.h"
 #include "../AI/CrushedState.h"
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 
 #include <cmath>
 #include <vector>
@@ -38,7 +38,7 @@ namespace Digger
 				m_Grid = gridObject->getComponent<LevelGridComponent>();
 		}
 
-		if (not m_Grid) return;
+		if (!m_Grid) return;
 
 		m_FallSpeed = m_Grid->cellSize() * 8.0f;
 		m_SlideSpeed = m_FallSpeed;
@@ -53,12 +53,12 @@ namespace Digger
 	void GoldBagComponent::update(float deltaTime)
 	{
 		if (GameState::isActionPaused()) return;
-		if (not m_Grid) return;
+		if (!m_Grid) return;
 
 		switch (m_State)
 		{
 		case State::Resting:
-			if (not isHeld())
+			if (!isHeld())
 				enterWobbling();
 			break;
 		case State::Wobbling:
@@ -190,7 +190,7 @@ namespace Digger
 				}
 
 		const glm::ivec2 below{ m_Cell.x, m_Cell.y + 1 };
-		if (not m_Grid->isSolid(below))
+		if (!m_Grid->isSolid(below))
 		{
 			m_Grid->clearObjectAt(m_Cell);
 			getOwner()->markForRemoval();
@@ -200,14 +200,15 @@ namespace Digger
 	void GoldBagComponent::squashIfPlayerHit()
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene) return;
+		if (!scene) return;
 
 		LivesComponent* lives = m_Player ? m_Player->getComponent<LivesComponent>() : nullptr;
-		if (not lives) return;
+		if (!lives) return;
 
 		for (GameObject* digger : scene->findGameObjectsWithComponent<MoveComponent>())
 			if (m_Grid->isOnCell(*digger, m_Cell))
 			{
+				SoundServiceLocator::getSoundSystem().stopSound("fall");
 				lives->die(*digger);
 				return;
 			}
@@ -216,13 +217,13 @@ namespace Digger
 	void GoldBagComponent::squashMonster()
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene) return;
+		if (!scene) return;
 
 		for (GameObject* monster : scene->findGameObjectsWithComponent<EnemyComponent>())
 		{
 			EnemyComponent* enemy = monster->getComponent<EnemyComponent>();
-			if (not enemy or not enemy->isAlive()) continue;
-			if (not m_Grid->isOnCell(*monster, m_Cell)) continue;
+			if (!enemy or !enemy->isAlive()) continue;
+			if (!m_Grid->isOnCell(*monster, m_Cell)) continue;
 
 			if (StateMachineComponent* machine = monster->getComponent<StateMachineComponent>())
 			{
@@ -246,7 +247,7 @@ namespace Digger
 			bag = occupant ? occupant->getComponent<GoldBagComponent>() : nullptr;
 		}
 
-		if (not m_Grid->inBounds(cell)) return false;
+		if (!m_Grid->inBounds(cell)) return false;
 		if (m_Grid->objectAt(cell) != nullptr) return false;
 
 		for (auto bag = chain.rbegin(); bag != chain.rend(); ++bag)
@@ -273,7 +274,7 @@ namespace Digger
 		{
 			getOwner()->getTransform().setLocalPosition(m_SlideTargetX, laneY, 0.0f);
 			m_State = State::Resting;
-			if (not isSupported())
+			if (!isSupported())
 				enterFalling();
 			return;
 		}
@@ -284,7 +285,7 @@ namespace Digger
 
 	void GoldBagComponent::fitTextureToCell()
 	{
-		if (not m_Texture) return;
+		if (!m_Texture) return;
 		const glm::vec2 size = m_Texture->getTextureSize();
 		if (size.x <= 0.0f) return;
 		m_Texture->setScale((m_Grid->cellSize() * 0.7f) / size.x);

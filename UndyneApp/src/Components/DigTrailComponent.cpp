@@ -25,7 +25,7 @@ namespace Digger
 			{
 				for (int column = 0; column < m_Grid->columns(); ++column)
 				{
-					if (not m_Grid->isDug({ column, row })) continue;
+					if (!m_Grid->isDug({ column, row })) continue;
 
 					const glm::vec2 center{ m_Grid->laneCenterX(column), m_Grid->laneCenterY(row) };
 					drawBrush(center);
@@ -60,7 +60,7 @@ namespace Digger
 
 	void DigTrailComponent::update(float)
 	{
-		if (not m_Grid or not m_Canvas or not m_Hole) return;
+		if (!m_Grid or !m_Canvas or !m_Hole) return;
 
 		UndyneEngine::Renderer::setRenderTarget(m_Canvas.get());
 		for (Follower& follower : m_Followers)
@@ -72,7 +72,7 @@ namespace Digger
 	{
 		UndyneEngine::Scene* scene = getOwner()->getScene();
 		UndyneEngine::GameObject* object = scene ? scene->findGameObjectByName(follower.name) : nullptr;
-		if (not object)
+		if (!object)
 		{
 			follower.hasStamped = false;
 			return;
@@ -81,7 +81,7 @@ namespace Digger
 		const glm::vec3 position = object->getTransform().getLocalPosition();
 		const glm::vec2 current{ position.x, position.y };
 
-		if (not follower.hasStamped)
+		if (!follower.hasStamped)
 		{
 			drawBrush(current);
 			follower.lastStampPos = current;
@@ -128,7 +128,7 @@ namespace Digger
 
 	void DigTrailComponent::render() const
 	{
-		if (not m_Canvas or not m_Grid) return;
+		if (!m_Canvas or !m_Grid) return;
 		const glm::vec2 origin = m_Grid->cellTopLeft(0, 0);
 		UndyneEngine::Renderer::renderTexture(*m_Canvas, origin.x, origin.y,
 			m_Grid->columns() * m_Grid->cellSize(),

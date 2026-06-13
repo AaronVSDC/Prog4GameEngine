@@ -43,7 +43,7 @@ namespace Digger
 
 	void ScoreDisplayComponent::refresh()
 	{
-		if (not m_Text)
+		if (!m_Text)
 			return;
 
 		int total = 0;

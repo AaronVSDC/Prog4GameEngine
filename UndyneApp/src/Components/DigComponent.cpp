@@ -28,7 +28,7 @@ namespace Digger
 
 	void DigComponent::update(float)
 	{
-		if (not m_AutoDig or not m_Grid) return;
+		if (!m_AutoDig or !m_Grid) return;
 
 		const glm::vec3 position = getOwner()->getTransform().getLocalPosition();
 		const glm::vec2 center{ position.x, position.y };
@@ -45,10 +45,10 @@ namespace Digger
 
 	bool DigComponent::dig(glm::ivec2 cell)
 	{
-		if (not m_Grid or not m_Grid->inBounds(cell))
+		if (!m_Grid or !m_Grid->inBounds(cell))
 			return false;
 
-		const bool wasEarth = not m_Grid->isDug(cell);
+		const bool wasEarth = !m_Grid->isDug(cell);
 		m_Grid->markDug(cell);
 
 		if (m_ClearsObstacles)
@@ -64,7 +64,7 @@ namespace Digger
 
 	bool DigComponent::digToward(glm::ivec2 direction)
 	{
-		if (not m_Grid)
+		if (!m_Grid)
 			return false;
 
 		const glm::vec3 position = getOwner()->getTransform().getLocalPosition();

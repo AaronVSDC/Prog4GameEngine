@@ -4,9 +4,11 @@
 #include <glm/vec2.hpp>
 
 //std
+#include <memory>
+#include <string>
 #include <vector>
 
-namespace UndyneEngine { class Scene; }
+namespace UndyneEngine { class Scene; class GameObject; }
 
 namespace Digger
 {
@@ -31,6 +33,7 @@ namespace Digger
 
 	private:
 		void spawnMonster(UndyneEngine::Scene& scene);
+		std::unique_ptr<UndyneEngine::GameObject> createEnemy(const std::string& name, glm::vec2 worldPosition, float cellSize, bool manual = false);
 		void resetWave();
 
 		static constexpr float s_RespawnDelay{ 1.0f };

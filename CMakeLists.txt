@@ -23,7 +23,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif() 
  
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_compile_definitions(UDE_RELEASE)
+    add_compile_definitions(UDE_RELEASE) 
 endif()
  
 

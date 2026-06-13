@@ -6,9 +6,9 @@
 
 namespace UndyneEngine
 {
-	TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font, Renderer::Color color)
+	TextComponent::TextComponent(const std::string& text, Font* font, Renderer::Color color)
 		: m_Text{ text }
-		, m_Font{ std::move(font) }
+		, m_Font{ font }
 		, m_Color{ color }
 	{
 	}
@@ -46,6 +46,14 @@ namespace UndyneEngine
 		if (!m_Texture)
 			return;
 		const glm::vec3& worldPosition = getOwner()->getTransform().getWorldPosition();
-		Renderer::renderTexture(*m_Texture, worldPosition.x, worldPosition.y);
+		float x = worldPosition.x;
+		float y = worldPosition.y;
+		if (m_Centered)
+		{
+			const glm::vec2 size = m_Texture->getSize();
+			x -= size.x * 0.5f;
+			y -= size.y * 0.5f;
+		}
+		Renderer::renderTexture(*m_Texture, x, y);
 	}
 }

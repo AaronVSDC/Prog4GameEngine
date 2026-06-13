@@ -14,19 +14,21 @@ namespace UndyneEngine
 	class TextComponent final : public BaseComponent
 	{
 	public:
-		TextComponent(const std::string& text, std::shared_ptr<Font> font, Renderer::Color color = {});
+		TextComponent(const std::string& text, Font* font, Renderer::Color color = {});
 
 		void update(float deltaTime) override;
 		void render() const override;
 
 		void setText(const std::string& text);
 		void setColor(Renderer::Color color);
+		void setCentered(bool centered) noexcept { m_Centered = centered; }
 
 	private:
 		std::string m_Text;
-		std::shared_ptr<Font> m_Font;
+		Font* m_Font{ nullptr };
 		Renderer::Color m_Color;
 		bool m_NeedsRebuild{ true };
+		bool m_Centered{ false };
 		std::unique_ptr<Texture2D> m_Texture;
 	};
 }

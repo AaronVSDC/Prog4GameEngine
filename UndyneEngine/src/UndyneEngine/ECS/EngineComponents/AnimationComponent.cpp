@@ -33,9 +33,9 @@ namespace UndyneEngine
 
 	void AnimationComponent::update(float deltaTime)
 	{
-		if (not m_TextureComponent or m_ColumnCount <= 1 or m_SecondsPerFrame <= 0.0f)
+		if (!m_TextureComponent or m_ColumnCount <= 1 or m_SecondsPerFrame <= 0.0f)
 			return;
-		if (not m_Playing)
+		if (!m_Playing)
 			return;
 
 		m_ElapsedFrameTime += deltaTime;

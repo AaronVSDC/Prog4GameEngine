@@ -19,7 +19,7 @@ namespace UndyneEngine
 
 	void StateMachineComponent::update(float deltaTime)
 	{
-		if (not m_CurrentState)
+		if (!m_CurrentState)
 			return;
 
 		std::unique_ptr<State> nextState = m_CurrentState->update(*getOwner(), deltaTime);

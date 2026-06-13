@@ -1,7 +1,7 @@
 #define UNDYNE_ENTRY_POINT
 #include <UndyneEngine.h>
 #include "UndyneApp.h"
-#include "GameState.h"
+#include "GameState/GameState.h"
 
 #ifdef UDE_DEBUG
 #include <vld.h>

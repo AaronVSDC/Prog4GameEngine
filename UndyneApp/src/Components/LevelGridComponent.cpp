@@ -119,19 +119,19 @@ namespace Digger
 
 	UndyneEngine::GameObject* LevelGridComponent::objectAt(glm::ivec2 cell) const noexcept
 	{
-		if (not inBounds(cell)) return nullptr;
+		if (!inBounds(cell)) return nullptr;
 		return m_Objects[cellIndex(cell.x, cell.y)];
 	}
 
 	void LevelGridComponent::setObjectAt(glm::ivec2 cell, UndyneEngine::GameObject* object) noexcept
 	{
-		if (not inBounds(cell)) return;
+		if (!inBounds(cell)) return;
 		m_Objects[cellIndex(cell.x, cell.y)] = object;
 	}
 
 	void LevelGridComponent::clearObjectAt(glm::ivec2 cell) noexcept
 	{
-		if (not inBounds(cell)) return;
+		if (!inBounds(cell)) return;
 		m_Objects[cellIndex(cell.x, cell.y)] = nullptr;
 	}
 
@@ -162,6 +162,6 @@ namespace Digger
 
 	bool LevelGridComponent::isSolid(glm::ivec2 cell) const noexcept
 	{
-		return not inBounds(cell) or not isDug(cell) or objectAt(cell) != nullptr;
+		return !inBounds(cell) or !isDug(cell) or objectAt(cell) != nullptr;
 	}
 }

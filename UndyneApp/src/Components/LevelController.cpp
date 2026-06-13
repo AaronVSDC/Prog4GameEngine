@@ -3,7 +3,7 @@
 #include "EnemyComponent.h"
 #include "LivesComponent.h"
 #include "MonsterSpawnerComponent.h"
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 #include <UndyneEngine.h>
 
 using namespace UndyneEngine;
@@ -13,7 +13,7 @@ namespace Digger
 	void LevelController::start()
 	{
 		if (Scene* scene = getOwner()->getScene())
-			m_HadGems = not scene->findGameObjectsWithComponent<PickupComponent>().empty();
+			m_HadGems = !scene->findGameObjectsWithComponent<PickupComponent>().empty();
 	}
 
 	void LevelController::update(float deltaTime)
@@ -33,14 +33,14 @@ namespace Digger
 		}
 
 		Scene* scene = getOwner()->getScene();
-		if (not scene)
+		if (!scene)
 			return;
 
 		const auto players = scene->findGameObjectsWithComponent<LivesComponent>();
-		bool everyoneGameOver = not players.empty();
+		bool everyoneGameOver = !players.empty();
 		for (GameObject* player : players)
 			if (LivesComponent* lives = player->getComponent<LivesComponent>())
-				if (not lives->isGameOver())
+				if (!lives->isGameOver())
 				{
 					everyoneGameOver = false;
 					break;

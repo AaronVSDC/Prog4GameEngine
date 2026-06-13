@@ -15,19 +15,19 @@ namespace Digger
 
 	bool GridMovementComponent::step(glm::ivec2 direction, float deltaTime)
 	{
-		if (not m_Grid)
+		if (!m_Grid)
 			return false;
 
 		auto& transform = getOwner()->getTransform();
 		const glm::vec3 position = transform.getLocalPosition();
 		glm::vec2 center{ position.x, position.y };
 
-		if (not m_Sliding)
+		if (!m_Sliding)
 		{
 			if (direction == glm::ivec2{ 0, 0 })
 				return false;
 			const glm::ivec2 next = m_Grid->worldToCell(center) + direction;
-			if (not m_Grid->isOpen(next))
+			if (!m_Grid->isOpen(next))
 				return false;
 			m_SlideTarget = { m_Grid->laneCenterX(next.x), m_Grid->laneCenterY(next.y) };
 			m_Sliding = true;
@@ -53,7 +53,7 @@ namespace Digger
 
 	void GridMovementComponent::faceDirection(glm::ivec2 direction)
 	{
-		if (not m_Texture or direction.x == 0)
+		if (!m_Texture or direction.x == 0)
 			return;
 		m_Texture->setFlip(direction.x > 0
 			? UndyneEngine::Renderer::Flip::Horizontal

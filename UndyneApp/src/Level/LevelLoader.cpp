@@ -7,7 +7,11 @@
 #include "../Components/LivesDisplayComponent.h"
 #include "../Components/MonsterSpawnerComponent.h"
 #include "../Components/LevelController.h"
-#include "../Factory/PlayerFactory.h"
+#include "../Components/MoveComponent.h"
+#include "../Components/DigComponent.h"
+#include "../Components/ScoreComponent.h"
+#include "../Components/LivesComponent.h"
+#include "../Components/ShootComponent.h"
 #include <UndyneEngine.h>
 
 //std
@@ -33,15 +37,15 @@ namespace Digger
 		constexpr float fillRatio = 0.7f;
 
 		const glm::vec2 startCenter{ levelGrid->laneCenterX(level.startCell.x), levelGrid->laneCenterY(level.startCell.y) };
-		scene.add(PlayerFactory::createPlayer("Player", startCenter, levelGrid->cellSize(), true));
+		scene.add(createPlayer("Player", startCenter, levelGrid->cellSize(), true));
 
 		if (mode == GameState::Mode::Coop)
-			scene.add(PlayerFactory::createPlayer("Player2", startCenter, levelGrid->cellSize(), false));
+			scene.add(createPlayer("Player2", startCenter, levelGrid->cellSize(), false));
 
 		for (const LevelData::Placement& placement : level.entities)
 		{
 			const glm::ivec2 cell{ placement.column, placement.row };
-			const bool isGoldBag = placement.texture == "Sprites/GoldBag.BMP";
+			const bool isGoldBag = placement.texture == "Sprites/GoldBag.png";
 
 			auto entity = std::make_unique<GameObject>(isGoldBag ? "GoldBag" : "Emerald");
 			auto* texture = entity->addComponent<TextureComponent>(placement.texture);
@@ -58,7 +62,7 @@ namespace Digger
 			scene.add(std::move(entity));
 		}
 
-		if (not level.spawnCells.empty())
+		if (!level.spawnCells.empty())
 		{
 			auto spawner = std::make_unique<GameObject>("MonsterSpawner");
 			auto* monsterSpawner = spawner->addComponent<MonsterSpawnerComponent>();
@@ -109,14 +113,41 @@ namespace Digger
 
 		auto gameOver = std::make_unique<GameObject>("GameOverText");
 		auto gameOverFont = ResourceManager::loadFont("ScoreBoardFont.otf", 48);
-		gameOver->addComponent<TextComponent>("", gameOverFont);
+		gameOver->addComponent<TextComponent>("", gameOverFont)->setCentered(true);
 		gameOver->getTransform().setLocalPosition(
-			levelGrid->laneCenterX(level.columns / 2) - 130.0f, levelGrid->laneCenterY(level.rows / 2), 0.0f);
+			levelGrid->laneCenterX(level.columns / 2), levelGrid->laneCenterY(level.rows / 2), 0.0f);
 		scene.add(std::move(gameOver));
 
-		auto controller = std::make_unique<GameObject>("LevelController");
-		controller->addComponent<LevelController>();
-		scene.add(std::move(controller));
+		auto levelController = std::make_unique<GameObject>("LevelController");
+		levelController->addComponent<LevelController>();
+		scene.add(std::move(levelController));
+	}
+
+	std::unique_ptr<GameObject> LevelLoader::createPlayer(
+		const std::string& name, glm::vec2 worldPosition, float cellSize, bool primary) const
+	{
+		constexpr int columnCount = 4;
+		constexpr float fillRatio = 0.7f;
+
+		auto player = std::make_unique<GameObject>(name);
+		TextureComponent* texture = player->addComponent<TextureComponent>("Sprites/PlayerSprites.png");
+		player->addComponent<AnimationComponent>(columnCount);
+		texture->setCentered(true);
+
+		const float frameWidth = texture->getTextureSize().x / static_cast<float>(columnCount);
+		if (frameWidth > 0.0f)
+			texture->setScale(cellSize * fillRatio / frameWidth);
+
+		player->getTransform().setLocalPosition(worldPosition.x, worldPosition.y, 0.0f);
+
+		player->addComponent<MoveComponent>();
+		player->addComponent<DigComponent>();
+		player->addComponent<ShootComponent>();
+		player->addComponent<ScoreComponent>();
+		if (primary)
+			player->addComponent<LivesComponent>();
+
+		return player;
 	}
 
 	bool LevelLoader::parse(int levelIndex, LevelData& outData) const
@@ -149,7 +180,7 @@ namespace Digger
 					outData.entities.push_back({ column, row, "Sprites/Gem.png", 25 });
 					break;
 				case '3':
-					outData.entities.push_back({ column, row, "Sprites/GoldBag.BMP", 0 });
+					outData.entities.push_back({ column, row, "Sprites/GoldBag.png", 0 });
 					break;
 				case '5':
 					outData.dugCells.push_back({ column, row });
@@ -166,7 +197,7 @@ namespace Digger
 
 	bool LevelLoader::readLevelGrid(int levelIndex, std::vector<std::string>& outRows) const
 	{
-		const auto fullPath = UndyneEngine::ResourceManager::getDataPath() / "Levels.json";
+		const auto fullPath = UndyneEngine::ResourceManager::getDataPath() / "Levels.txt";
 		std::ifstream levelFile(fullPath);
 		if (!levelFile.is_open())
 		{

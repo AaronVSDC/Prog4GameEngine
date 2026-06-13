@@ -1,10 +1,10 @@
 #include "GameState.h"
-#include "Level/LevelLoader.h"
-#include "Commands/MoveCommand.h"
-#include "Commands/ActionCommand.h"
-#include "Commands/StartModeCommand.h"
-#include "Commands/SecondPlayerMoveCommand.h"
-#include "Commands/FireCommand.h"
+#include "../Level/LevelLoader.h"
+#include "../Commands/MoveCommand.h"
+#include "../Commands/ActionCommand.h"
+#include "../Commands/StartModeCommand.h"
+#include "../Commands/SecondPlayerMoveCommand.h"
+#include "../Commands/FireCommand.h"
 #include <UndyneEngine.h>
 
 //std
@@ -22,7 +22,7 @@ namespace Digger::GameState
 		Phase s_Phase{ Phase::Menu };
 		Mode s_Mode{ Mode::Normal };
 		bool s_ActionPaused{ false };
-		const std::vector<int> s_LevelSequence{ 1, 2 };
+		const std::vector<int> s_LevelSequence{ 0, 1, 2 };
 		std::size_t s_LevelCursor{ 0 };
 
 		void buildMenuScene()
@@ -38,13 +38,13 @@ namespace Digger::GameState
 			const float height = static_cast<float>(outputHeight);
 
 			auto title = std::make_unique<GameObject>("MenuTitle");
-			title->addComponent<TextComponent>("DIGGER", ResourceManager::loadFont("ScoreBoardFont.otf", 72));
-			title->getTransform().setLocalPosition(centerX - 130.0f, height * 0.25f, 0.0f);
+			title->addComponent<TextComponent>("DIGGER", ResourceManager::loadFont("ScoreBoardFont.otf", 72))->setCentered(true);
+			title->getTransform().setLocalPosition(centerX, height * 0.25f, 0.0f);
 			menu->add(std::move(title));
 
 			auto prompt = std::make_unique<GameObject>("MenuPrompt");
-			prompt->addComponent<TextComponent>("1: NORMAL   2: CO-OP   3: VERSUS", ResourceManager::loadFont("ScoreBoardFont.otf", 28));
-			prompt->getTransform().setLocalPosition(centerX - 230.0f, height * 0.55f, 0.0f);
+			prompt->addComponent<TextComponent>("1: NORMAL   2: CO-OP   3: VERSUS", ResourceManager::loadFont("ScoreBoardFont.otf", 28))->setCentered(true);
+			prompt->getTransform().setLocalPosition(centerX, height * 0.55f, 0.0f);
 			menu->add(std::move(prompt));
 		}
 

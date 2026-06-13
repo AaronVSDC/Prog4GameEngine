@@ -18,12 +18,14 @@ namespace UndyneEngine
 	 
 	glm::vec2 TextureComponent::getTextureSize() const
 	{
+		if (!m_Texture)
+			return { 0.0f, 0.0f };
 		return m_Texture->getSize();
 	}
 
 	void TextureComponent::render() const
 	{
-		if (not m_Visible)
+		if (!m_Visible or !m_Texture)
 			return;
 		const auto& worldPosition = getOwner()->getTransform().getWorldPosition();
 		if (m_SourceRect.has_value())

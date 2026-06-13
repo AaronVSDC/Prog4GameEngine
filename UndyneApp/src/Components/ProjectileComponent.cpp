@@ -16,6 +16,11 @@ namespace Digger
 	{
 	}
 
+	ProjectileComponent::~ProjectileComponent()
+	{
+		SoundServiceLocator::getSoundSystem().stopSound("fire");
+	}
+
 	void ProjectileComponent::start()
 	{
 		SoundServiceLocator::getSoundSystem().loadSound("Audio/explode.wav", "explode");
@@ -39,15 +44,15 @@ namespace Digger
 	bool ProjectileComponent::hitEnemy(glm::ivec2 cell)
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene)
+		if (!scene)
 			return false;
 
 		for (GameObject* enemy : scene->findGameObjectsWithComponent<EnemyComponent>())
 		{
 			EnemyComponent* enemyComponent = enemy->getComponent<EnemyComponent>();
-			if (not enemyComponent or not enemyComponent->isAlive())
+			if (!enemyComponent or !enemyComponent->isAlive())
 				continue;
-			if (not m_Grid->isOnCell(*enemy, cell))
+			if (!m_Grid->isOnCell(*enemy, cell))
 				continue;
 
 			if (StateMachineComponent* machine = enemy->getComponent<StateMachineComponent>())
@@ -59,7 +64,7 @@ namespace Digger
 
 	void ProjectileComponent::update(float deltaTime)
 	{
-		if (not m_Grid)
+		if (!m_Grid)
 		{
 			getOwner()->markForRemoval();
 			return;
@@ -79,14 +84,14 @@ namespace Digger
 			return;
 		}
 
-		if (not m_Grid->containsWorldPoint({ position.x, position.y }))
+		if (!m_Grid->containsWorldPoint({ position.x, position.y }))
 		{
 			detonate();
 			return;
 		}
 
 		const glm::ivec2 cell = m_Grid->worldToCell({ position.x, position.y });
-		if (not m_Grid->isDug(cell))
+		if (!m_Grid->isDug(cell))
 		{
 			detonate();
 			return;

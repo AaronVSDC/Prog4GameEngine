@@ -35,7 +35,7 @@ namespace Digger
 	void ShootComponent::fire()
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene or not m_Grid or not m_Move)
+		if (!scene or !m_Grid or !m_Move)
 			return;
 
 		const glm::ivec2 direction = m_Move->facing();

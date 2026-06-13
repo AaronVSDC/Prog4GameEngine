@@ -17,7 +17,7 @@ namespace Digger
         void execute() override
         {
             UndyneEngine::Scene* scene = UndyneEngine::SceneManager::getActiveScene();
-            if (not scene)
+            if (!scene)
                 return;
             if (UndyneEngine::GameObject* player = scene->findGameObjectByName("Player"))
                 if (MoveComponent* moveComponent = player->getComponent<MoveComponent>())

@@ -32,7 +32,7 @@ namespace Digger
 
 	std::unique_ptr<UndyneEngine::State> CrushedState::update(UndyneEngine::GameObject& owner, float deltaTime)
 	{
-		if (not m_Grid)
+		if (!m_Grid)
 		{
 			owner.markForRemoval();
 			return nullptr;

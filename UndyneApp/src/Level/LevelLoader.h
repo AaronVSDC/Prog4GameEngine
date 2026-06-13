@@ -1,13 +1,14 @@
 #ifndef LEVEL_LOADER_H
 #define LEVEL_LOADER_H
 #include <glm/vec2.hpp>
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 
 //std
+#include <memory>
 #include <string>
 #include <vector>
 
-namespace UndyneEngine { class Scene; }
+namespace UndyneEngine { class Scene; class GameObject; }
 
 namespace Digger
 {
@@ -41,9 +42,10 @@ namespace Digger
 		int m_GridRows = 10;
 		float m_NativeCellSize = 20.0f;
 
-
 		bool parse(int levelIndex, LevelData& outData) const;
 		bool readLevelGrid(int levelIndex, std::vector<std::string>& outRows) const;
+
+		std::unique_ptr<UndyneEngine::GameObject> createPlayer(const std::string& name, glm::vec2 worldPosition, float cellSize, bool primary) const;
 	};
 }
 

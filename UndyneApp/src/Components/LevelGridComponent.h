@@ -68,7 +68,7 @@ namespace Digger
 
 		std::vector<CellState> m_Cells;
 		std::vector<UndyneEngine::GameObject*> m_Objects;
-		std::shared_ptr<UndyneEngine::Texture2D> m_Background;
+		UndyneEngine::Texture2D* m_Background{ nullptr };
 	};
 }
 

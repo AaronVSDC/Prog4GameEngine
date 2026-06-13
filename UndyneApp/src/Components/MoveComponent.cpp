@@ -1,7 +1,7 @@
 #include "MoveComponent.h"
 #include "LevelGridComponent.h"
 #include "GoldBagComponent.h"
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 
 //std
 #include <cmath>
@@ -29,11 +29,11 @@ namespace Digger
     bool MoveComponent::tryEnterCell(glm::ivec2 cell, glm::ivec2 direction)
     {
         UndyneEngine::GameObject* object = m_Grid->objectAt(cell);
-        if (not object)
+        if (!object)
             return true;
 
         GoldBagComponent* bag = object->getComponent<GoldBagComponent>();
-        if (not bag)
+        if (!bag)
             return true;
         if (bag->isGold())
             return true;
@@ -50,7 +50,7 @@ namespace Digger
     {
         if (GameState::isActionPaused())
             return;
-        if (not m_Enabled)
+        if (!m_Enabled)
             return;
 
         const glm::vec2 desired = m_DesiredDirection;
@@ -58,7 +58,7 @@ namespace Digger
 
         if (desired.x == 0.0f and desired.y == 0.0f)
             return;
-        if (not m_Grid)
+        if (!m_Grid)
             return;
 
         auto& transform = getOwner()->getTransform();

@@ -21,7 +21,7 @@ namespace Digger
 	private:
 		int m_Lives{ 0 };
 		UndyneEngine::Subject* m_LivesSubject{ nullptr };
-		std::shared_ptr<UndyneEngine::Texture2D> m_Icon;
+		UndyneEngine::Texture2D* m_Icon{ nullptr };
 	};
 }
 #endif

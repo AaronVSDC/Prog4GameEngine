@@ -1,7 +1,7 @@
 #ifndef START_MODE_COMMAND_H
 #define START_MODE_COMMAND_H
 #include <UndyneEngine.h>
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 
 namespace Digger
 {

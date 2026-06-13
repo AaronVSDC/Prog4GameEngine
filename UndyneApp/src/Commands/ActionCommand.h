@@ -1,7 +1,7 @@
 #ifndef ACTION_COMMAND_H
 #define ACTION_COMMAND_H
 #include <UndyneEngine.h>
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 #include "../Components/ShootComponent.h"
 
 namespace Digger

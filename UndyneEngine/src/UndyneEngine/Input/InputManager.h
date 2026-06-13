@@ -69,7 +69,7 @@ namespace UndyneEngine
 		bool processInput();
 
 		ControllerID addController();
-		void			removeController(ControllerID id);
+		void		removeController(ControllerID id);
 
 		BindingID bindButtonCommand (                  KeyboardKey   key,     InputState state, std::unique_ptr<Command> command);
 		BindingID bindButtonCommand (ControllerID id,  GamepadButton button,  InputState state, std::unique_ptr<Command> command);

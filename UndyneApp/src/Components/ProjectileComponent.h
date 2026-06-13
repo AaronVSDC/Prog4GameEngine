@@ -11,6 +11,7 @@ namespace Digger
 	{
 	public:
 		explicit ProjectileComponent(glm::ivec2 direction) noexcept;
+		~ProjectileComponent() override;
 
 		void start() override;
 		void update(float deltaTime) override;

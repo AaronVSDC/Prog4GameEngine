@@ -2,7 +2,7 @@
 #include "ScoreComponent.h"
 #include "MoveComponent.h"
 #include "DigTrailComponent.h"
-#include "../GameState.h"
+#include "../GameState/GameState.h"
 
 using namespace UndyneEngine;
 
@@ -41,8 +41,8 @@ namespace Digger
 			return;
 		}
 
-		if (not m_Dying) return;
-		if (m_DeathAnimation and not m_DeathAnimation->isFinished()) return;
+		if (!m_Dying) return;
+		if (m_DeathAnimation and !m_DeathAnimation->isFinished()) return;
 
 		m_Dying = false;
 		m_DeathAnimation = nullptr;
@@ -103,7 +103,7 @@ namespace Digger
 
 	void LivesComponent::respawn()
 	{
-		if (not m_DyingPlayer) return;
+		if (!m_DyingPlayer) return;
 
 		if (TextureComponent* texture = m_DyingPlayer->getComponent<TextureComponent>())
 			texture->setVisible(true);
@@ -122,10 +122,10 @@ namespace Digger
 	void LivesComponent::showGravestone(bool visible)
 	{
 		Scene* scene = getOwner()->getScene();
-		if (not scene) return;
+		if (!scene) return;
 
 		GameObject* grave = scene->findGameObjectByName("Gravestone");
-		if (not grave) return;
+		if (!grave) return;
 
 		if (visible and m_DyingPlayer)
 		{
@@ -140,7 +140,7 @@ namespace Digger
 	{
 		if (event != Event::ScoreChanged) return;
 		ScoreComponent* score = subject.getComponent<ScoreComponent>();
-		if (not score) return;
+		if (!score) return;
 		while (score->getScore() >= m_NextExtraLife)
 		{
 			++m_Lives;

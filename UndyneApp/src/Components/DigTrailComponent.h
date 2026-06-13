@@ -41,7 +41,7 @@ namespace Digger
 
 		LevelGridComponent* m_Grid{ nullptr };
 		std::unique_ptr<UndyneEngine::Texture2D> m_Canvas;
-		std::shared_ptr<UndyneEngine::Texture2D> m_Hole;
+		UndyneEngine::Texture2D* m_Hole{ nullptr };
 		std::vector<Follower> m_Followers;
 	};
 }

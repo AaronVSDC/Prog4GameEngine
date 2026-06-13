@@ -14,8 +14,8 @@ namespace UndyneEngine
 	{
 		void init();
 		void destroy();
-		[[nodiscard]] std::shared_ptr<Texture2D> loadTexture(const std::string& file);
-		[[nodiscard]] std::shared_ptr<Font> loadFont(const std::string& file, uint8_t size);
+		[[nodiscard]] Texture2D* loadTexture(const std::string& file);
+		[[nodiscard]] Font* loadFont(const std::string& file, uint8_t size);
 		[[nodiscard]] const std::filesystem::path& getDataPath();
 
 	}

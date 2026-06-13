@@ -13,7 +13,7 @@ namespace Digger
 		void start() override;
 
 		bool step(glm::ivec2 direction, float deltaTime);
-		bool isAtCellCenter() const noexcept { return not m_Sliding; }
+		bool isAtCellCenter() const noexcept { return !m_Sliding; }
 		void setSpeed(float speed) noexcept { m_Speed = speed; }
 
 	private:

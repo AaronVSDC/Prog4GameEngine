@@ -11,7 +11,7 @@ namespace UndyneEngine
 	class StateMachineComponent final : public BaseComponent
 	{
 	public:
-		explicit StateMachineComponent(std::unique_ptr<State> initialState);
+		explicit StateMachineComponent(std::unique_ptr<State> initialState = nullptr);
 
 		void start() override;
 		void update(float deltaTime) override;
