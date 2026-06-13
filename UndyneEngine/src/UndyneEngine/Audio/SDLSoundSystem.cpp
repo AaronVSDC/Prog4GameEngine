@@ -267,9 +267,8 @@ namespace UndyneEngine
                 UDE_CORE_WARN("stopSound: '{}' has no active tracks.", name);
                 return;
             }
-            const size_t count = iter->second.size();
             for (MIX_Track* track : iter->second) MIX_StopTrack(track, 0);
-            UDE_CORE_INFO("Stopped sound '{}' ({} track(s)).", name, count);
+            UDE_CORE_INFO("Stopped sound '{}' ({} track(s)).", name, iter->second.size());
         }
 
         void handlePauseAll()
