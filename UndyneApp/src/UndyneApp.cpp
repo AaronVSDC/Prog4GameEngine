@@ -9,4 +9,5 @@ UndyneEngine::Application* UndyneEngine::createApplication()
 
 void UndyneApp::load()
 {
+
 }
