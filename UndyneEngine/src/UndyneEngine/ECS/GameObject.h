@@ -39,7 +39,7 @@ namespace UndyneEngine
 		//---------------------
 		const std::string& getName() const noexcept { return m_Name;  }
 		void rename(const std::string& newName) noexcept { m_Name = newName;  }
-		const unsigned int getID() const noexcept { return m_ID;  }
+		[[nodiscard]] unsigned int getID() const noexcept { return m_ID;  }
 		GameObject* getParent() const noexcept { return m_Parent;  }
 		const std::vector<GameObject*>& getChildren() const noexcept { return m_Children;  }
 		Transform& getTransform() noexcept { return m_Transform;  }
@@ -89,9 +89,9 @@ namespace UndyneEngine
 		{
 			return getComponent<T>() != nullptr; 
 		}
-	private: 
-		std::string m_Name;
+	private:
 		const unsigned int m_ID;
+		std::string m_Name;
 		static unsigned int s_NextID;
 		std::vector<std::unique_ptr<BaseComponent>> m_Components; 
 		std::vector<GameObject*> m_Children;
